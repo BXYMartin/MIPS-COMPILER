@@ -6,7 +6,7 @@
 #include <map>
 #include "error.h"
 
-
+using namespace std;
 
 /*
 ######### Memory ###########
@@ -70,11 +70,11 @@ const unsigned int dataBaseAddress = 0x10010000;//数据段起始地址
 unsigned int returnValueAddress;//函数返回值存放点
 unsigned int functionStackTop;//整体函数栈的起始地址(即全局数据区域起始地址)
 
-const string opCodeToFileName = "OptimizedMiddleCode.txt";
-const string tmpCodeToFileName = "MiddleCode.txt";
-const string mipsCodeToFileName = "Assembly.asm";
-const string finalCodeToFileName = "OptimizedAssembly.asm";
-const string simuCodeToFileName = "SimulatedAssembly.asm";
+extern const string opCodeToFileName = "OptimizedMiddleCode.txt";
+extern const string tmpCodeToFileName = "MiddleCode.txt";
+extern const string mipsCodeToFileName = "Assembly.asm";
+extern const string finalCodeToFileName = "OptimizedAssembly.asm";
+extern const string simuCodeToFileName = "SimulatedAssembly.asm";
 
 extern vector<SymbolTableItem> SymbolTable;
 
@@ -1410,6 +1410,7 @@ void writeOptimizedAssemblyCode() {
 
 void writeSimulatedAssemblyCode() {
 	ofstream out(simuCodeToFileName, ios::out);
+	stringWithLabel.clear();
 	// 生成 data 段
 	out << ".data" << endl;
 	getDataSegment(out);

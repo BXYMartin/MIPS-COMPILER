@@ -16,8 +16,10 @@ using namespace std;
 #define MAX_STR 100
 
 void runSimulation();
+void checkOptimization();
+void checkSimulation();
 int runBenchmark();
-void printResult();
+void printResult(bool optimize);
 // Arithmetic operations 
 void add (int dest,int reg1,int reg2);		// Stores the sum of values in reg1 and reg2 in dest.
 void sub (int dest,int reg1,int reg2);		// Stores the difference of values in reg1 and reg2 in dest.
@@ -61,15 +63,8 @@ struct instruct_mem
 	struct instruct_mem_element mem[2048];
 };
 
-/********* FUNCTIONS TO ENCODE-DECODE THE INSTRUCTION ************/
-
 void encode(char*input, int *coded, int num);	 //Function to convert text into opcodes.
 void decode(int*encoded_inst);	// Decode and perform the instructions.
-
-													/*****************************************************************/
-
-
-													/********** FUNCTIONS TO LOAD & EXECUTE THE INSTRUCTIONS *********/
 
 int read_file(FILE*file);
 void load_instruct_mem(int mem_pos, int*instruct);  //Function to load the instruction into the instruction memory. 
@@ -89,7 +84,7 @@ int reg_num(char*alt_name);	// Returns the number of the register given the alte
 
 enum Instruction
 {
-	NOP, ADD, ADDU, ADDIU, SUB, SUBU, SUBIU, SLT, SLTI, SLL, MUL, DIV, AND, OR, ORI, SYSCALL, LW, SW, LI, LA, MOVE, J, JAL, JR, BEQ, BNE, BLT, BLE, BGT, BGE
+	NOP, ADDOP, ADDU, ADDIU, SUBOP, SUBU, SUBIU, SLT, SLTI, SLL, MUL, DIVOP, AND, OR, ORI, SYSCALL, LW, SW, LI, LA, MOVE, J, JAL, JR, BEQ, BNE, BLT, BLE, BGT, BGE
 };
 const string Instr[] = { "nop", "add", "addu", "addiu", "sub", "subu", "subiu", "slt", "slti", "sll", "mul", "div", "and", "or", "ori", "syscall", "lw", "sw", "li", "la", "move", "j", "jal", "jr", "beq", "bne", "blt", "ble", "bgt", "bge" };
 
@@ -98,5 +93,6 @@ struct function {
 	int line;
 	string name;
 };
+
 
  #endif		//End of file

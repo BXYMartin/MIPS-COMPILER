@@ -3,9 +3,18 @@
 #include <string>
 #include "operations.h"
 
+using namespace std;
+
 extern const string mipsCodeToFileName;
+extern const string simuCodeToFileName;
+extern const string finalCodeToFileName;
 extern vector<SymbolTableItem> SymbolTable;
 extern map<int, string> varToRegisterMap;
+extern map<string, unsigned> maxTempOrderMap;
+extern map<string, unsigned> maxVarOrderMap;
+extern map<string, vector<int>> functionVarIndexMap;
+extern vector<int> globalVarIndexMap;
+extern vector<string> funcNameTable;
 
 struct label_table
 {
@@ -18,31 +27,140 @@ struct label_table
 struct reg reg_file[32];
 
 string entry = "main";
+string current = "main";
 int total = 0;
 
 int INST_ALU = 0, INST_JUMP = 0, INST_BRANCH = 0, INST_MEM = 0, INST_OTHER = 0;
 int label_num;
 int pc;
 map<string, string> strings[MAX_STR];
-struct instruct_mem *im = new instruct_mem;
+struct instruct_mem *im;
 map<int, int> dm;
 map<int, int> record;
 vector<function> stack;
 map<int, int> number;
 bool endProperly = false;
 
-void printResult() {
-	cout << "-----------------------------------" << endl;
-	for (int i = 0; i < stack.size(); i++) {
-		for (int j = 0; j < stack.at(i).level; j++)
-			cout << " | ";
-		cout << stack.at(i).name << " | Line " << stack.at(i).line << endl;
+int getVariableOrder(string funcName, int offset) {
+	int number = 0;
+	unsigned int i;
+	for (i = 0; i < SymbolTable.size(); i++) {
+		SymbolTableItem item = SymbolTable.at(i);
+		if (funcName == "GLOBAL") {
+			if (item.getItemType() != Constant)
+				break;
+		}
+		else if (item.getId() == funcName) {
+			if (item.getItemType() == Function) {
+				i++;
+				break;
+			}
+		}
 	}
-	cout << "-----------------------------------" << endl;
-	cout << "--- Memory Access Status: " << endl;
-	//sort(record.begin(), record.end(), comp);
-	for (map<int, int>::iterator itr = record.begin(); itr != record.end(); itr++) {
-		cout << "--- " << itr->first << " | " << itr->second << endl;
+	for (; i < SymbolTable.size(); i++) {
+		SymbolTableItem item = SymbolTable.at(i);
+		if (item.getItemType() == Function)
+			return -1;
+		if (funcName != "GLOBAL")
+			if (item.getItemType() == Constant)
+				continue;
+		if (number >= offset) {
+			break;
+		}
+		if (item.getArrSize() == 0)
+			number += 4;
+		else
+			number += item.getArrSize() * 4;
+	}
+	if (i == SymbolTable.size())
+		return -1;
+	return i;
+}
+
+void optimizeRegister() {
+	current = "GLOBAL";
+	globalVarIndexMap.clear();
+	functionVarIndexMap.clear();
+	maxVarOrderMap.clear();
+	varToRegisterMap.clear();
+	unsigned int i = 0;
+	// Ìø¹ý Global ±äÁ¿
+	for (; i < SymbolTable.size(); i++) {
+		SymbolTableItem item = SymbolTable.at(i);
+		if (SymbolTable.at(i).getItemType() != Function) {
+			if (item.getItemType() == Variable && item.getArrSize() == 0)
+				globalVarIndexMap.push_back(i);
+			continue;
+		}
+		else
+			break;
+	}
+	for (; i < SymbolTable.size(); i++) {
+		SymbolTableItem item = SymbolTable.at(i);
+		if (item.getItemType() == Function) {
+			current = item.getId();
+			vector<int> temp;
+			functionVarIndexMap.insert(map<string, vector<int>>::value_type(current, temp));
+		}
+		else if ((item.getItemType() == Parameter) || (item.getItemType() == Variable && item.getArrSize() == 0)) { // (item.getItemType() == Parameter) || (item.getItemType() == Variable && item.getArrSize() == 0)
+			map<string, vector<int>>::iterator iter = functionVarIndexMap.find(current);
+			iter->second.push_back(i);
+		}
+	}
+	for (int j = 0; j < funcNameTable.size(); j++) {
+		map<string, vector<int>>::iterator iter = functionVarIndexMap.find(funcNameTable.at(j));
+		if (iter->second.size() == 0)
+			continue;
+		for (unsigned int k = 0; k < iter->second.size() - 1; k++) {
+			for (int l = k + 1; l < iter->second.size(); l++) {
+				int w1 = record[k];
+				int w2 = record[l];
+				if (w1 < w2) {
+					int t = iter->second.at(k);
+					iter->second.at(k) = iter->second.at(l);
+					iter->second.at(l) = t;
+				}
+			}
+		}
+		unsigned int k;
+		for (k = 0; k < iter->second.size() && k < VAR_REGISTER; k++) {
+			varToRegisterMap.insert(map<int, string>::value_type(SymbolTable.at(iter->second.at(k)).getOrder(), "$s" + to_string(k)));
+		}
+		maxVarOrderMap.insert(map<string, unsigned>::value_type(funcNameTable.at(j), k));
+	}
+	if (globalVarIndexMap.size() == 0)
+		return;
+	for (unsigned int k = 0; k < globalVarIndexMap.size() - 1; k++) {
+		for (int l = k + 1; l < globalVarIndexMap.size(); l++) {
+			int w1 = record[k];
+			int w2 = record[l];
+			if (w1 < w2) {
+				int t = globalVarIndexMap.at(k);
+				globalVarIndexMap.at(k) = globalVarIndexMap.at(l);
+				globalVarIndexMap.at(l) = t;
+			}
+		}
+	}
+	for (unsigned int k = 0; k < globalVarIndexMap.size() && k < 8 - VAR_REGISTER; k++) {
+		varToRegisterMap.insert(map<int, string>::value_type(SymbolTable.at(globalVarIndexMap.at(k)).getOrder(), "$s" + to_string(k + VAR_REGISTER)));
+	}
+}
+
+void printResult(bool optimize) {
+	if (optimize) {
+		cout << "-----------------------------------" << endl;
+		for (int i = 0; i < stack.size(); i++) {
+			for (int j = 0; j < stack.at(i).level; j++)
+				cout << " | ";
+			cout << stack.at(i).name << " | Line " << stack.at(i).line << endl;
+		}
+		cout << "-----------------------------------" << endl;
+		cout << "--- Memory Access Status: " << endl;
+		//sort(record.begin(), record.end(), comp);
+		for (map<int, int>::iterator itr = record.begin(); itr != record.end(); itr++) {
+			cout << "--- Symbol Table " << itr->first << " | Referenced " << itr->second << " Times" << endl;
+		}
+		optimizeRegister();
 	}
 	cout << "-----------------------------------" << endl;
 	cout << "--- ALU       | " << INST_ALU << endl;
@@ -62,11 +180,14 @@ void printPosition() {
 }
 
 void logMemory(int addr) {
-	int order = (addr - reg_file[26].val > 0 && reg_file[26].val != 0) ? (addr - reg_file[26].val) >> 2 : (addr - reg_file[28].val) >> 2;
-	if (record.find(order) != record.end())
-		record[order] = record[order] + 1;
+	int order;
+	if (addr - reg_file[26].val > 0)
+		order = getVariableOrder(current, addr - reg_file[26].val);
 	else
-		record[order] = 1;
+		order = getVariableOrder(current, addr - reg_file[28].val);
+	if (order < 0)
+		return;
+	record[order] = record[order] + 1;
 }
 
 void callStack(int inc, string name) {
@@ -77,6 +198,7 @@ void callStack(int inc, string name) {
 		func.level = level;
 		func.line = number[pc];
 		func.name = name;
+		current = name;
 		stack.push_back(func);
 	}
 	else {
@@ -91,6 +213,7 @@ void callStack(int inc, string name) {
 				func.level = level;
 				func.line = number[reg_file[31].val] + 1;
 				func.name = stack.at(i).name;
+				current = stack.at(i).name;
 				stack.push_back(func);
 				break;
 			}
@@ -159,7 +282,7 @@ void encode(char*input, int *coded, int num)
 		cout << "Unknown Instruction : " << inst << endl;
 		exit(3);
 	}
-	if (coded[0] >= ADD && coded[0] <= OR)
+	if (coded[0] >= ADDOP && coded[0] <= OR)
 	{
 		char reg[3];
 		int j;
@@ -467,7 +590,7 @@ void decode(int*encoded_inst)
 {
 	switch (encoded_inst[0])
 	{
-	case ADD:
+	case ADDOP:
 	case ADDIU:
 	case ADDU:
 		INST_ALU++;
@@ -475,7 +598,7 @@ void decode(int*encoded_inst)
 		break;
 	case SUBU:
 	case SUBIU:
-	case SUB:
+	case SUBOP:
 		if (encoded_inst[3] >= 32 || encoded_inst[3] < 0)
 			INST_ALU += 2;
 		INST_ALU++;
@@ -506,7 +629,7 @@ void decode(int*encoded_inst)
 		INST_ALU++;
 		mul(encoded_inst[1], encoded_inst[2], encoded_inst[3]);
 		break;
-	case DIV:
+	case DIVOP:
 		if (encoded_inst[3] >= 32 || encoded_inst[3] < 0)
 			INST_ALU += 3;
 		else
@@ -990,6 +1113,7 @@ void execute(int fin)
 	{
 		if (labels.label[i].name == entry) {
 			pc = labels.label[i].inst_num;
+			current = entry;
 			callStack(0, entry);
 		}
 	}
@@ -1008,6 +1132,20 @@ void execute(int fin)
 
 void init_reg_file()
 {
+	for (int i = 0; i < total; i++) {
+		strings[i].clear();
+	}
+	total = 0;
+	for (int i = 0; i < SymbolTable.size(); i++) {
+		record[i] = 0;
+	}
+	for (int i = 0; i < 100; i++) {
+		labels.label[i].name = "";
+		labels.label[i].inst_num = 0;
+	}
+	im = new instruct_mem;
+	endProperly = false;
+	INST_ALU = INST_JUMP = INST_BRANCH = INST_MEM = INST_OTHER = 0;
 	reg_file[0].alt_name = "zero";
 	reg_file[1].alt_name = "at";
 	reg_file[2].alt_name = "v0";
@@ -1068,11 +1206,34 @@ int reg_num(char*alt_name)
 }
 
 void runSimulation() {
+	cout << ">>> Begin Simulations: " << endl;
 	init_reg_file();		// Initialize the register file
 	FILE *f;
 	fopen_s(&f, mipsCodeToFileName.c_str(), "r");
 	int len = read_file(f);	// len stores the largest possible value of pc.
 	fclose(f);
 	execute(len);
-	printResult();
+	printResult(true);
+}
+
+void checkSimulation(){
+	cout << ">>> Begin Simulations: " << endl;
+	init_reg_file();		// Initialize the register file
+	FILE *f;
+	fopen_s(&f, simuCodeToFileName.c_str(), "r");
+	int len = read_file(f);	// len stores the largest possible value of pc.
+	fclose(f);
+	execute(len);
+	printResult(false);
+}
+
+void checkOptimization() {
+	cout << ">>> Begin Simulations: " << endl;
+	init_reg_file();		// Initialize the register file
+	FILE *f;
+	fopen_s(&f, finalCodeToFileName.c_str(), "r");
+	int len = read_file(f);	// len stores the largest possible value of pc.
+	fclose(f);
+	execute(len);
+	printResult(false);
 }
