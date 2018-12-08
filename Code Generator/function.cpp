@@ -74,6 +74,7 @@ const string opCodeToFileName = "OptimizedMiddleCode.txt";
 const string tmpCodeToFileName = "MiddleCode.txt";
 const string mipsCodeToFileName = "Assembly.asm";
 const string finalCodeToFileName = "OptimizedAssembly.asm";
+const string simuCodeToFileName = "SimulatedAssembly.asm";
 
 extern vector<SymbolTableItem> SymbolTable;
 
@@ -156,9 +157,9 @@ void genQuaterCode(ofstream &out, MiddleCode item) {
 		break;
 	case Pass:
 		if (item.isTargetArr) {
-			out << item.target << "[" << item.index1 << "] = ";
+			out << item.target << "[" << item.indexTargetArr << "] = ";
 			if (item.isLeftArr) {
-				out << item.left << "[" << item.index2 << "]" << endl;
+				out << item.left << "[" << item.indexLeftArr << "]" << endl;
 			}
 			else {
 				out << item.left << " " << item.op << " " << item.right << endl;
@@ -179,7 +180,7 @@ void genQuaterCode(ofstream &out, MiddleCode item) {
 			}
 			out << item.target << " = ";
 			if (item.isLeftArr) {
-				out << item.left << "[" << item.index2 << "]" << endl;
+				out << item.left << "[" << item.indexLeftArr << "]" << endl;
 			}
 			else {
 				out << item.left << " " << item.op << " " << item.right << endl;
@@ -442,16 +443,16 @@ void locateTempAddress(int order, string targetReg, ofstream & out) {
 void locateArray(MiddleCode item, ofstream & out) {
 	locateVariableAddress(item.target, "$t0", out);
 
-	// 观察index1即数组下标
-	string index1 = item.index1;
-	if (IsNum(index1.at(0))) {		// 属于数字
-		int number = integerConversion(index1);
+	// 观察indexTargetArr即数组下标
+	string indexTargetArr = item.indexTargetArr;
+	if (IsNum(indexTargetArr.at(0))) {		// 属于数字
+		int number = integerConversion(indexTargetArr);
 		number = 4 * number;
 		out << "addiu $t0 $t0 " << number << endl;
 	}
-	else if (index1.at(0) == '#') {	// 是临时变量
+	else if (indexTargetArr.at(0) == '#') {	// 是临时变量
 									// 放在$t1
-		int g = integerConversion(index1.substr(1));
+		int g = integerConversion(indexTargetArr.substr(1));
 		if (g > TEMP_REGISTER) {
 			getTemp(g, "$t1", out);
 			out << "sll $t1 $t1 2" << endl;
@@ -463,14 +464,14 @@ void locateArray(MiddleCode item, ofstream & out) {
 		}
 	}
 	else {							// 是变量
-		map<int, string>::iterator itr = varToRegisterMap.find(locateVariable(index1));
+		map<int, string>::iterator itr = varToRegisterMap.find(locateVariable(indexTargetArr));
 		if (itr != varToRegisterMap.end()) {
 			out << "sll $t1 " << itr->second << " 2" << endl;
 			out << "addu $t0 $t0 $t1" << endl;
 		}
 		else {
 			// 地址放在$t1
-			getVariable(index1, "$t1", out);
+			getVariable(indexTargetArr, "$t1", out);
 			out << "sll $t1 $t1 2" << endl;
 			out << "addu $t0 $t0 $t1" << endl;
 		}
@@ -672,12 +673,12 @@ void handleAssignment(MiddleCode item, ofstream & out) {
 				// 分析索引下标,将数组地址取出放在$t1
 				locateVariableAddress(item.left, "$t1", out);
 				// 下标地址取出放在$t2
-				string index2 = item.index2;
-				if (IsNum(index2.at(0))) {			// 数字
-					out << "addiu $t1 $t1 " << 4 * integerConversion(index2) << endl;
+				string indexLeftArr = item.indexLeftArr;
+				if (IsNum(indexLeftArr.at(0))) {			// 数字
+					out << "addiu $t1 $t1 " << 4 * integerConversion(indexLeftArr) << endl;
 				}
-				else if (index2.at(0) == '#') {		// 临时变量
-					g = integerConversion(index2.substr(1));
+				else if (indexLeftArr.at(0) == '#') {		// 临时变量
+					g = integerConversion(indexLeftArr.substr(1));
 					if (g > TEMP_REGISTER) {
 						getTemp(g, "$t2", out);
 						out << "sll $t2 $t2 2" << endl;
@@ -689,13 +690,13 @@ void handleAssignment(MiddleCode item, ofstream & out) {
 					}
 				}
 				else {								// 标识符
-					map<int, string>::iterator itr = varToRegisterMap.find(locateVariable(index2));
+					map<int, string>::iterator itr = varToRegisterMap.find(locateVariable(indexLeftArr));
 					if (itr != varToRegisterMap.end()) {
 						out << "sll $t2 " << itr->second << " 2" << endl;
 						out << "addu $t1 $t1 $t2" << endl;
 					}
 					else {
-						getVariable(index2, "$t2", out);
+						getVariable(indexLeftArr, "$t2", out);
 						out << "sll $t2 $t2 2" << endl;
 						out << "addu $t1 $t1 $t2" << endl;
 					}
@@ -1386,6 +1387,29 @@ void writeOptimizedMiddleCode() {
 
 void writeOptimizedAssemblyCode() {
 	ofstream out(finalCodeToFileName, ios::out);
+	// 生成 data 段
+	out << ".data" << endl;
+	getDataSegment(out);
+	// 对齐 data 段栈顶地址
+	dataSegmentAddress = dataSegmentAddress + 4 - (dataSegmentAddress % 4);
+	// 设置临时参数栈为 data 段顶部
+	functionStackAddress = dataSegmentAddress + dataBaseAddress;
+	currentFunctionStackAddress = 0;
+	functionStackTop = functionStackAddress + maxFunctionStack;
+	// 生成 main 函数声明
+	out << ".globl main" << endl;
+	// 生成 text 段
+	funcName = "GLOBAL";
+	out << ".text" << endl;
+
+	getTextSegment(out, optimizedMiddleCodeArr);
+
+	out << "# End Of MIPS Assembly Code." << endl;
+	out.close();
+}
+
+void writeSimulatedAssemblyCode() {
+	ofstream out(simuCodeToFileName, ios::out);
 	// 生成 data 段
 	out << ".data" << endl;
 	getDataSegment(out);

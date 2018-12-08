@@ -20,6 +20,7 @@ void writeOptimizedMiddleCode();
 //将中间代码翻译成最终的mips32汇编语言代码
 void writeAssemblyCode();
 void writeOptimizedAssemblyCode();
+void writeSimulatedAssemblyCode();
 void getDataSegment(ofstream &);
 void getTextSegment(ofstream &, vector<MiddleCode> QuaterCode);
 void getOptimizedTextSegment(ofstream &);

@@ -321,17 +321,17 @@ private:
 		pushMiddleCode(code, isCache, cache);
 		return code.target;
 	}
-	string pushPseudoCode(TmpCodeType type, vector<MiddleCode> &cache, bool isCache, string left, char op, string right, string index1, string index2, bool isLeftArr, bool isTargetArr) {
+	string pushPseudoCode(TmpCodeType type, vector<MiddleCode> &cache, bool isCache, string left, char op, string right, string indexTargetArr, string indexLeftArr, bool isLeftArr, bool isTargetArr) {
 		MiddleCode code;
 		code.type = type;
 		switch (type) {
-		case Pass:			// Assign Target(target) = Left(left) Op(op) Right(right) index1 index2 leftArray targetArray
+		case Pass:			// Assign Target(target) = Left(left) Op(op) Right(right) indexTargetArr indexLeftArr leftArray targetArray
 			code.target = getVar();
 			code.left = left;
 			code.op = op;
 			code.right = right;
-			code.index1 = index1;
-			code.index2 = index2;
+			code.indexTargetArr = indexTargetArr;
+			code.indexLeftArr = indexLeftArr;
 			code.isLeftArr = isLeftArr;
 			code.isTargetArr = isTargetArr;
 			break;

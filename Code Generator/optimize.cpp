@@ -300,10 +300,10 @@ void reduceExpression(int start, int end) {
 			if (item.isLeftArr) {
 				v1 = pushNode(false, item.left);
 				//—∞’“v2
-				if (item.index2.at(0) == '#')
-					v2 = pushNode(false, item.index2);
+				if (item.indexLeftArr.at(0) == '#')
+					v2 = pushNode(false, item.indexLeftArr);
 				else
-					v2 = pushNode(true, item.index2);
+					v2 = pushNode(true, item.indexLeftArr);
 				//’Î∂‘target,≤È—ØDAGÕº
 				v3 = pushNode(v1, v2, '[', item.target);
 			}
@@ -427,7 +427,7 @@ void reduceExpression(int start, int end) {
 			break;
 		case '[':
 			tempMiddleCode.isLeftArr = true;
-			tempMiddleCode.index2 = right.value;
+			tempMiddleCode.indexLeftArr = right.value;
 			break;
 		}
 		for (vector<string>::iterator itr = nodeTable.final[code].begin(); itr != nodeTable.final[code].end(); itr++) {
@@ -498,7 +498,7 @@ void fixTemp() {
 			{
 				itr->target = (itr + 1)->target;
 				itr->isTargetArr = (itr + 1)->isTargetArr;
-				itr->index1 = (itr + 1)->index1;
+				itr->indexTargetArr = (itr + 1)->indexTargetArr;
 				itr->isVal = (itr + 1)->isVal;
 				printOptimize(*(itr + 1));
 				optimizedMiddleCodeArr.erase(itr + 1);

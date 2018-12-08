@@ -84,12 +84,12 @@ struct MiddleCode {
 	ValueType valueType;	// 变量类型
 	FuncType funcType;
 	string target;
-	string index1;
+	string indexTargetArr;
 	bool isTargetArr;
 	bool isLeftArr;
 	bool isVal;				// 打印变量
 	string left;
-	string index2;
+	string indexLeftArr;
 	string right;
 	char op;
 };

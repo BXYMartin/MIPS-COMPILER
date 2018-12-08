@@ -879,18 +879,18 @@ bool Syntax::enter_assignStatement(string funcName, string id, bool isCache, vec
 				orderx = semantic.checkArrayId(id, funcName, true, exp.character);
 				
 				string x = to_string(exp.character);
-				code.index1 = x;
+				code.indexTargetArr = x;
 			}
 			else {
 				orderx = semantic.checkArrayId(id, funcName, true, exp.number);
 				
 				string x = to_string(exp.number);
-				code.index1 = x;
+				code.indexTargetArr = x;
 			}
 		}
 		else {
 			orderx = semantic.checkArrayId(id, funcName, false);
-			code.index1 = exp.name;
+			code.indexTargetArr = exp.name;
 		}
 		if (orderx >= 0) {
 			code.target = id;
