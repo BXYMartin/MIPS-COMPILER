@@ -360,6 +360,7 @@ void encode(char*input, int *coded, int num)
 	{
 		char reg[3];
 		int j;
+		int neg = 1;
 		for (; input[i] == ',' || input[i] == 32 || input[i] == '$'; i++);		// Move to the next register
 
 		for (j = 0; input[i] != 32 && input[i] != 10 && input[i] != '\x0' && input[i] != ',' && j<2 && input[i] != '#' && input[i] != 9; i++, j++)
@@ -372,10 +373,13 @@ void encode(char*input, int *coded, int num)
 		for (; input[i] == ',' || input[i] == 32 || input[i] == '$'; i++);		// Move to the next register
 
 		coded[2] = 0;
+		for (; input[i] == '-' && input[i] != '\x0'; i++)
+			neg = -1;
 		for (; input[i] != 32 && input[i] != 10 && input[i] != '\x0' && input[i] != ',' && input[i] != '#' && input[i] != 9; i++)
 		{
 			coded[2] = coded[2] * 10 + (input[i] - '0');
 		}
+		coded[2] *= neg;
 		//printf ("%d %d %d",coded[0],coded[1],coded[2]);
 	}
 	else if (coded[0] == LA) {
