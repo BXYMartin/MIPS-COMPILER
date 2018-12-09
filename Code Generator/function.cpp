@@ -1385,9 +1385,19 @@ void writeOptimizedMiddleCode() {
 	out.close();
 }
 
+void printVarIndexMap() {
+	cout << "-----------------------------------" << endl;
+	cout << "--- Variable To Index Map:" << endl;
+	for (map<int, string>::iterator itr = varToRegisterMap.begin(); itr != varToRegisterMap.end(); itr++) {
+		cout << "Order " << itr->first << " | Variable " << SymbolTable.at(itr->first).getId() << " | Register " << itr->second << " | Field " << SymbolTable.at(itr->first).getFuncName() << endl;
+	}
+	cout << "-----------------------------------" << endl;
+}
+
 void writeOptimizedAssemblyCode() {
 	ofstream out(finalCodeToFileName, ios::out);
 	// 生成 data 段
+	printVarIndexMap();
 	out << ".data" << endl;
 	getDataSegment(out);
 	// 对齐 data 段栈顶地址
@@ -1411,6 +1421,7 @@ void writeOptimizedAssemblyCode() {
 void writeSimulatedAssemblyCode() {
 	ofstream out(simuCodeToFileName, ios::out);
 	stringWithLabel.clear();
+	printVarIndexMap();
 	// 生成 data 段
 	out << ".data" << endl;
 	getDataSegment(out);

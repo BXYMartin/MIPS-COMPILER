@@ -113,8 +113,8 @@ void optimizeRegister() {
 			continue;
 		for (unsigned int k = 0; k < iter->second.size() - 1; k++) {
 			for (int l = k + 1; l < iter->second.size(); l++) {
-				int w1 = record[k];
-				int w2 = record[l];
+				int w1 = record[iter->second.at(k)];
+				int w2 = record[iter->second.at(l)];
 				if (w1 < w2) {
 					int t = iter->second.at(k);
 					iter->second.at(k) = iter->second.at(l);
@@ -144,6 +144,7 @@ void optimizeRegister() {
 	for (unsigned int k = 0; k < globalVarIndexMap.size() && k < 8 - VAR_REGISTER; k++) {
 		varToRegisterMap.insert(map<int, string>::value_type(SymbolTable.at(globalVarIndexMap.at(k)).getOrder(), "$s" + to_string(k + VAR_REGISTER)));
 	}
+	return;
 }
 
 void printResult(bool optimize) {
@@ -181,8 +182,8 @@ void printPosition() {
 
 void logMemory(int addr) {
 	int order;
-	if (addr - reg_file[26].val > 0)
-		order = getVariableOrder(current, addr - reg_file[26].val);
+	if (addr - reg_file[30].val > 0)
+		order = getVariableOrder(current, addr - reg_file[30].val - 8);
 	else
 		order = getVariableOrder(current, addr - reg_file[28].val);
 	if (order < 0)
