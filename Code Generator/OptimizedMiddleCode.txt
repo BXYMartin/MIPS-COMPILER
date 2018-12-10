@@ -1,315 +1,125 @@
-FUNC int returnyear()
-RET int 2018
-FUNC int add()
+FUNC int sqrt()
 PARA int x
-PARA int y
-#0 = x + y
+#0 = x * x
 RET id #0
-FUNC void error()
-PARA int err_typ
-BEZ err_typ 1 $Label2
-BEZ err_typ 2 $Label3
-BEZ err_typ 3 $Label6
-PRT string "Error Type Not Define."
-ENTER
-JMP $Label5
-LABEL $Label6
-PRT string "Invalid Input."
-ENTER
-JMP $Label5
-LABEL $Label5
-JMP $Label1
-LABEL $Label2
-PRT string "Max value limit."
-ENTER
-JMP $Label1
-LABEL $Label3
-PRT string "Min value limit."
-ENTER
-JMP $Label1
+FUNC void arrange()
+PARA int unuse0
+PARA int unuse1
+PARA int unuse2
+PARA int unuse3
+PARA int level
+i = 0 + 0
+BNZ level n $Label1
+RET
 LABEL $Label1
-error_number = error_number + 1
-RET
-FUNC int cumulative_sum()
-PARA int x
-PARA int y
-BLEZ x y $Label8
-PUSH 3
-CALL error
-JMP $Label9
-LABEL $Label8
-BLEZ y 100 $Label10
-PUSH 1
-CALL error
-JMP $Label11
-LABEL $Label10
-BGEZ x -100 $Label12
-PUSH 2
-CALL error
-JMP $Label13
-LABEL $Label12
-#0 = x - y
-BEZ #0 0 $Label14
-#0 = x + 1
+LABEL $Label2
+LABEL $Label3
+#0 = mark[i]
+BNZ #0 0 $Label4
+mark[i] = 1 + 0
+data[level] = i + 0
+#0 = level + 1
+PUSH 0
+PUSH 0
+PUSH 0
+PUSH 0
 PUSH #0
-PUSH y
-CALL cumulative_sum
-#1 = Ret + 0
-PUSH x
-PUSH #1
-CALL add
-#2 = Ret + 0
-RET id #2
-JMP $Label15
-LABEL $Label14
-RET id x
-LABEL $Label15
-LABEL $Label13
-LABEL $Label11
-LABEL $Label9
-FUNC char returnc()
-BGEZ void_index 5 $Label16
-void_index = void_index + 1
-CALL returnc
-#0 = Ret + 0
-RET id #0
-JMP $Label17
-LABEL $Label16
-RET char '6'
-LABEL $Label17
-FUNC char output()
-PARA char input
-LABEL $Label18
-PRT string "Letter is "
-PRT id input
-ENTER
-RET id input
-#0 = 1 + 0
-BNZ #0 0 $Label18
-FUNC int register_disaster()
-PARA int t1
-PARA int t2
-PARA int t3
-PARA int t4
-PARA int t5
-PARA int t6
-PARA int t7
-PARA int t8
-PARA int t9
-PARA int t10
-PARA int t11
-PARA int t12
-t1 = 1 + 0
-t10 = 1 + 0
-t11 = 1 + 0
-t12 = 1 + 0
-t2 = 1 + 0
-t3 = 1 + 0
-t4 = 1 + 0
-t5 = 1 + 0
-t6 = 1 + 0
-t7 = 1 + 0
-t8 = 1 + 0
-t9 = 1 + 0
-#0 = t1 + t1
-#1 = #0 + t1
-#2 = #1 + t1
-#3 = #2 + t1
-#4 = #3 + t1
-#5 = #4 + t1
-#6 = #5 + t1
-#7 = #6 + t1
-#8 = #7 + t1
-#9 = #8 + t1
-#10 = #9 + t1
-RET id #10
-FUNC void warning()
+CALL arrange
+mark[i] = 0 + 0
+LABEL $Label4
+LABEL $Label5
+i = i + 1
+BLZ i n $Label3
 RET
-FUNC void test()
-char_test = 65 + 0
-letters[0] = 49 + 0
-letters[1] = 50 + 0
-letters[2] = 97 + 0
-i = 10 + 0
-BEZ char_test 65 $Label20
-BEZ char_test 97 $Label22
-int_test = -1 + 0
-JMP $Label19
-LABEL $Label20
-LABEL $Label21
-#0 = letters[1]
-#1 = letters[0]
-#2 = letters[2]
-#3 = 131 + char_test
-#4 = #3 + #0
-#5 = #4 - #1
-#6 = #5 - #2
-#7 = i * 1
-#9 = #6 + #7
-int_test = #9 + 0
-i = i - 1
-BGEZ i 0 $Label21
-JMP $Label19
-LABEL $Label22
-#0 = letters[1]
-#1 = letters[0]
-#2 = letters[2]
-#3 = 221 + char_test
-#4 = #3 + #0
-#5 = #4 - #1
-#6 = #5 - #2
-#7 = i * 1
-int_test = #6 + #7
-JMP $Label19
-LABEL $Label19
-PRT string ""
+FUNC void foo_recursion()
+_i = 0 + 0
+PRT string "Full permutation, please input a number(<100)"
 ENTER
-PRT string "Complex Expression = "
-PRT id int_test
-ENTER
-i = 10 + 0
-LABEL $Label24
-BLZ i 5 $Label25
-BEZ i 10 $Label28
-BEZ i 57 $Label29
-BEZ i 8 $Label30
-BEZ i 55 $Label31
-BEZ i 6 $Label32
-char_test = 70 + 0
-JMP $Label27
-LABEL $Label28
-char_test = 65 + 0
-JMP $Label27
-LABEL $Label29
-char_test = 66 + 0
-JMP $Label27
-LABEL $Label30
-char_test = 67 + 0
-JMP $Label27
-LABEL $Label31
-char_test = 68 + 0
-JMP $Label27
-LABEL $Label32
-char_test = 69 + 0
-JMP $Label27
-LABEL $Label27
-JMP $Label26
-LABEL $Label25
-#0 = 2 * i
-#1 = #0 / 2
-#2 = #1 + 48
-#3 = #2 - 0
-BEZ #3 0 $Label35
-BEZ #3 48 $Label36
-char_test = 71 + 0
-JMP $Label34
-LABEL $Label35
-char_test = 65 + 0
-JMP $Label34
-LABEL $Label36
-char_test = 48 + 0
-JMP $Label34
-LABEL $Label34
-LABEL $Label26
-i = i - 1
-BGEZ i 0 $Label24
-PUSH char_test
-CALL output
+READ int n
+LABEL $Label6
+mark[_i] = 0 + 0
+_i = _i + 1
+BLZ _i n $Label6
+PUSH 1
+PUSH 2
+PUSH 3
 PUSH 4
-CALL error
+PUSH 0
+CALL arrange
+PRT string "Finished!"
+ENTER
+RET
+FUNC int foo_expr()
+i = 0 + 0
+PRT string "Three integers"
+ENTER
+READ int a
+READ int c
+READ int d
+LABEL $Label7
+data[i] = i + 0
+i = i + 1
+BLZ i 100 $Label7
+#0 = data[c]
+PUSH d
+CALL sqrt
+#1 = Ret + 0
+#2 = a * #0
+#3 = 0 - #2
+#4 = #3 + -198
+#5 = #4 + #1
+#6 = #5 - 2
+RET id #6
+FUNC void do_nothing()
+RET
+FUNC void value()
+READ int op
+BEZ op 1 $Label9
+BEZ op 2 $Label10
+PRT int 98
+ENTER
+JMP $Label8
+LABEL $Label9
+PRT int 110
+ENTER
+JMP $Label8
+LABEL $Label10
+PRT char 'b'
+ENTER
+JMP $Label8
+LABEL $Label8
 RET
 FUNC void main()
-t1 = 1 + 0
-t2 = 2 + 0
-label = 48 + 0
-label1 = 49 + 0
-label2 = 50 + 0
-PRT string "Please Input Lower Bound and Upper Bound:"
+READ char op
+LABEL $Label12
+#0 = -1 + 0
+BEZ #0 0 $Label13
+BEZ op 101 $Label16
+BEZ op 114 $Label17
+BEZ op 110 $Label18
+BEZ op 118 $Label19
+PRT string "Please input e/r/n/v instead of "
+PRT id op
 ENTER
-READ int x
-READ int y
-PRT string "Please Input A Char:"
+JMP $Label15
+LABEL $Label16
+CALL foo_expr
+#0 = Ret + 0
+PRT id #0
 ENTER
-READ char input
-i = 0 + 0
-LABEL $Label38
-#0 = i * 1
-#1 = #0 - 1
-#2 = #1 + 1
-PUSH x
-PUSH y
-CALL cumulative_sum
-result[#2] = Ret + 0
+JMP $Label15
+LABEL $Label17
+CALL foo_recursion
+JMP $Label15
+LABEL $Label18
+CALL do_nothing
+JMP $Label15
+LABEL $Label19
+CALL value
+JMP $Label15
+LABEL $Label15
+LABEL $Label13
+LABEL $Label14
 #0 = 0 + 0
-BNZ #0 0 $Label38
-i = 1 + 0
-LABEL $Label39
-result[i] = i + 0
-i = i + 1
-#0 = y - x
-BLZ i #0 $Label39
-i = 1 + 0
-BLZ x -100 $Label40
-BGZ y 100 $Label42
-BGZ x y $Label44
-PRT string "X sum to Y = "
-#0 = result[0]
-PRT id #0
-ENTER
-LABEL $Label44
-LABEL $Label45
-LABEL $Label42
-LABEL $Label43
-LABEL $Label40
-LABEL $Label41
-PRT string "It's already "
-CALL returnyear
-#0 = Ret + 0
-PRT id #0
-ENTER
-PUSH input
-CALL output
-c = Ret + 0
-BNZ c 99 $Label46
-PRT string "It is Lower c."
-PRT id t1
-ENTER
-JMP $Label47
-LABEL $Label46
-PRT string "It is not Lower c"
-PRT id t2
-ENTER
-LABEL $Label47
-CALL returnc
-c = Ret + 0
-#0 = c + 0
-BNZ #0 67 $Label48
-PRT string "\tReturnC is Upper C.\n"
-ENTER
-JMP $Label49
-LABEL $Label48
-PRT string "ReturnC is not Upper C"
-ENTER
-LABEL $Label49
-CALL warning
-CALL test
-PRT string "Final i = "
-PRT id i
-ENTER
-PRT string "Register_Disater = "
-PUSH 0
-PUSH 0
-PUSH 0
-PUSH 0
-PUSH 0
-PUSH 0
-PUSH 0
-PUSH 0
-PUSH 0
-PUSH 0
-PUSH 0
-PUSH 0
-CALL register_disaster
-#0 = Ret + 0
-PRT id #0
-ENTER
+BNZ #0 0 $Label12
+EXIT

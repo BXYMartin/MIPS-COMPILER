@@ -842,8 +842,8 @@ int read_file(FILE*file)
 			}
 			temp[j] = '\x0';
 			for (; line[i] == 32 || line[i] == ':' || line[i] == '.'; i++, j++);		// To read past the colon and spaces	
-			for (; ((line[i] >= 'a' && line[i] <= 'z') || line[i] == '"' || line[i] == ' ') && line[i] != '\x0'; i++);	// To read till the end of the next word (which is 'word')
-
+			for (; line[i] != '"' && line[i] != '\x0'; i++);	// To read till the end of the next word (which is 'word')
+			for (; line[i] == '"' && line[i] != '\x0'; i++);
 			for (j = 0; line[i] != '"' && line[i] != '\x0'; i++, j++)
 			{
 				text += line[i];
