@@ -1075,11 +1075,18 @@ void syscall()
 	else if (reg_file[2].val == 5)
 	{
 		int temp;
-		if (cin >> temp)
+		cin >> temp;
+		if (!cin.fail())
 			reg_file[2].val = temp;
 		else {
-			reg_file[2].val = 0;
-			cout << "Invalid Input Number..." << endl;
+			while (cin.fail()) {
+				cin.clear();
+				while (cin.get() != '\n')
+					continue;
+				cout << "Invalid Input Number..." << endl;
+				cin >> temp;
+			}
+			reg_file[2].val = temp;
 		}
 	}
 	else if (reg_file[2].val == 11) {	// Char
@@ -1096,11 +1103,18 @@ void syscall()
 	else if (reg_file[2].val == 12)
 	{
 		char temp;
-		if (cin >> temp)
+		cin >> temp;
+		if (!cin.fail())
 			reg_file[2].val = (int)temp;
 		else {
-			reg_file[2].val = (int)'0';
-			cout << "Invalid Input Char..." << endl;
+			while (cin.fail()) {
+				cin.clear();
+				while (cin.get() != '\n')
+					continue;
+				cout << "Invalid Input Char..." << endl;
+				cin >> temp;
+			}
+			reg_file[2].val = temp;
 		}
 	}
 	else if (reg_file[2].val == 10)
