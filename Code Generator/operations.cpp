@@ -203,7 +203,7 @@ void callStack(int inc, string name) {
 		stack.push_back(func);
 	}
 	else {
-		for (int i = stack.size() - 1; i >= 0; i--) {
+		for (unsigned int i = stack.size() - 1; i >= 0; i--) {
 			if (stack.at(i).level == level + 1) {
 				func.level = level + 1;
 				func.line = number[pc] + 1;
@@ -415,7 +415,7 @@ void encode(char*input, int *coded, int num)
 	{
 		/* These instructions have a register and then a memory destination */
 
-		char reg[3], var_name[20];
+		char reg[3];
 		int j, val = 0, neg = 1;
 
 		for (; input[i] == ',' || input[i] == 32 || input[i] == '$'; i++);		// Move to the next register
@@ -1202,8 +1202,7 @@ void init_reg_file()
 
 int reg_num(char*alt_name)
 {
-	int i;
-	i = strlen(alt_name);
+	unsigned int i = strlen(alt_name);
 	if (i == 1)
 		return alt_name[0] - '0';
 	for (i = 0; i<32; i++)

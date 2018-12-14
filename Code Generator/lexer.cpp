@@ -32,6 +32,10 @@ void Lexer::readFile(string FilePath) {
 		exit(EXIT_FAILURE);
 	}
 	istreambuf_iterator<char> begin(file), end;
+	if (begin == end) {
+		cout << "Empty File Detected" << endl;
+		exit(EXIT_SUCCESS);
+	}
 	targetFile = string(begin, end);
 	currentError.targetFile = targetFile;
 	file.close();
