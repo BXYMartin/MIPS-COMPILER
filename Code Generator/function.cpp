@@ -571,13 +571,15 @@ void handleAssignment(MiddleCode item, ofstream & out) {
 				out << "addiu $t1 " << tempReg << " " << integerConversion(left) << endl;
 			}
 			else if (op == '-') {
-				out << "subu $t1 " << tempReg << " " << integerConversion(left) << endl;
+				out << "li $t1 " << integerConversion(left) << endl;
+				out << "subu $t1 $t1 " << tempReg << endl;
 			}
 			else if (op == '*') {
 				out << "mul $t1 " << tempReg << " " << integerConversion(left) << endl;
 			}
 			else if (op == '/') {
-				out << "div $t1 " << tempReg << " " << integerConversion(left) << endl;
+				out << "li $t1 " << integerConversion(left) << endl;
+				out << "div $t1 $t1 " << tempReg << endl;
 			}
 			out << "sw $t1 0($t0)" << endl;
 			return;
