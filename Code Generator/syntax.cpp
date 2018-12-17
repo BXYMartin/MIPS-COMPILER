@@ -1553,10 +1553,12 @@ bool Syntax::enter_headDeclaration() {
 
 //加权----引用计数
 void Syntax::addWeight(int order, int weight) {
-	SymbolTableItem item = SymbolTable.at(order);
-	if ((item.getItemType() == Variable || item.getItemType() == Parameter) && item.getFuncName() != "GLOBAL"
-		&& item.getArrSize() == 0) {
-		SymbolTable.at(order).addWeight(weight);
+	if (order >= 0) {
+		SymbolTableItem item = SymbolTable.at(order);
+		if ((item.getItemType() == Variable || item.getItemType() == Parameter) && item.getFuncName() != "GLOBAL"
+			&& item.getArrSize() == 0) {
+			SymbolTable.at(order).addWeight(weight);
+		}
 	}
 }
 

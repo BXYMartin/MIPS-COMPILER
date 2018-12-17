@@ -72,7 +72,27 @@ k = 2 + 0
 l = 5 + 0
 a[1] = z * y
 a[2] = y - z
-j = 5 / k
+#11 = z * z
+#9 = z * y
+#0 = z * x
+#3 = z * x
+#1 = x - #0
+#7 = #1 * z
+#2 = x + y
+#4 = #2 - #0
+#5 = #4 + y
+#6 = #5 - z
+#8 = #6 + #7
+#10 = #8 + #9
+#12 = #10 + #11
+PUSH 0
+PUSH 0
+PUSH 0
+PUSH 0
+PUSH #12
+CALL recursive
+#13 = Ret + 0
+j = #13 - 3
 l = z * 0
 PRT id l
 ENTER
