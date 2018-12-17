@@ -10,7 +10,8 @@ A MIPS Assembly Generator for C0 Syntax, intended for Compiler Principle Curricu
 ＜number＞   ::= ０｜１｜．．．｜９
 ＜character＞    ::=  '＜add＞'｜'＜multiply＞'｜'＜alphabet＞'｜'＜number＞'
 ＜string＞   ::=  "｛ASCII number in 32,33,35-126｝"
-＜program＞    ::= ［＜constant description＞］［＜variable description＞］{＜function definition with return＞|＜function definition without return＞}＜main function＞
+＜program＞    ::= ［＜constant description＞］［＜variable description＞］
+                    {＜function definition with return＞|＜function definition without return＞}＜main function＞
 ＜constant description＞ ::=  const＜constant definition＞;{ const＜constant definition＞;}
 ＜constant definition＞   ::=   int＜identifier＞＝＜integer＞{,＜identifier＞＝＜integer＞}
                             | char＜identifier＞＝＜character＞{,＜identifier＞＝＜character＞}
@@ -19,17 +20,23 @@ A MIPS Assembly Generator for C0 Syntax, intended for Compiler Principle Curricu
 ＜identifier＞    ::=  ＜alphabet＞｛＜alphabet＞｜＜number＞｝
 ＜declaration head＞   ::=  int＜identifier＞|char＜identifier＞
 ＜variable description＞  ::= ＜variable definition＞;{＜variable definition＞;}
-＜variable definition＞  ::= ＜type＞(＜identifier＞|＜identifier＞‘[’＜unsigned integer＞‘]’){,(＜identifier＞|＜identifier＞‘[’＜unsigned integer＞‘]’) }
+＜variable definition＞  ::= ＜type＞(＜identifier＞|＜identifier＞‘[’＜unsigned integer＞‘]’)
+                              {,(＜identifier＞|＜identifier＞‘[’＜unsigned integer＞‘]’) }
 ＜type＞      ::=  int | char
-＜function definition with return＞  ::=  ＜declaration head＞‘(’＜parameter table＞‘)’ ‘{’＜compound statement＞‘}’|＜declaration head＞‘{’＜compound statement＞‘}’
-＜function definition without return＞  ::= void＜identifier＞(’＜parameter table＞‘)’‘{’＜compound statement＞‘}’| void＜identifier＞{’＜compound statement＞‘}’
+＜function definition with return＞  ::=  ＜declaration head＞‘(’＜parameter table＞‘)’ ‘{’＜compound statement＞‘}’
+                                          |＜declaration head＞‘{’＜compound statement＞‘}’
+＜function definition without return＞  ::= void＜identifier＞(’＜parameter table＞‘)’
+                                          ‘{’＜compound statement＞‘}’| void＜identifier＞{’＜compound statement＞‘}’
 ＜compound statement＞   ::=  ［＜constant description＞］［＜variable description＞］＜statement block＞
 ＜parameter table＞    ::=  ＜type＞＜identifier＞{,＜type＞＜identifier＞}
 ＜main function＞    ::= void main‘(’‘)’ ‘{’＜compound statement＞‘}’
 ＜expression＞    ::= ［＋｜－］＜item＞{＜add＞＜item＞}
 ＜item＞     ::= ＜factor＞{＜multiply＞＜factor＞}
-＜factor＞    ::= ＜identifier＞｜＜identifier＞‘[’＜expression＞‘]’｜＜integer＞|＜character＞｜＜function call with return＞|‘(’＜expression＞‘)’
-＜statement＞    ::= ＜condition statement＞｜＜loop statement＞| ‘{’＜statement block＞‘}’｜<case statement>|＜function call with return＞; |＜function call without return＞;｜＜assignment＞;｜＜read＞;｜＜write＞;｜＜empty＞;｜＜return＞;
+＜factor＞    ::= ＜identifier＞｜＜identifier＞‘[’＜expression＞‘]’｜＜integer＞|＜character＞
+                  ｜＜function call with return＞|‘(’＜expression＞‘)’
+＜statement＞    ::= ＜condition statement＞｜＜loop statement＞| ‘{’＜statement block＞‘}’｜ <case statement> 
+                      |＜function call with return＞; |＜function call without return＞;｜＜assignment＞;
+                      ｜＜read＞;｜＜write＞;｜＜empty＞;｜＜return＞;
 ＜assignment＞   ::=  ＜identifier＞＝＜expression＞|＜identifier＞‘[’＜expression＞‘]’=＜expression＞
 ＜condition statement＞  ::=  if ‘(’＜condition＞‘)’＜statement＞else <statement>
 ＜condition＞    ::=  ＜expression＞＜relation＞＜expression＞｜＜expression＞
