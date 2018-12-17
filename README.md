@@ -23,13 +23,41 @@ The compiler can handle error types as follows:
 |Error Type|Descriptions|
 |---|---
 | `Illegal Char` | Multiple elements appears in `' '` 
-| `Illegal String` | Illigal element (ASCII Code in `32~126` except for `34`) appears in `" "` 
+| `Illegal String` | Illegal element (ASCII Code in `32~126` except for `34`) appears in `" "` 
 | `Illegal Content` | Illegal content appears 
 | `Incomplete Not Equal` | Missing '=' in `!=` 
 
-
 ### Syntax Error
 
+|Error Type|Descriptions|
+|---|---
+| `Empty File` | Simply an empty file
+| `Illegal Content After Main` | Illegal content appears after `void main(){}` definition 
+| `Missing Main Function` | Lack of `void main(){}` definition
+| `Illegal Array Index Definition` | Array index not greater than zero
+| `Missing Component` | Missing critical component during syntax analysis
+
 ### Semantic Error
+
+
+|Error Type|Descriptions|
+|---|---
+| `Multiple Definition` | Multiple Definition of an identifier
+| `Missing Variable Definition` | Missing definition for variables
+| `Missing Function Definition` | Missing definition for functions
+| `Index Out Of Range` | Array index out of range (Larger than maximum or Less than zero)
+| `Conflicting Types` | Identifier type not match in symbol table
+| `Invalid Variable Call` | Calling a variable as a function
+| `Invalid Return Value` | Void function involved in assignments
+| `Missing Parameter Table` | Parameter count mismatch in calling a function
+| `Abundant Parameter` | Extra parameter detected
+| `Missing Parameter` | Missing parameter in calling a function 
+| `Conflicting Parameter Type` | Type mismatch during calling a function
+| `Invalid Type Conversion` | Invalid Conversion from **`int`** to **`char`**
+| `Invalid Assignment` | Assigned to non-variable identifiers
+| `Conflicting Case Entry` | Multiple entry found in `switch(){case:...}` block
+| `Divided by Zero` | Set zero as denominator
+
+
 
 ### Return Error
