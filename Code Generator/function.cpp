@@ -814,7 +814,7 @@ void handleAssignment(MiddleCode item, ofstream & out) {
 				return;
 			}
 			else if (IsNum(left.at(0))) {
-				string tempReg = "$t1";
+				string tempReg = "$t2";
 				if (right.at(0) == '#') {		// 临时变量
 					int g = integerConversion(right.substr(1));
 					if (g > TEMP_REGISTER) {
@@ -826,7 +826,7 @@ void handleAssignment(MiddleCode item, ofstream & out) {
 
 				}
 				else if (right == "Ret") {			// 返回值
-					out << "move $t1 $v0" << endl;
+					out << "move $t2 $v0" << endl;
 				}
 				else {								// 标识符
 					map<int, string>::iterator itr = varToRegisterMap.find(locateVariable(right));
@@ -834,7 +834,7 @@ void handleAssignment(MiddleCode item, ofstream & out) {
 						tempReg = itr->second;
 					}
 					else {
-						getVariable(right, "$t1", out);
+						getVariable(right, "$t2", out);
 					}
 				}
 				if (isVar) {

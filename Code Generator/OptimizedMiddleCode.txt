@@ -1,26 +1,90 @@
-FUNC void main()
-q = 10 + 0
-e = 2 + 0
+FUNC int recursive()
+PARA int x
+PARA int y
+PARA int z
+PARA int p
+PARA int q
+BLEZ x 10 $Label1
+RET id q
+JMP $Label2
 LABEL $Label1
-q = q + 1
-t[0] = 99 + q
-#0 = t[0]
-#1 = 5 * #0
-t[1] = #1 - 23
-#0 = t[1]
-t[1] = 5 + #0
-#0 = t[1]
-t[0] = 2 * #0
-#0 = t[0]
-t[1] = 4096 / #0
-#0 = t[0]
-t[1] = #0 / 4
-#0 = t[1]
-t[1] = #0 - 3
-#0 = t[0]
-t[1] = 10024 - #0
-#0 = t[1]
-e = e + #0
-PRT id e
+#0 = x + 1
+PUSH #0
+PUSH y
+PUSH z
+PUSH p
+PUSH q
+CALL recursive
+#1 = Ret + 0
+RET id #1
+LABEL $Label2
+FUNC void main()
+f = 0 + 0
+h = 0 + 0
+j = 0 + 0
+k = 0 + 0
+l = 0 + 0
+m = 0 + 0
+n = 0 + 0
+z = 3 + 0
+#11 = z * z
+#24 = z * z
+y = 2 + 0
+#22 = z * y
+#9 = z * y
+x = 1 + 0
+#0 = z * x
+#13 = z * x
+#16 = z * x
+#3 = z * x
+#1 = x - #0
+#14 = x - #0
+#20 = #1 * z
+#7 = #1 * z
+#15 = x + y
+#2 = x + y
+#17 = #15 - #0
+#4 = #15 - #0
+#18 = #17 + y
+#5 = #17 + y
+#19 = #18 - z
+#6 = #18 - z
+#21 = #19 + #20
+#8 = #19 + #20
+#10 = #21 + #22
+#23 = #21 + #22
+#12 = #10 + #11
+#25 = #10 + #11
+PUSH 0
+PUSH 0
+PUSH 0
+PUSH 0
+PUSH #25
+CALL recursive
+#26 = Ret + 0
+a[#12] = 1 + #26
+f = 0 + 0
+h = 0 + 0
+j = 0 + 0
+m = 0 + 0
+n = 0 + 0
+k = 2 + 0
+l = 5 + 0
+a[1] = z * y
+a[2] = y - z
+j = 5 / k
+l = z * 0
+PRT id l
 ENTER
-BLZ e 2050 $Label1
+PRT id j
+ENTER
+#0 = a[1]
+PRT id #0
+ENTER
+#0 = a[2]
+PRT id #0
+ENTER
+#0 = a[8]
+PRT id #0
+ENTER
+EXIT
