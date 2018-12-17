@@ -9,7 +9,7 @@ After Basic Block Division, the compiler construct variable DAG Graph for each b
 ### Bulit-in Constant
 **Constant Variables** together with numbers used in source code will be automatically merged while semantic analysis during compiling. This feature is deeply implemented in every module.
 ### Register Allocation
-For variables that matters, the program further allocates global registers for global variables and local variables (Implemented as ***vector*** **varToRegisterMap**). Registers for local variables changes through functions and registers for global variables are always the same while the program is running.
+For variables that matters (sorted by reference counts), the program further allocates global registers for global variables and local variables (Implemented as ***vector*** **varToRegisterMap**). Registers for local variables changes through functions and registers for global variables are always the same while the program is running.
 
 ## Profiling
 ### Optimize Register Allocation Strategy
