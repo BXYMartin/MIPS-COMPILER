@@ -61,3 +61,10 @@ The compiler can handle error types as follows:
 
 
 ### Return Error
+
+|Error Type|Descriptions|
+|---|---
+| `Void Function Returned Non-void Value` | **`int`** or **`char`** type returned in void function
+| `Char Function Returned Int Value` | **`int`** type returned in **`char`** function
+| `Non-void Function Returned Void Value` | Void type returned in **`int`** or **`char`** function
+| `Missing Return` | Missing return statement in function
