@@ -2,7 +2,7 @@
 A MIPS Assembly Generator for C0 Syntax, intended for Compiler Principle Curriculum. This Compiler separates each syntax elements with different functions and calls them recursively according to the recursive descent method.
 
 ## Syntax
-
+```
 ＜add＞ ::= +｜-
 ＜multiply＞  ::= *｜/
 ＜relations＞  ::=  <｜<=｜>｜>=｜!=｜==
@@ -53,7 +53,7 @@ A MIPS Assembly Generator for C0 Syntax, intended for Compiler Principle Curricu
 （3）写语句中，字符串原样输出，单个字符类型的变量或常量输出字符，其他表达式按整型输出
 （4）数组的下标从0开始
 （5）情况语句中，switch后面的表达式和case后面的常量只允许出现int和char类型；每个情况子语句执行完毕后，不继续执行后面的情况子语句
-
+```
 
 ## Optimizations
 ### Direct Acyclic Graph (DAG) Reduction
