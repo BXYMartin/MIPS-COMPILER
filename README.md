@@ -17,4 +17,4 @@ For variables that matters, the program further allocates global registers for g
 ### Automatic BenchMark
 
 ## Error Handling
-Error Types
+`Error Types`
