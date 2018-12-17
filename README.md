@@ -19,8 +19,9 @@ For variables that matters, the program further allocates global registers for g
 ## Error Handling
 ### Lexical Error
 The compiler can handle error types as follows:
-| Error Type | Descriptions |
-| --- | ---
+
+|Error Type|Descriptions|
+|---|---
 | `Illegal Char` | Multiple elements appears in `' '` 
 | `Illegal String` | Illigal element (ASCII Code in `32~126` except for `34`) appears in `" "` 
 | `Illegal Content` | Illegal content appears 
