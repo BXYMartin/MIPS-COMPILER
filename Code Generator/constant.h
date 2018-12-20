@@ -15,7 +15,7 @@
 #define MAX_WORD_LENGTH 1024		// 最长单词长度
 
 #define DEBUG true
-#define NEWLINE true
+#define NEWLINE false
 #include <string>
 #include <cstdio>
 using namespace std;
