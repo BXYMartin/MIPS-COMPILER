@@ -497,7 +497,7 @@ bool Syntax::enter_compoundStatement(string funcName) {
 	}
 	return true;
 }
-// TODO
+
 // ＜表达式＞ ::= ［＋｜－］＜项＞{＜加法运算符＞＜项＞}
 assign Syntax::enter_expression(string funcName, bool isCache, vector<MiddleCode> &cache, int weight) {
 	bool x_flag = false;	// 前缀项标志
@@ -621,8 +621,7 @@ void Syntax::enter_factor(vector<PostfixItem> & obj, string funcName, bool isCac
 			vector<ValueType> retParamTable = enter_callParameterTable(funcName, isCache, cache, weight);
 			semantic.checkFuncCall(id, true, retParamTable);
 			pushPseudoCode(FunctionCall, cache, isCache, id);
-			// TODO:检查函数是否存在,返回其所在符号表的order,根据其返回类型决定isChar的值
-
+			
 			item.type = StringType;
 			item.str = pushPseudoCode(Pass, cache, isCache, "Ret", '+', "0", "", "", false, false);
 			item.nonChar = semantic.checkFuncType(id);
@@ -1178,7 +1177,6 @@ bool Syntax::enter_switchStatement(string funcName, bool isCache, vector<MiddleC
 	for (unsigned int i = 0; i < caseTable.size(); i++) {
 		entry t = caseTable.at(i);
 		cases.push_back(t.constValue);
-
 		string x = to_string(t.constValue);
 		// judge - const
 		if(isFixed)
@@ -1348,7 +1346,7 @@ bool Syntax::enter_readStatement(string funcName, bool isCache, vector<MiddleCod
 	MiddleCode code;
 	int orderx;
 	string id;
-	//分析scanf
+	// scanf
 	if (!checkSymbol(SCANFSY))
 		return false;
 	// (
@@ -1365,10 +1363,6 @@ bool Syntax::enter_readStatement(string funcName, bool isCache, vector<MiddleCod
 		if (orderx >= 0) {
 			addWeight(orderx, weight);
 			pushPseudoCode(Read, cache, isCache, (SymbolTable.at(orderx).getValueType() == IntType) ? IntType : CharType, id);
-		}
-		else // TODO!!! 未找到标识符
-		{
-
 		}
 
 		if (!getncheckEnd("Unexpected end-of-file in scanf() statement"))
@@ -1423,7 +1417,8 @@ bool Syntax::enter_writeStatement(string funcName, bool isCache, vector<MiddleCo
 				pushPseudoCode(Print, cache, isCache, true, exp.type, exp.name);
 			}
 		}
-		pushPseudoCode(Print, cache, isCache, false, CharType, "\n");
+		if(NEWLINE)
+			pushPseudoCode(Print, cache, isCache, false, CharType, "\n");
 	}
 	else {
 		assign exp = enter_expression(funcName, isCache, cache, weight);
@@ -1442,7 +1437,8 @@ bool Syntax::enter_writeStatement(string funcName, bool isCache, vector<MiddleCo
 		else {
 			pushPseudoCode(Print, cache, isCache, true, exp.type, exp.name);
 		}
-		pushPseudoCode(Print, cache, isCache, false, CharType, "\n");
+		if(NEWLINE)
+			pushPseudoCode(Print, cache, isCache, false, CharType, "\n");
 	}
 	// )
 	checkComponent(RSBRACKET, "Missing ) in printf() statement");
@@ -1545,13 +1541,13 @@ bool Syntax::enter_headDeclaration() {
 	else {
 		return false;
 	}
-	//预读
+	// 预读
 	lexical.nextSym();
 	return true;
 }
 
 
-//加权----引用计数
+// 引用计数
 void Syntax::addWeight(int order, int weight) {
 	if (order >= 0) {
 		SymbolTableItem item = SymbolTable.at(order);

@@ -284,7 +284,6 @@ void Semantic::checkCaseEntry(vector<int> cases) {
 	}
 }
 
-
 void Semantic::checkFuncReturn(string funcName) {
 	for (unsigned i = 0; i < SymbolTable.size(); i++) {
 		SymbolTableItem item = SymbolTable.at(i);

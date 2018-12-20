@@ -40,6 +40,7 @@ enum SemanticErrorCode {
 	ConflictingParameterTypeError,		// 函数参数类型错误
 	CriticalAssignmentError,			// 赋值对象错误
 	ConflictingCaseEntryError,			// case 入口值重复
+	ConflictingCaseTypeError,			// case 类型不匹配
 	DivisionByZeroError,				// 除 0 错误
 };
 

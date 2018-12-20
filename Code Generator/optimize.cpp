@@ -299,12 +299,12 @@ void reduceExpression(int start, int end) {
 			// 检查左节点,如果左节点是数组
 			if (item.isLeftArr) {
 				v1 = pushNode(false, item.left);
-				//寻找v2
+				// 寻找v2
 				if (item.indexLeftArr.at(0) == '#')
 					v2 = pushNode(false, item.indexLeftArr);
 				else
 					v2 = pushNode(true, item.indexLeftArr);
-				//针对target,查询DAG图
+				// 针对target,查询DAG图
 				v3 = pushNode(v1, v2, '[', item.target);
 			}
 			else {
@@ -321,14 +321,11 @@ void reduceExpression(int start, int end) {
 			}
 		}
 	}
-	//Step2:遍历DAG图生成逆序的计算顺序
-	/*Step2.1:遍历所有可能需要保存初始值的变量,观察它们所对应的变量在节点表中的位置是否发生变化,
-	* 如果未发生变化,则不需要先生成保存的四元式代码
-	*/
-	//Step2.2:找出所有的中间节点
+	// 遍历DAG图生成逆序的计算顺序
+	// 遍历所有可能需要保存初始值的变量,观察它们所对应的变量在节点表中的位置是否发生变化, 用以判定是否需要保存
+	// 找出所有的中间节点
 	vector<int> tempNodes;
 	map<string, unsigned>::iterator itr = maxTempOrderMap.find(funcName);
-	// TODO!!!
 	int tmpCount;
 	if (itr == maxTempOrderMap.end())
 		tmpCount = 0;
@@ -353,7 +350,6 @@ void reduceExpression(int start, int end) {
 		else if (!node.isLeftLeaf)
 			tempNodes.push_back(node.code);
 	}
-	//检查中间节点数，如果是跟优化前一样的化,不优化
 	if ((end - start) == tempNodes.size()) {
 		for (int p = start; p < end; p++) {
 			optimizedMiddleCodeArr.push_back(MiddleCodeArr.at(p));
@@ -377,7 +373,7 @@ void reduceExpression(int start, int end) {
 				vars.push_back(iter->first);
 			}
 		}
-		if (isVarIn) {//删除所有的临时变量
+		if (isVarIn) {// 删除所有的临时变量
 			for (unsigned int j = 0; j < vars.size(); j++) {
 				if (vars.at(j).at(0) == '#') {
 					vars.erase(vars.begin() + j);
@@ -389,21 +385,21 @@ void reduceExpression(int start, int end) {
 			if (vars.size() == 0)
 				vars.push_back(nodeGraph.at(tempNodes.at(i)).target);
 		}
-		//将DAG中对应节点的value设置为vars的第一个
+		// 将DAG中对应节点的value设置为vars的第一个
 		nodeGraph.at(tempNodes.at(i)).value = vars.at(0);
-		//加入final
+		// 加入final
 		nodeTable.final.insert(map<int, vector<string>>::value_type(tempNodes.at(i), vars));
 	}
-	//Step2.4:遍历所有的中间节点,生成实质逆序的计算顺序
+	// 遍历所有的中间节点,生成实质逆序的计算顺序
 	vector<int> calcNodes;
-	while (calcNodes.size() != tempNodes.size()) {//只要不等于,就继续扫描
+	while (calcNodes.size() != tempNodes.size()) {// 只要不等于,就继续扫描
 		for (int i = tempNodes.size() - 1; i >= 0; i--) {
 			doFillCalSequ(calcNodes, tempNodes, tempNodes.at(i));
 		}
 	}
-	//Step3:逆转计算序列
+	// 逆转计算序列
 	reverse(calcNodes.begin(), calcNodes.end());
-	//Step4:生成新的四元式
+	// 生成新的四元式
 	MiddleCode tempMiddleCode;
 	for (unsigned int i = 0; i < calcNodes.size(); i++) {
 		int code = calcNodes.at(i);

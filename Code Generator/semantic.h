@@ -47,7 +47,7 @@ public:
 	void checkCaseEntry(vector<int> cases);
 	void checkSwitchType(ValueType s, ValueType t) {
 		if (s != t) {
-			error.SemanticError(ConflictingCaseEntryError, getLine(), getIndex(), "");
+			error.SemanticError(ConflictingCaseTypeError, getLine(), getIndex(), "");
 		}
 	}
 

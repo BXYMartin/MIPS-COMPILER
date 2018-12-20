@@ -9,7 +9,7 @@ bool Errors = false;
 
 void Error::reportPosition(int index) {
 	int begin, end, i;
-	for (begin = index; begin >= 0 && targetFile[begin] != '\n' && targetFile[begin] != '\t' && (index - begin) <= SURROUND; begin--);
+	for (begin = index; begin >= 0 && (index - begin) <= SURROUND; begin--);
 	if (targetFile[begin] != '\n') {
 		cout << "... ";
 	}
@@ -139,6 +139,9 @@ void Error::SemanticError(SemanticErrorCode errorCode, int currentLine, int inde
 		break;
 	case ConflictingCaseEntryError:
 		cout << "Conflicting case entry value." << endl;
+		break;
+	case ConflictingCaseTypeError:
+		cout << "Conflicting case type." << endl;
 		break;
 	case DivisionByZeroError:
 		cout << "Divided By Zero." << endl;
