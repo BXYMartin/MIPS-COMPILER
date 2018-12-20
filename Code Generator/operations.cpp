@@ -149,11 +149,13 @@ void optimizeRegister() {
 
 void printResult(bool optimize) {
 	if (optimize) {
-		cout << "-----------------------------------" << endl;
-		for (int i = 0; i < stack.size(); i++) {
-			for (int j = 0; j < stack.at(i).level; j++)
-				cout << " | ";
-			cout << stack.at(i).name << " | Line " << stack.at(i).line << endl;
+		if (DEBUG) {
+			cout << "-----------------------------------" << endl;
+			for (int i = 0; i < stack.size(); i++) {
+				for (int j = 0; j < stack.at(i).level; j++)
+					cout << " | ";
+				cout << stack.at(i).name << " | Line " << stack.at(i).line << endl;
+			}
 		}
 		cout << "-----------------------------------" << endl;
 		cout << "--- Memory Access Status: " << endl;

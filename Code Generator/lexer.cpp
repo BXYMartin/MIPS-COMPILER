@@ -48,9 +48,11 @@ void Lexer::readFile(string FilePath) {
 		}
 	}
 	cout << "Loading Succeed, Total File Size: " << fileSize << " Bytes" << endl;
-	cout << "Line" << "\t";
-	cout << setw(8) << "Symbol" << "\t";
-	cout << "Content" << endl;
+	if (DEBUG) {
+		cout << "Line" << "\t";
+		cout << setw(8) << "Symbol" << "\t";
+		cout << "Content" << endl;
+	}
 }
 
 bool Lexer::handleError(char temp, LexicalErrorCode c) {
@@ -215,7 +217,7 @@ bool Lexer::nextSym() {
 	}
 	else if (temp == '\'') {
 		temp = getChar();
-		if (IsChar(temp)) { // 检查字符型变量的可用性
+		if (IsAlphaBet(temp)) { // 检查字符型变量的可用性
 			currentChar = temp;
 			temp = getChar();
 			if (temp != '\'') {
