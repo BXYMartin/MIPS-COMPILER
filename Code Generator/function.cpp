@@ -69,6 +69,7 @@ const int maxFunctionStack = 100;//设置临时参数栈最大为100字节(最多有25个参数)
 const unsigned int dataBaseAddress = 0x10010000;//数据段起始地址
 unsigned int returnValueAddress;//函数返回值存放点
 unsigned int functionStackTop;//整体函数栈的起始地址(即全局数据区域起始地址)
+int tempVariableOffsetAddress = 0;
 
 extern const string opCodeToFileName = "OptimizedMiddleCode.txt";
 extern const string tmpCodeToFileName = "MiddleCode.txt";
@@ -384,7 +385,7 @@ void getVariable(string target, string targetReg, ofstream & out) {
 
 void getTemp(int order, string targetReg, ofstream & out) {
 	// 若 order > TEMP_REGISTER 时需要读取内存
-	out << "lw " << targetReg << " " << (order - 1 - TEMP_REGISTER) * 4 << "($k0)" << endl;
+	out << "lw " << targetReg << " " << (order - 1 - TEMP_REGISTER) * 4 + tempVariableOffsetAddress << "($sp)" << endl;
 }
 
 void locateVariableAddress(string target, string targetReg, ofstream & out) {
@@ -431,7 +432,7 @@ void locateVariableAddress(string target, string targetReg, ofstream & out) {
 // 获取临时变量的地址
 void locateTempAddress(int order, string targetReg, ofstream & out) {
 	// 若 order > TEMP_REGISTER 时需要读取内存
-	out << "addiu " << targetReg << " $k0 " << (order - 1 - TEMP_REGISTER) * 4 << endl;
+	out << "addiu " << targetReg << " $sp " << (order - 1 - TEMP_REGISTER) * 4 + tempVariableOffsetAddress << endl;
 }
 
 
@@ -1029,11 +1030,11 @@ void initializeStack(string funcName, ofstream & out) {
 	map<string, unsigned>::iterator iter = maxTempOrderMap.find(funcName);
 	if (iter != maxTempOrderMap.end() && iter->second > TEMP_REGISTER) {
 		out << "addiu $sp $sp " << number + (iter->second - TEMP_REGISTER) * 4 << endl;
-		out << "addiu $k0 $sp -" << (iter->second - TEMP_REGISTER) * 4 << endl;
+		tempVariableOffsetAddress = (iter->second - TEMP_REGISTER) * 4 * -1;
 	}
 	else {
 		out << "addiu $sp $sp " << number << endl;
-		out << "move $k0 $sp" << endl;
+		tempVariableOffsetAddress = 0;
 	}
 }
 
@@ -1127,7 +1128,6 @@ void handleBranch(MiddleCode item, ofstream & out) {
 
 // 函数返回处理
 void handleReturn(ofstream & out) {
-	
 	out << "jr $ra" << endl;
 }
 
@@ -1210,7 +1210,7 @@ void getTextSegment(ofstream & out, vector<MiddleCode> QuaterCode) {
 			currentFunctionStackAddress = 0;// 重置函数栈
 
 															   // 将$k0,$k1寄存器的值保存入栈
-			out << "sw $k0 0($sp)" << endl;
+			//out << "sw $k0 0($sp)" << endl;
 			//out << "sw $k1 4($sp)" << endl;
 
 			for (int i = 0; i < getMaxTemp(item.target); i++)
@@ -1229,7 +1229,7 @@ void getTextSegment(ofstream & out, vector<MiddleCode> QuaterCode) {
 			out << "move $sp $fp" << endl;
 			// $k0 $k1寄存器值恢复
 			out << "addiu $sp $sp -" << 8 + 4 * getMaxTemp(item.target) + 4 * getMaxVar(item.target) << endl;
-			out << "lw $k0 0($sp)" << endl;
+			//out << "lw $k0 0($sp)" << endl;
 			//out << "lw $k1 4($sp)" << endl;
 			for (int i = 0; i < getMaxTemp(item.target); i++)
 				out << "lw $t" << i + 3 << " " << 8 + 4 * i << "($sp)" << endl;

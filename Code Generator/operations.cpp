@@ -434,7 +434,8 @@ void encode(char*input, int *coded, int num)
 		{
 			if (input[i] == '-')
 				neg = -1;
-			val = val * 10 + input[i] - '0';
+			else
+				val = val * 10 + input[i] - '0';
 		}
 		val *= neg;
 		if (neg < 0)
