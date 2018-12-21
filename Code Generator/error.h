@@ -3,6 +3,7 @@
 #define ERROR_H
 #include <iostream>
 #include <string>
+#include "constant.h"
 
 using namespace std;
 
@@ -31,24 +32,29 @@ enum SemanticErrorCode {
 	NoFunctionDefinitionError,			// 函数未定义
 	IndexOutOfRangeError,				// 数组下标超过索引
 	TypeNotMatchError,					// 类型不匹配
-	ConversionAssignmentError,			// 赋值类型错误
 	VariableNotCallableError,			// 符号表中类型错误
 	ValueExpectedError,					// 调用空函数参与值运算
 	NoneValueParamError,				// 空值参数错误
 	ExtraParameterError,				// 过多函数参数错误			
 	MissingParameterError,				// 缺失函数参数错误
-	ConflictingParameterTypeError,		// 函数参数类型错误
 	CriticalAssignmentError,			// 赋值对象错误
 	ConflictingCaseEntryError,			// case 入口值重复
-	ConflictingCaseTypeError,			// case 类型不匹配
 	DivisionByZeroError,				// 除 0 错误
 };
 
 enum ReturnErrorCode {
 	ValueReturnedInVoidFunctionError,	// 空函数返回值
-	IntReturnedInCharFunctionError,		// 字符型函数返回数值
 	VoidReturnedInNonVoidFunctionError,	// 非空函数返回空值
 	NoReturnError						// 无返回语句
+};
+
+enum TypeWarningCode {
+	IlligalCharWarning,					// 单字符变量超出范围
+	ConflictingCaseTypeWarning,			// case 类型不匹配
+	ConversionAssignmentWarning,		// 赋值类型错误
+	ConflictingParameterTypeWarning,	// 函数参数类型错误
+	ConflictingComparisonTypeWarning,	// 条件表达式比较非整型
+	ConflictingReturnTypeWarning,		// 函数返回值不匹配
 };
 
 class Error
@@ -63,6 +69,7 @@ public:
 	void SyntaxError(SyntaxErrorCode errorCode, int currentLine, int index, string info);
 	void SemanticError(SemanticErrorCode errorCode, int currentLine, int index, string identifier);
 	void ReturnError(ReturnErrorCode errorCode, int currentLine, int index, string funcName);
+	void TypeWarning(TypeWarningCode warningCode, int currentLine, int index, ValueType src, ValueType dst);
 };
 
 #endif

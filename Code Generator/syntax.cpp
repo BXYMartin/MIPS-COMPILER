@@ -90,6 +90,7 @@ bool Syntax::getnskipComponent(SymbolCode symbol, string message, char end) {
 	if (currentSymbol != symbol) {
 		error.SyntaxError(MissingComponentError, getLine(), getIndex(), message);
 		lexical.skip(end);
+		return false;
 	}
 	return true;
 }
@@ -535,6 +536,8 @@ assign Syntax::enter_expression(string funcName, bool isCache, vector<MiddleCode
 	prefixConversion(input, output);
 	returnValue.name = expressionCalculator(output, isSure, type, expResult, getLine(), isCache, cache, funcName);
 	returnValue.determined = isSure;
+	if (input.size() > 1)
+		type = IntType;
 	returnValue.type = type;
 	if (isSure) {
 		if (type == IntType)
@@ -1028,6 +1031,7 @@ void Syntax::enter_condition(string funcName, bool isCache, vector<MiddleCode> &
 				return;
 			// <±í´ïÊ½>
 			assign rightExp = enter_expression(funcName, isCache, cache, weight);
+			semantic.checkCondition(leftExp.type, rightExp.type);
 			if (rightExp.determined) {
 				string x = (rightExp.type == IntType) ? to_string(rightExp.number) : to_string(rightExp.character);
 				right = x;
@@ -1057,11 +1061,10 @@ void Syntax::enter_condition(string funcName, bool isCache, vector<MiddleCode> &
 					return;
 				}
 			}
-			// TODO Add Type Check
-			// if(leftExp.type != rightExp.type)
 		}
 	}
 	cmp = NEQ;
+	semantic.checkCondition(leftExp.type, IntType);
 	if (isFixed) {
 		left = pushPseudoCode(Pass, cache, isCache, left, '+', "0", "", "", false, false);
 		right = "0";

@@ -449,7 +449,8 @@ void locateArray(MiddleCode item, ofstream & out) {
 	if (IsNum(indexTargetArr.at(0))) {		// 属于数字
 		int number = integerConversion(indexTargetArr);
 		number = 4 * number;
-		out << "addiu $t0 $t0 " << number << endl;
+		if(number != 0)
+			out << "addiu $t0 $t0 " << number << endl;
 	}
 	else if (indexTargetArr.at(0) == '#') {	// 是临时变量
 									// 放在$t1
@@ -678,7 +679,8 @@ void handleAssignment(MiddleCode item, ofstream & out) {
 				// 下标地址取出放在$t2
 				string indexLeftArr = item.indexLeftArr;
 				if (IsNum(indexLeftArr.at(0))) {			// 数字
-					out << "addiu $t1 $t1 " << 4 * integerConversion(indexLeftArr) << endl;
+					if(integerConversion(indexLeftArr) != 0)
+						out << "addiu $t1 $t1 " << 4 * integerConversion(indexLeftArr) << endl;
 				}
 				else if (indexLeftArr.at(0) == '#') {		// 临时变量
 					g = integerConversion(indexLeftArr.substr(1));
@@ -1029,11 +1031,13 @@ void initializeStack(string funcName, ofstream & out) {
 	// 分配临时变量所用空间
 	map<string, unsigned>::iterator iter = maxTempOrderMap.find(funcName);
 	if (iter != maxTempOrderMap.end() && iter->second > TEMP_REGISTER) {
-		out << "addiu $sp $sp " << number + (iter->second - TEMP_REGISTER) * 4 << endl;
+		if((number + (iter->second - TEMP_REGISTER) * 4) != 0)
+			out << "addiu $sp $sp " << number + (iter->second - TEMP_REGISTER) * 4 << endl;
 		tempVariableOffsetAddress = (iter->second - TEMP_REGISTER) * 4 * -1;
 	}
 	else {
-		out << "addiu $sp $sp " << number << endl;
+		if(number != 0)
+			out << "addiu $sp $sp " << number << endl;
 		tempVariableOffsetAddress = 0;
 	}
 }
@@ -1239,7 +1243,6 @@ void getTextSegment(ofstream & out, vector<MiddleCode> QuaterCode) {
 			out << "lw $ra 0($fp)" << endl;
 			// 函数栈区起始地址恢复--->上一级函数基地址$fp恢复
 			out << "lw $fp 4($fp)" << endl;
-
 			break;
 		case Pass:
 			handleAssignment(item, out);

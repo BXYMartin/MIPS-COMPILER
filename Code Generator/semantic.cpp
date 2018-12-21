@@ -213,7 +213,7 @@ void Semantic::checkFuncCall(string identifier, bool isInExp, vector<ValueType> 
 			ValueType first = actualParam.at(i);
 			ValueType second = paramType.at(i);
 			if (first != second) {								// 参数类型不匹配
-				error.SemanticError(ConflictingParameterTypeError, getLine(), getIndex(), identifier);
+				error.TypeWarning(ConflictingParameterTypeWarning, getLine(), getIndex(), first, second);
 				return;
 			}
 		}
@@ -319,8 +319,8 @@ void Semantic::checkFuncReturn(string funcName, ValueType retType) {
 			if (item.getFuncType() == VoidType) {
 				error.ReturnError(ValueReturnedInVoidFunctionError, getLine(), getIndex(), funcName);
 			}
-			else if (item.getFuncType() == ReturnCharType && retType == IntType) {
-				error.ReturnError(IntReturnedInCharFunctionError, getLine(), getIndex(), funcName);
+			else if ((item.getFuncType() == ReturnCharType && retType == IntType) || (item.getFuncType() == ReturnIntType && retType == CharType)) {
+				error.TypeWarning(ConflictingReturnTypeWarning, getLine(), getIndex(), (ValueType)item.getFuncType(), retType);
 			}
 			return;
 		}

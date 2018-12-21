@@ -21,7 +21,7 @@ struct label_table
 	struct label_element {
 		string name;
 		int inst_num;
-	}label[100];
+	}label[500];
 }labels;
 
 struct reg reg_file[32];
@@ -386,7 +386,7 @@ void encode(char*input, int *coded, int num)
 		//printf ("%d %d %d",coded[0],coded[1],coded[2]);
 	}
 	else if (coded[0] == LA) {
-		char reg[3], label[20];
+		char reg[3], label[50];
 		int j;
 		for (; input[i] == ',' || input[i] == 32 || input[i] == '$'; i++);		// Move to the next register
 
@@ -484,7 +484,7 @@ void encode(char*input, int *coded, int num)
 	else if (coded[0] >= BEQ && coded[0] <= BGE)
 	{
 		char reg[3];
-		char label[20];
+		char label[50];
 
 		int j;
 
@@ -552,7 +552,7 @@ void encode(char*input, int *coded, int num)
 	}
 	else if (coded[0] >= J && coded[0] <= JAL)
 	{
-		char label[20];
+		char label[50];
 		int j;
 
 		for (; input[i] == 32; i++);		// Move to the label
@@ -955,7 +955,7 @@ void load_word(int dest, int addr, int offset)
 	if ((reg_file[addr].val + offset) % 4)
 		cout << "Load Word Not Aligned to 4KB" << endl;
 	if (reg_file[addr].val + offset < 0x10008000 || reg_file[addr].val + offset > 0x10040000) {
-		cout << "Access To Illegal Memory Address " << hex << reg_file[addr].val + offset << endl;
+		cout << "Access To Illegal Memory Address " << reg_file[addr].val + offset << " in Function " << current << endl;
 		//printPosition();
 	}
 	logMemory(reg_file[addr].val + offset);
@@ -963,7 +963,7 @@ void load_word(int dest, int addr, int offset)
 		reg_file[dest].val = dm[reg_file[addr].val + offset];
 	else {
 		reg_file[dest].val = 0;
-		cout << "Accessed Uninitialized Memory Area " << reg_file[addr].val + offset << endl;
+		cout << "Accessed Uninitialized Memory Area " << reg_file[addr].val + offset << " in Function " << current << endl;
 	}
 	pc++;
 	return;
@@ -976,7 +976,7 @@ void store_word(int dest, int addr, int offset)
 	if ((reg_file[addr].val + offset) % 4)
 		cout << "Store Word Not Aligned to 4KB" << endl;
 	if (reg_file[addr].val + offset < 0x10008000 || reg_file[addr].val + offset > 0x10040000) {
-		cout << "Access To Illegal Memory Address " << hex << reg_file[addr].val + offset << endl;
+		cout << "Access To Illegal Memory Address " << reg_file[addr].val + offset << " in Function " << current << endl;
 		//printPosition();
 	}
 	logMemory(reg_file[addr].val + offset);

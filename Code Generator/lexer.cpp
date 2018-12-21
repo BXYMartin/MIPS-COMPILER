@@ -225,6 +225,15 @@ bool Lexer::nextSym() {
 			}
 			currentSymbol = CHAR;
 		}
+		else if (IsChar(temp)) {
+			currentChar = temp;
+			currentError.TypeWarning(IlligalCharWarning, currentLine, index, (ValueType)temp, (ValueType)0);
+			temp = getChar();
+			if (temp != '\'') {
+				return handleError(temp, SingleCharIllegal);
+			}
+			currentSymbol = CHAR;
+		}
 		else {
 			return handleError(temp, SingleCharIllegal);
 		}

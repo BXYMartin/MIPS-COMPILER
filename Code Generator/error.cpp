@@ -3,13 +3,16 @@
 #include <iostream>
 #include <iomanip>
 #include "error.h"
+
 using namespace std;
 
 bool Errors = false;
 
 void Error::reportPosition(int index) {
 	int begin, end, i;
-	for (begin = index; begin >= 0 && (index - begin) <= SURROUND; begin--);
+	if (targetFile[index] == '\n' && index > 0)
+		index--;
+	for (begin = index; begin > 0 && targetFile[begin] != '\n' && targetFile[begin] != '\t' && (index - begin) <= SURROUND; begin--);
 	if (targetFile[begin] != '\n') {
 		cout << "... ";
 	}
@@ -18,7 +21,7 @@ void Error::reportPosition(int index) {
 		
 
 	begin++;
-	for (end = index; end < targetFile.size() && targetFile[end] != '\n' && (end - index) <= SURROUND; end++);
+	for (end = index; end < targetFile.size() - 2 && targetFile[end] != '\n' && (end - index) <= SURROUND; end++);
 
 	for (i = begin; i < end; i++)
 		cout << targetFile[i];
@@ -85,7 +88,7 @@ void Error::SyntaxError(SyntaxErrorCode errorCode, int currentLine, int index, s
 	cout << ", ";
 	switch (errorCode) {
 	case MissingComponentError:
-		cout << " " << info << endl;
+		cout << " " << info << "." << endl;
 		break;
 	default:break;
 	}
@@ -128,20 +131,11 @@ void Error::SemanticError(SemanticErrorCode errorCode, int currentLine, int inde
 	case MissingParameterError:
 		cout << "Missing parameters in calling function " << identifier << "." << endl;
 		break;
-	case ConflictingParameterTypeError:
-		cout << "Conflicting types in function " << identifier << " parameter declaration." << endl;
-		break;
-	case ConversionAssignmentError:
-		cout << "Invalid assignment from int to char." << endl;
-		break;
 	case CriticalAssignmentError:
 		cout << "Invalid assignment to a non-variable identifier " << identifier << "." << endl;
 		break;
 	case ConflictingCaseEntryError:
 		cout << "Conflicting case entry value." << endl;
-		break;
-	case ConflictingCaseTypeError:
-		cout << "Conflicting case type." << endl;
 		break;
 	case DivisionByZeroError:
 		cout << "Divided By Zero." << endl;
@@ -160,14 +154,42 @@ void Error::ReturnError(ReturnErrorCode errorCode, int currentLine, int index, s
 	case ValueReturnedInVoidFunctionError:
 		cout << "Non-return function void " << funcName << "returned a value." << endl;
 		break;
-	case IntReturnedInCharFunctionError:
-		cout << "Char function char " << funcName << " returned int, idicating illigal conversion from int to char." << endl;
-		break;
 	case NoReturnError:
 		cout << "Missing return statement for function " << funcName << "." << endl;
 		break;
 	case VoidReturnedInNonVoidFunctionError:
 		cout << "Missing return value for non-void function " << funcName << "." << endl;
+		break;
+	default:break;
+	}
+}
+
+void Error::TypeWarning(TypeWarningCode warningCode, int currentLine, int index, ValueType src, ValueType dst) {
+	reportPosition(index);
+	cout << "--- Warning at line: ";
+	cout << setw(4) << currentLine;
+	cout << ", ";
+	string source, dest;
+	dest = (src == IntType) ? "int" : "char";
+	source = (dst == IntType) ? "int" : "char";
+	switch (warningCode) {
+	case ConflictingCaseTypeWarning:
+		cout << "Conflicting case type from " << source << " to " << dest << "." << endl;
+		break;
+	case ConflictingParameterTypeWarning:
+		cout << "Conflicting types in parameter reference from " << source << " to " << dest << "." << endl;
+		break;
+	case ConversionAssignmentWarning:
+		cout << "Invalid assignment from " << source << " to " << dest << "." << endl;
+		break;
+	case ConflictingReturnTypeWarning:
+		cout << "Illigal conversion in return statement from " << source << " to " << dest << "." << endl;
+		break;
+	case ConflictingComparisonTypeWarning:
+		cout << "Conflicting condition type between " << source << " and " << dest << "." << endl;
+		break;
+	case IlligalCharWarning:
+		cout << "Illigal Char '" << (char)src << "' Recognized." << endl;
 		break;
 	default:break;
 	}

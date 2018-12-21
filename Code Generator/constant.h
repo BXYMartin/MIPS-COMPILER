@@ -41,9 +41,9 @@ enum ValueType {
 };
 
 enum FuncType {
-	VoidType,
 	ReturnIntType,
-	ReturnCharType
+	ReturnCharType,
+	VoidType
 };
 
 /*

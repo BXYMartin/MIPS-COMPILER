@@ -37,8 +37,13 @@ public:
 	void checkFuncCall(string identifier, bool isInExp, vector<ValueType> paramType);
 	bool checkFuncType(string funcName);
 	void checkType(ValueType s, ValueType t) {
-		if (s == CharType && t == IntType) {
-			error.SemanticError(ConversionAssignmentError, getLine(), getIndex(), "");
+		if (s != t) {
+			error.TypeWarning(ConversionAssignmentWarning, getLine(), getIndex(), s, t);
+		}
+	}
+	void checkCondition(ValueType s, ValueType t) {
+		if (s != IntType || t != IntType) {
+			error.TypeWarning(ConflictingComparisonTypeWarning, getLine(), getIndex(), s, t);
 		}
 	}
 
@@ -47,7 +52,7 @@ public:
 	void checkCaseEntry(vector<int> cases);
 	void checkSwitchType(ValueType s, ValueType t) {
 		if (s != t) {
-			error.SemanticError(ConflictingCaseTypeError, getLine(), getIndex(), "");
+			error.TypeWarning(ConflictingCaseTypeWarning, getLine(), getIndex(), s, t);
 		}
 	}
 

@@ -482,7 +482,7 @@ void printOptimize(MiddleCode item) {
 }
 
 void fixTemp() {
-	for (vector<MiddleCode>::iterator itr = optimizedMiddleCodeArr.begin()+1; itr != optimizedMiddleCodeArr.end() - 2; itr++) {
+	for (vector<MiddleCode>::iterator itr = optimizedMiddleCodeArr.begin()+1; itr != optimizedMiddleCodeArr.end() - 2 && itr != optimizedMiddleCodeArr.end() - 1 && itr != optimizedMiddleCodeArr.end(); itr++) {
 		switch (itr->type) {
 		case Pass:
 			if (itr->target == itr->left && itr->op == '+' && itr->right == "0") {
@@ -490,7 +490,7 @@ void fixTemp() {
 				printOptimize(*(itr + 1));
 				optimizedMiddleCodeArr.erase(itr+1);
 			}
-			if (itr->target == (itr + 1)->left && (itr + 1)->op == '+' && (itr + 1)->right == "0")
+			if (itr->target == (itr + 1)->left && (itr + 1)->op == '+' && (itr + 1)->right == "0" && (itr->target.at(0) == '#'))
 			{
 				itr->target = (itr + 1)->target;
 				itr->isTargetArr = (itr + 1)->isTargetArr;
