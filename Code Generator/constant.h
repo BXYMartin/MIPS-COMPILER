@@ -16,10 +16,11 @@
 
 #define DEBUG	false
 #define NEWLINE false
+#define INORD	true
 #include <string>
 #include <cstdio>
 using namespace std;
-#define VAR_REGISTER 2
+#define VAR_REGISTER 3
 #define TEMP_REGISTER 6 // $t3~$t9
 #define IsChar(x) ((x >= 32) && (x <= 126) && (x != 34))	// 定义字符的合法范围
 #define IsNum(x) (((x >= '0') && (x <= '9')) || x == '-' || x == '+')

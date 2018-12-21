@@ -613,7 +613,10 @@ void Syntax::enter_factor(vector<PostfixItem> & obj, string funcName, bool isCac
 			}
 			else {
 				item.type = StringType;
-				item.str = id;
+				if (INORD)
+					item.str = pushPseudoCode(Pass, cache, isCache, id, '+', "0", "", "", false, false);//id; // TODO 确认计算顺序规则，严重影响效率
+				else
+					item.str = id;
 			}
 			checkComponent(RMBRACKET, "Missing ] in array a[...]");
 		}
@@ -656,14 +659,20 @@ void Syntax::enter_factor(vector<PostfixItem> & obj, string funcName, bool isCac
 					if ((tableElement.getItemType() == Variable || tableElement.getItemType() == Parameter) && tableElement.getValueType() == CharType)
 						item.nonChar = false;
 					item.type = StringType;
-					item.str = id;
+					if (INORD)
+						item.str = pushPseudoCode(Pass, cache, isCache, id, '+', "0", "", "", false, false);//id; // TODO 确认计算顺序规则，严重影响效率
+					else
+						item.str = id;
 					addWeight(orderx, weight);
 				}
 			}
 			else {
 				item.type = StringType;
 				item.nonChar = true;
-				item.str = id;
+				if (INORD)
+					item.str = pushPseudoCode(Pass, cache, isCache, id, '+', "0", "", "", false, false);//id; // TODO 确认计算顺序规则，严重影响效率
+				else
+					item.str = id;
 			}
 			obj.push_back(item);
 		}
