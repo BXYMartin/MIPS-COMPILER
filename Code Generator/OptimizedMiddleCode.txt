@@ -1,25 +1,17 @@
 FUNC void recursive_cal()
 PARA int cur_pointer
 PARA int min
-#0 = cur_pointer + 0
-#1 = amount + 0
-BNZ #0 #1 $Label1
+BNZ cur_pointer amount $Label1
 #0 = f[0]
 PRT id #0
 i = 1 + 0
-#0 = i + 0
-#1 = amount + 0
-BGEZ #0 #1 $Label3
+BGEZ i amount $Label3
 LABEL $Label5
 PRT string " "
-#0 = i + 0
-#1 = f[#0]
-PRT id #1
-#0 = i + 0
-i = #0 + 1
-#0 = i + 0
-#1 = amount + 0
-BLZ #0 #1 $Label5
+#0 = f[i]
+PRT id #0
+i = i + 1
+BLZ i amount $Label5
 LABEL $Label3
 LABEL $Label4
 PRT string "\n"
@@ -27,34 +19,22 @@ RET
 LABEL $Label1
 LABEL $Label2
 i = min + 0
-#0 = i + 0
-#1 = cur_pointer + 0
-#2 = numbers_to_be_selected + 0
-#3 = amount + 0
-#4 = #1 + #2
-#5 = #4 - #3
-#6 = #5 + 1
-BGZ #0 #6 $Label6
+#0 = cur_pointer + numbers_to_be_selected
+#1 = #0 - amount
+#2 = #1 + 1
+BGZ i #2 $Label6
 LABEL $Label8
-#0 = cur_pointer + 0
-f[#0] = i + 0
-#0 = cur_pointer + 0
-#1 = #0 + 1
-#2 = i + 0
-#3 = #2 + 1
+f[cur_pointer] = i + 0
+#0 = cur_pointer + 1
+#1 = i + 1
+PUSH #0
 PUSH #1
-PUSH #3
 CALL recursive_cal
-#4 = i + 0
-i = #4 + 1
-#0 = i + 0
-#1 = cur_pointer + 0
-#2 = numbers_to_be_selected + 0
-#3 = amount + 0
-#4 = #1 + #2
-#5 = #4 - #3
-#6 = #5 + 1
-BLEZ #0 #6 $Label8
+i = i + 1
+#0 = cur_pointer + numbers_to_be_selected
+#1 = #0 - amount
+#2 = #1 + 1
+BLEZ i #2 $Label8
 LABEL $Label6
 LABEL $Label7
 RET
@@ -63,28 +43,22 @@ PARA int var
 PARA int lenth
 i = 0 + 0
 LABEL $Label9
-#0 = i + 0
-f[#0] = var + 0
-#0 = i + 0
-i = #0 + 1
-#0 = i + 0
-#1 = lenth + 0
-BLEZ #0 #1 $Label9
+f[i] = var + 0
+i = i + 1
+BLEZ i lenth $Label9
 RET
 FUNC void main()
 READ int numbers_to_be_selected
 READ int amount
-#0 = amount + 0
-#1 = #0 + 1
-BLEZ #1 1000 $Label10
+#0 = amount + 1
+BLEZ #0 1000 $Label10
 PRT string "ERROR!"
 EXIT
 LABEL $Label10
 LABEL $Label11
-#0 = amount + 0
-#1 = #0 + 1
+#0 = amount + 1
 PUSH 0
-PUSH #1
+PUSH #0
 CALL initial
 PUSH 0
 PUSH 1

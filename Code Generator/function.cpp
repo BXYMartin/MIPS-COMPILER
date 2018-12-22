@@ -429,10 +429,99 @@ void locateVariableAddress(string target, string targetReg, ofstream & out) {
 	}
 }
 
+void saveSpecialVariable(string target, string value, int offset, string reg, ofstream & out) {
+	int order = locateVariable(target);
+	SymbolTableItem symbol = SymbolTable.at(order);
+	string funcName = symbol.getFuncName();
+	string eleName = symbol.getId();
+	int number = 0;
+	unsigned int i;
+	for (i = 0; i < SymbolTable.size(); i++) {
+		SymbolTableItem item = SymbolTable.at(i);
+		if (funcName == "GLOBAL") {
+			if (item.getItemType() != Constant)
+				break;
+		}
+		else if (item.getId() == funcName) {
+			if (item.getItemType() == Function) {
+				i++;
+				break;
+			}
+		}
+	}
+	for (; i < SymbolTable.size(); i++) {
+		SymbolTableItem item = SymbolTable.at(i);
+		if (funcName != "GLOBAL")
+			if (item.getItemType() == Constant)
+				continue;
+		if (item.getId() == eleName) {
+			break;
+		}
+		if (item.getArrSize() == 0)
+			number += 4;
+		else
+			number += item.getArrSize() * 4;
+	}
+	if (funcName == "GLOBAL") {
+		out << "addu " << reg << " $gp " << reg << endl;
+		out << "sw " << value << " " << number + offset << "(" << reg << ")" << endl;
+	}
+	else {
+		out << "addu " << reg << " $fp " << reg << endl;
+		out << "sw " << value << " " << number + 8 + offset << "(" << reg << ")" << endl;
+	}
+}
+
 // 获取临时变量的地址
 void locateTempAddress(int order, string targetReg, ofstream & out) {
 	// 若 order > TEMP_REGISTER 时需要读取内存
 	out << "addiu " << targetReg << " $sp " << (order - 1 - TEMP_REGISTER) * 4 + tempVariableOffsetAddress << endl;
+}
+
+void saveTemp(int order, string value, ofstream & out) {
+	// 若 order > TEMP_REGISTER 时需要读取内存
+	out << "sw " << value << " " << (order - 1 - TEMP_REGISTER) * 4 + tempVariableOffsetAddress << "($sp)" << endl;
+}
+
+void saveVariable(string target, string value, int offset, ofstream & out) {
+	int order = locateVariable(target);
+	SymbolTableItem symbol = SymbolTable.at(order);
+	string funcName = symbol.getFuncName();
+	string eleName = symbol.getId();
+	int number = 0;
+	unsigned int i;
+	for (i = 0; i < SymbolTable.size(); i++) {
+		SymbolTableItem item = SymbolTable.at(i);
+		if (funcName == "GLOBAL") {
+			if (item.getItemType() != Constant)
+				break;
+		}
+		else if (item.getId() == funcName) {
+			if (item.getItemType() == Function) {
+				i++;
+				break;
+			}
+		}
+	}
+	for (; i < SymbolTable.size(); i++) {
+		SymbolTableItem item = SymbolTable.at(i);
+		if (funcName != "GLOBAL")
+			if (item.getItemType() == Constant)
+				continue;
+		if (item.getId() == eleName) {
+			break;
+		}
+		if (item.getArrSize() == 0)
+			number += 4;
+		else
+			number += item.getArrSize() * 4;
+	}
+	if (funcName == "GLOBAL") {
+		out << "sw " << value << " " << number + offset << "($gp)" << endl;
+	}
+	else {
+		out << "sw " << value << " " << number + 8 + offset << "($fp)" << endl;
+	}
 }
 
 
@@ -476,6 +565,612 @@ void locateArray(MiddleCode item, ofstream & out) {
 			getVariable(indexTargetArr, "$t1", out);
 			out << "sll $t1 $t1 2" << endl;
 			out << "addu $t0 $t0 $t1" << endl;
+		}
+	}
+}
+
+void saveArray(MiddleCode item, string value, ofstream & out) {
+	// 观察indexTargetArr即数组下标
+	string indexTargetArr = item.indexTargetArr;
+	if (IsNum(indexTargetArr.at(0))) {		// 属于数字
+		int offset = integerConversion(indexTargetArr);
+		offset = 4 * offset;
+		saveVariable(item.target, value, offset, out);
+	}
+	else if (indexTargetArr.at(0) == '#') {	// 是临时变量
+											// 放在$t1
+		int g = integerConversion(indexTargetArr.substr(1));
+		if (g > TEMP_REGISTER) {
+			getTemp(g, "$t0", out);
+			out << "sll $t0 $t0 2" << endl;
+		}
+		else {
+			out << "sll $t0 " << "$t" << (g + 3) << " 2" << endl;
+		}
+		saveSpecialVariable(item.target, value, 0, "$t0", out);
+		//out << "sw " << value << " 0($t0)" << endl;
+	}
+	else {							// 是变量
+		map<int, string>::iterator itr = varToRegisterMap.find(locateVariable(indexTargetArr));
+		if (itr != varToRegisterMap.end()) {
+			out << "sll $t0 " << itr->second << " 2" << endl;
+		}
+		else {
+			// 地址放在$t1
+			getVariable(indexTargetArr, "$t0", out);
+			out << "sll $t0 $t0 2" << endl;
+		}
+		saveSpecialVariable(item.target, value, 0, "$t0", out);
+		//out << "sw " << value << " 0($t0)" << endl;
+	}
+}
+
+void bestAssignment(MiddleCode item, ofstream & out) {
+	if (item.isTargetArr) {
+		string left = item.left;
+		string right = item.right;
+		char op = item.op;
+		if (right == "0" && item.op == '*') {
+			saveArray(item, "$0", out);
+			return;
+		}
+		if (IsNum(left.at(0)) && IsNum(right.at(0))) {			// 数字
+			if (op == '+') {
+				out << "li $t1 " << integerConversion(left) + integerConversion(right) << endl;
+			}
+			else if (op == '-') {
+				out << "li $t1 " << integerConversion(left) - integerConversion(right) << endl;
+			}
+			else if (op == '*') {
+				out << "li $t1 " << integerConversion(left) * integerConversion(right) << endl;
+			}
+			else if (op == '/') {
+				out << "li $t1 " << integerConversion(left) / integerConversion(right) << endl;
+			}
+			saveArray(item, "$t1", out);
+			return;
+		}
+		else if (IsNum(right.at(0))) {
+			string tempReg = "$t1";
+			if (left.at(0) == '#') {		// 临时变量
+				int g = integerConversion(left.substr(1));
+				if (g > TEMP_REGISTER) {
+					getTemp(g, tempReg, out);
+				}
+				else {
+					tempReg = "$t" + to_string(g + 3);
+				}
+
+			}
+			else if (left == "Ret") {			// 返回值
+				out << "move $t1 $v0" << endl;
+			}
+			else {								// 标识符
+				map<int, string>::iterator itr = varToRegisterMap.find(locateVariable(left));
+				if (itr != varToRegisterMap.end()) {
+					tempReg = itr->second;
+				}
+				else {
+					getVariable(left, "$t1", out);
+				}
+			}
+			if (op == '+') {
+				out << "addiu $t1 " << tempReg << " " << integerConversion(right) << endl;
+			}
+			else if (op == '-') {
+				out << "subu $t1 " << tempReg << " " << integerConversion(right) << endl;
+			}
+			else if (op == '*') {
+				out << "mul $t1 " << tempReg << " " << integerConversion(right) << endl;
+			}
+			else if (op == '/') {
+				out << "div $t1 " << tempReg << " " << integerConversion(right) << endl;
+			}
+			saveArray(item, "$t1", out);
+			return;
+		}
+		else if (IsNum(left.at(0))) {
+			string tempReg = "$t2";
+			if (right.at(0) == '#') {		// 临时变量
+				int g = integerConversion(right.substr(1));
+				if (g > TEMP_REGISTER) {
+					getTemp(g, tempReg, out);
+				}
+				else {
+					tempReg = "$t" + to_string(g + 3);
+				}
+
+			}
+			else if (right == "Ret") {			// 返回值
+				out << "move $t2 $v0" << endl;
+			}
+			else {								// 标识符
+				map<int, string>::iterator itr = varToRegisterMap.find(locateVariable(right));
+				if (itr != varToRegisterMap.end()) {
+					tempReg = itr->second;
+				}
+				else {
+					getVariable(right, "$t2", out);
+				}
+			}
+			if (op == '+') {
+				out << "addiu $t1 " << tempReg << " " << integerConversion(left) << endl;
+			}
+			else if (op == '-') {
+				out << "li $t1 " << integerConversion(left) << endl;
+				out << "subu $t1 $t1 " << tempReg << endl;
+			}
+			else if (op == '*') {
+				out << "mul $t1 " << tempReg << " " << integerConversion(left) << endl;
+			}
+			else if (op == '/') {
+				out << "li $t1 " << integerConversion(left) << endl;
+				out << "div $t1 $t1 " << tempReg << endl;
+			}
+			saveArray(item, "$t1", out);
+			return;
+		}
+		else {
+			string tempLeft = "$t1", tempRight = "$t2";
+			if (left.at(0) == '#') {		// 临时变量
+				int g = integerConversion(left.substr(1));
+				if (g > TEMP_REGISTER) {
+					getTemp(g, "$t1", out);
+				}
+				else {
+					tempLeft = "$t" + to_string(g + 3);
+				}
+			}
+			else if (left == "Ret") {			// 返回值
+				out << "move $t1 $v0" << endl;
+			}
+			else {								// 标识符
+				map<int, string>::iterator itr = varToRegisterMap.find(locateVariable(left));
+				if (itr != varToRegisterMap.end()) {
+					tempLeft = itr->second;
+				}
+				else {
+					getVariable(left, "$t1", out);
+				}
+			}
+			if (right.at(0) == '#') {		// 临时变量
+				int g = integerConversion(right.substr(1));
+				if (g > TEMP_REGISTER) {
+					getTemp(g, "$t2", out);
+				}
+				else {
+					tempRight = "$t" + to_string(g + 3);
+				}
+			}
+			else if (right == "Ret") {			// 返回值
+				out << "move $t2 $v0" << endl;
+			}
+			else {								// 标识符
+				map<int, string>::iterator itr = varToRegisterMap.find(locateVariable(right));
+				if (itr != varToRegisterMap.end()) {
+					tempRight = itr->second;
+				}
+				else {
+					getVariable(right, "$t2", out);
+				}
+			}
+
+			if (op == '+') {
+				out << "addu $t1 " << tempLeft << " " << tempRight << endl;
+			}
+			else if (op == '-') {
+				out << "subu $t1 " << tempLeft << " " << tempRight << endl;
+			}
+			else if (op == '*') {
+				out << "mul $t1 " << tempLeft << " " << tempRight << endl;
+			}
+			else if (op == '/') {
+				out << "div $t1 " << tempLeft << " " << tempRight << endl;
+			}
+			saveArray(item, "$t1", out);
+			return;
+		}
+	}
+	else {
+		bool isVar = false;
+		string targetReg = "$t0";
+		int g, g1;
+		if (item.target.at(0) == '#') {		// 临时变量
+			g1 = g = integerConversion(item.target.substr(1));
+			if (g > TEMP_REGISTER) {
+				//locateTempAddress(integerConversion(item.target.substr(1)), "$t0", out);
+			}
+			else {
+				targetReg = "$t" + to_string(g + 3);
+				isVar = true;
+			}
+		}
+		else {								// 标识符
+			map<int, string>::iterator itr = varToRegisterMap.find(locateVariable(item.target));
+			if (itr != varToRegisterMap.end()) {
+				targetReg = itr->second;
+				isVar = true;
+			}
+			else {
+				//locateVariableAddress(item.target, "$t0", out);
+			}
+		}
+
+		if (item.isLeftArr) {
+			// 单纯的数组取值
+			// 分析索引下标,将数组地址取出放在$t1
+			// 下标地址取出放在$t2
+			string indexLeftArr = item.indexLeftArr;
+			if (IsNum(indexLeftArr.at(0))) {			// 数字
+														// 取出数据,放在$t1
+				int order = locateVariable(item.left);
+				SymbolTableItem symbol = SymbolTable.at(order);
+				string funcName = symbol.getFuncName();
+				string eleName = symbol.getId();
+				int number = 0;
+				unsigned int i;
+				for (i = 0; i < SymbolTable.size(); i++) {
+					SymbolTableItem tab = SymbolTable.at(i);
+					if (funcName == "GLOBAL") {
+						if (tab.getItemType() != Constant)
+							break;
+					}
+					else if (tab.getId() == funcName) {
+						if (tab.getItemType() == Function) {
+							i++;
+							break;
+						}
+					}
+				}
+				for (; i < SymbolTable.size(); i++) {
+					SymbolTableItem tab = SymbolTable.at(i);
+					if (funcName != "GLOBAL")
+						if (tab.getItemType() == Constant)
+							continue;
+					if (tab.getId() == eleName) {
+						break;
+					}
+					if (tab.getArrSize() == 0)
+						number += 4;
+					else
+						number += tab.getArrSize() * 4;
+				}
+				if (funcName == "GLOBAL") {
+					if (isVar)
+						out << "lw " << targetReg << " " << number + 4 * integerConversion(indexLeftArr) << "($gp)" << endl;
+					else {
+						out << "lw $t1 " << number + 4 * integerConversion(indexLeftArr) << "($gp)" << endl;
+						if (item.target.at(0) == '#') {
+							saveTemp(integerConversion(item.target.substr(1)), "$t1", out);
+						}
+						else {
+							saveVariable(item.target, "$t1", 0, out);
+						}
+					}
+				}
+				else {
+					if (isVar)
+						out << "lw " << targetReg << " " << number + 8 + 4 * integerConversion(indexLeftArr) << "($fp)" << endl;
+					else {
+						out << "lw $t1 " << number + 8 + 4 * integerConversion(indexLeftArr) << "($fp)" << endl;
+						if (item.target.at(0) == '#') {
+							saveTemp(integerConversion(item.target.substr(1)), "$t1", out);
+						}
+						else {
+							saveVariable(item.target, "$t1", 0, out);
+						}
+					}
+				}
+			}
+			else if (indexLeftArr.at(0) == '#') {		// 临时变量
+				locateVariableAddress(item.left, "$t1", out);
+				g = integerConversion(indexLeftArr.substr(1));
+				if (g > TEMP_REGISTER) {
+					getTemp(g, "$t2", out);
+					out << "sll $t2 $t2 2" << endl;
+					out << "addu $t1 $t1 $t2" << endl;
+				}
+				else {
+					out << "sll $t2 " << "$t" << (g + 3) << " 2" << endl;
+					out << "addu $t1 $t1 $t2" << endl;
+				}
+				// 取出数据,放在$t1
+				if (isVar)
+					out << "lw " << targetReg << " 0($t1)" << endl;
+				else {
+					out << "lw $t1 0($t1)" << endl;
+					if (item.target.at(0) == '#') {
+						saveTemp(integerConversion(item.target.substr(1)), "$t1", out);
+					}
+					else {
+						saveVariable(item.target, "$t1", 0, out);
+					}
+				}
+			}
+			else {								// 标识符
+				locateVariableAddress(item.left, "$t1", out);
+				map<int, string>::iterator itr = varToRegisterMap.find(locateVariable(indexLeftArr));
+				if (itr != varToRegisterMap.end()) {
+					out << "sll $t2 " << itr->second << " 2" << endl;
+					out << "addu $t1 $t1 $t2" << endl;
+				}
+				else {
+					getVariable(indexLeftArr, "$t2", out);
+					out << "sll $t2 $t2 2" << endl;
+					out << "addu $t1 $t1 $t2" << endl;
+				}
+				// 取出数据,放在$t1
+				if (isVar)
+					out << "lw " << targetReg << " 0($t1)" << endl;
+				else {
+					out << "lw $t1 0($t1)" << endl;
+					if (item.target.at(0) == '#') {
+						saveTemp(integerConversion(item.target.substr(1)), "$t1", out);
+					}
+					else {
+						saveVariable(item.target, "$t1", 0, out);
+					}
+				}
+			}
+			return;
+
+		}
+		string left = item.left;
+		string right = item.right;
+		char op = item.op;
+		if (right == "0" && item.op == '*') {
+			if (isVar)
+				out << "move " << targetReg << " $0" << endl;
+			else
+				if (item.target.at(0) == '#') {
+					saveTemp(integerConversion(item.target.substr(1)), "$0", out);
+				}
+				else {
+					saveVariable(item.target, "$0", 0, out);
+				}
+				return;
+		}
+		if (IsNum(left.at(0)) && IsNum(right.at(0))) {			// 数字
+			if (isVar) {
+				if (op == '+') {
+					out << "li " << targetReg << " " << integerConversion(left) + integerConversion(right) << endl;
+				}
+				else if (op == '-') {
+					out << "li " << targetReg << " " << integerConversion(left) - integerConversion(right) << endl;
+				}
+				else if (op == '*') {
+					out << "li " << targetReg << " " << integerConversion(left) * integerConversion(right) << endl;
+				}
+				else if (op == '/') {
+					out << "li " << targetReg << " " << integerConversion(left) / integerConversion(right) << endl;
+				}
+			}
+			else
+			{
+				if (op == '+') {
+					out << "li $t1 " << integerConversion(left) + integerConversion(right) << endl;
+				}
+				else if (op == '-') {
+					out << "li $t1 " << integerConversion(left) - integerConversion(right) << endl;
+				}
+				else if (op == '*') {
+					out << "li $t1 " << integerConversion(left) * integerConversion(right) << endl;
+				}
+				else if (op == '/') {
+					out << "li $t1 " << integerConversion(left) / integerConversion(right) << endl;
+				}
+				if (item.target.at(0) == '#') {
+					saveTemp(integerConversion(item.target.substr(1)), "$t1", out);
+				}
+				else {
+					saveVariable(item.target, "$t1", 0, out);
+				}
+			}
+			return;
+		}
+		else if (IsNum(right.at(0))) {
+			string tempReg = "$t1";
+			if (left.at(0) == '#') {		// 临时变量
+				int g = integerConversion(left.substr(1));
+				if (g > TEMP_REGISTER) {
+					getTemp(g, tempReg, out);
+				}
+				else {
+					tempReg = "$t" + to_string(g + 3);
+				}
+
+			}
+			else if (left == "Ret") {			// 返回值
+				out << "move $t1 $v0" << endl;
+			}
+			else {								// 标识符
+				map<int, string>::iterator itr = varToRegisterMap.find(locateVariable(left));
+				if (itr != varToRegisterMap.end()) {
+					tempReg = itr->second;
+				}
+				else {
+					getVariable(left, "$t1", out);
+				}
+			}
+			if (isVar) {
+				if (op == '+') {
+					out << "addiu " << targetReg << " " << tempReg << " " << integerConversion(right) << endl;
+				}
+				else if (op == '-') {
+					out << "subu " << targetReg << " " << tempReg << " " << integerConversion(right) << endl;
+				}
+				else if (op == '*') {
+					out << "mul " << targetReg << " " << tempReg << " " << integerConversion(right) << endl;
+				}
+				else if (op == '/') {
+					out << "div " << targetReg << " " << tempReg << " " << integerConversion(right) << endl;
+				}
+			}
+			else {
+				if (op == '+') {
+					out << "addiu $t1 " << tempReg << " " << integerConversion(right) << endl;
+				}
+				else if (op == '-') {
+					out << "subu $t1 " << tempReg << " " << integerConversion(right) << endl;
+				}
+				else if (op == '*') {
+					out << "mul $t1 " << tempReg << " " << integerConversion(right) << endl;
+				}
+				else if (op == '/') {
+					out << "div $t1 " << tempReg << " " << integerConversion(right) << endl;
+				}
+				if (item.target.at(0) == '#') {
+					saveTemp(integerConversion(item.target.substr(1)), "$t1", out);
+				}
+				else {
+					saveVariable(item.target, "$t1", 0, out);
+				}
+			}
+			return;
+		}
+		else if (IsNum(left.at(0))) {
+			string tempReg = "$t2";
+			if (right.at(0) == '#') {		// 临时变量
+				int g = integerConversion(right.substr(1));
+				if (g > TEMP_REGISTER) {
+					getTemp(g, tempReg, out);
+				}
+				else {
+					tempReg = "$t" + to_string(g + 3);
+				}
+
+			}
+			else if (right == "Ret") {			// 返回值
+				out << "move $t2 $v0" << endl;
+			}
+			else {								// 标识符
+				map<int, string>::iterator itr = varToRegisterMap.find(locateVariable(right));
+				if (itr != varToRegisterMap.end()) {
+					tempReg = itr->second;
+				}
+				else {
+					getVariable(right, "$t2", out);
+				}
+			}
+			if (isVar) {
+				if (op == '+') {
+					out << "addiu " << targetReg << " " << tempReg << " " << integerConversion(left) << endl;
+				}
+				else if (op == '-') {
+					out << "li $t0 " << integerConversion(left) << endl;
+					out << "subu " << targetReg << " $t0 " << tempReg << endl;
+				}
+				else if (op == '*') {
+					out << "mul " << targetReg << " " << tempReg << " " << integerConversion(left) << endl;
+				}
+				else if (op == '/') {
+					out << "li $t0 " << integerConversion(left) << endl;
+					out << "div " << targetReg << " $t0 " << tempReg << endl;
+				}
+			}
+			else {
+				if (op == '+') {
+					out << "addiu $t1 " << tempReg << " " << integerConversion(left) << endl;
+				}
+				else if (op == '-') {
+					out << "li $t1 " << integerConversion(left) << endl;
+					out << "subu $t1 $t1 " << tempReg << endl;
+				}
+				else if (op == '*') {
+					out << "mul $t1 " << tempReg << " " << integerConversion(left) << endl;
+				}
+				else if (op == '/') {
+					out << "li $t1 " << integerConversion(left) << endl;
+					out << "div $t1 $t1 " << tempReg << endl;
+				}
+				if (item.target.at(0) == '#') {
+					saveTemp(integerConversion(item.target.substr(1)), "$t1", out);
+				}
+				else {
+					saveVariable(item.target, "$t1", 0, out);
+				}
+			}
+			return;
+		}
+		else {
+			string tempLeft = "$t1", tempRight = "$t2";
+			if (left.at(0) == '#') {		// 临时变量
+				int g = integerConversion(left.substr(1));
+				if (g > TEMP_REGISTER) {
+					getTemp(g, "$t1", out);
+				}
+				else {
+					tempLeft = "$t" + to_string(g + 3);
+				}
+			}
+			else if (left == "Ret") {			// 返回值
+				out << "move $t1 $v0" << endl;
+			}
+			else {								// 标识符
+				map<int, string>::iterator itr = varToRegisterMap.find(locateVariable(left));
+				if (itr != varToRegisterMap.end()) {
+					tempLeft = itr->second;
+				}
+				else {
+					getVariable(left, "$t1", out);
+				}
+			}
+			if (right.at(0) == '#') {		// 临时变量
+				int g = integerConversion(right.substr(1));
+				if (g > TEMP_REGISTER) {
+					getTemp(g, "$t2", out);
+				}
+				else {
+					tempRight = "$t" + to_string(g + 3);
+				}
+			}
+			else if (right == "Ret") {			// 返回值
+				out << "move $t2 $v0" << endl;
+			}
+			else {								// 标识符
+				map<int, string>::iterator itr = varToRegisterMap.find(locateVariable(right));
+				if (itr != varToRegisterMap.end()) {
+					tempRight = itr->second;
+				}
+				else {
+					getVariable(right, "$t2", out);
+				}
+			}
+			if (isVar) {
+				if (op == '+') {
+					out << "addu " << targetReg << " " << tempLeft << " " << tempRight << endl;
+				}
+				else if (op == '-') {
+					out << "subu " << targetReg << " " << tempLeft << " " << tempRight << endl;
+				}
+				else if (op == '*') {
+					out << "mul " << targetReg << " " << tempLeft << " " << tempRight << endl;
+				}
+				else if (op == '/') {
+					out << "div " << targetReg << " " << tempLeft << " " << tempRight << endl;
+				}
+			}
+			else {
+				if (op == '+') {
+					out << "addu $t1 " << tempLeft << " " << tempRight << endl;
+				}
+				else if (op == '-') {
+					out << "subu $t1 " << tempLeft << " " << tempRight << endl;
+				}
+				else if (op == '*') {
+					out << "mul $t1 " << tempLeft << " " << tempRight << endl;
+				}
+				else if (op == '/') {
+					out << "div $t1 " << tempLeft << " " << tempRight << endl;
+				}
+				if (item.target.at(0) == '#') {
+					saveTemp(integerConversion(item.target.substr(1)), "$t1", out);
+				}
+				else {
+					saveVariable(item.target, "$t1", 0, out);
+				}
+			}
+			return;
 		}
 	}
 }
@@ -716,8 +1411,6 @@ void handleAssignment(MiddleCode item, ofstream & out) {
 				return;
 
 			}
-
-
 			string left = item.left;
 			string right = item.right;
 			char op = item.op;
@@ -1230,9 +1923,9 @@ void getTextSegment(ofstream & out, vector<MiddleCode> QuaterCode) {
 			out << "jal " << item.target << endl;
 
 			// 栈指针恢复到$fp
-			out << "move $sp $fp" << endl;
+			//out << "move $sp $fp" << endl;
 			// $k0 $k1寄存器值恢复
-			out << "addiu $sp $sp -" << 8 + 4 * getMaxTemp(item.target) + 4 * getMaxVar(item.target) << endl;
+			out << "addiu $sp $fp -" << 8 + 4 * getMaxTemp(item.target) + 4 * getMaxVar(item.target) << endl;
 			//out << "lw $k0 0($sp)" << endl;
 			//out << "lw $k1 4($sp)" << endl;
 			for (int i = 0; i < getMaxTemp(item.target); i++)
@@ -1245,7 +1938,10 @@ void getTextSegment(ofstream & out, vector<MiddleCode> QuaterCode) {
 			out << "lw $fp 4($fp)" << endl;
 			break;
 		case Pass:
-			handleAssignment(item, out);
+			if(ULTOP)
+				bestAssignment(item, out);
+			else
+				handleAssignment(item, out);
 			break;
 		case Label:
 			out << item.target << ":" << endl;
@@ -1280,8 +1976,13 @@ void getTextSegment(ofstream & out, vector<MiddleCode> QuaterCode) {
 				out << "move " << itr->second << " $v0" << endl;
 				break;
 			}
-			locateVariableAddress(item.target, "$a3", out);
-			out << "sw $v0 0($a3)" << endl;
+			if(ULTOP)
+				saveVariable(item.target, "$v0", 0, out);
+			else {
+				locateVariableAddress(item.target, "$a3", out);
+				out << "sw $v0 0($a3)" << endl;
+			}
+			
 			break;
 		}
 		case Print: {
