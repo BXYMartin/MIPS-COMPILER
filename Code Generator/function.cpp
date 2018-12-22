@@ -83,6 +83,7 @@ vector<MiddleCode> MiddleCodeArr; // 中间代码生成集合
 extern vector<MiddleCode> optimizedMiddleCodeArr;
 extern map<int, string> varToRegisterMap;
 
+
 vector<string> constStringSet; // 程序需要打印的常量字符串集合,放在.data域
 map<string, string> stringWithLabel; // 字符串与伪指令标签
 map<string, unsigned> maxTempOrderMap; // 每个函数最大的临时变量编号
@@ -1665,7 +1666,7 @@ int arrageGlobalVariable() {
 	return number;
 }
 
-void initializeStack(string funcName, ofstream & out) {
+int initializeStack(string funcName, int offset, ofstream & out) {
 	// 参数计数器
 	int parameterCount = 0;
 	int number = 0;									// 变量不进行初始化
@@ -1688,7 +1689,7 @@ void initializeStack(string funcName, ofstream & out) {
 							out << "move " << itr->second << " " << aReg << endl;
 						}
 						else {
-							out << "sw " << aReg << " " << 4 * parameterCount << "($sp)" << endl;
+							out << "sw " << aReg << " " << 4 * parameterCount + offset << "($sp)" << endl;
 						}
 						parameterCount++;
 						number += 4;
@@ -1702,7 +1703,7 @@ void initializeStack(string funcName, ofstream & out) {
 						}
 						else {
 							out << "lw $v1 " << parameterCount * 4 - 16 << "($k1)" << endl;
-							out << "sw $v1 " << 4 * parameterCount << "($sp)" << endl;
+							out << "sw $v1 " << 4 * parameterCount + offset << "($sp)" << endl;
 						}
 						parameterCount++;
 						number += 4;
@@ -1724,14 +1725,12 @@ void initializeStack(string funcName, ofstream & out) {
 	// 分配临时变量所用空间
 	map<string, unsigned>::iterator iter = maxTempOrderMap.find(funcName);
 	if (iter != maxTempOrderMap.end() && iter->second > TEMP_REGISTER) {
-		if((number + (iter->second - TEMP_REGISTER) * 4) != 0)
-			out << "addiu $sp $sp " << number + (iter->second - TEMP_REGISTER) * 4 << endl;
 		tempVariableOffsetAddress = (iter->second - TEMP_REGISTER) * 4 * -1;
+		return number + (iter->second - TEMP_REGISTER) * 4;
 	}
 	else {
-		if(number != 0)
-			out << "addiu $sp $sp " << number << endl;
 		tempVariableOffsetAddress = 0;
+		return number;
 	}
 }
 
@@ -1741,12 +1740,14 @@ void handleFunctionDefinition(string funcName, ofstream & out) {
 		int size = arrageGlobalVariable();
 		out << "li $k1 " << functionStackAddress << endl;
 		out << "addiu $fp $gp " << size << endl;
-		out << "addiu $sp $fp 8" << endl;
-		initializeStack(funcName, out);
+		out << "addiu $sp $fp " << 8 + initializeStack(funcName, 8, out) << endl;
 	}
 	else {
 		// 设置上一级函数的基地址
-		initializeStack(funcName, out);
+		int increment = 16 + 4 * getMaxTemp(funcName) + 4 * getMaxVar(funcName) + initializeStack(funcName, 16 + 4 * getMaxTemp(funcName) + 4 * getMaxVar(funcName), out);
+		out << "addiu $fp $sp " << 8 + 4 * getMaxTemp(funcName) + 4 * getMaxVar(funcName) << endl;
+		out << "addiu $sp $sp " << increment << endl;
+
 	}
 }
 // 处理分支类指令
@@ -1916,8 +1917,6 @@ void getTextSegment(ofstream & out, vector<MiddleCode> QuaterCode) {
 				out << "sw $s" << i << " " << 8 + 4 * getMaxTemp(item.target) + 4 * i << "($sp)" << endl;
 			out << "sw $ra " << 8 + 4 * getMaxTemp(item.target) + 4 * getMaxVar(item.target) << "($sp)" << endl;
 			out << "sw $fp " << 12 + 4 * getMaxTemp(item.target) + 4 * getMaxVar(item.target) << "($sp)" << endl;
-			out << "addiu $sp $sp " << 16 + 4 * getMaxTemp(item.target) + 4 * getMaxVar(item.target) << endl;
-			out << "addiu $fp $sp -8" << endl;
 
 										  // 函数调用,跳转,生成所跳转的目标函数运行栈空间的首地址
 			out << "jal " << item.target << endl;
