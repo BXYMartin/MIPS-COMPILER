@@ -17,7 +17,7 @@
 #define DEBUG	true
 #define NEWLINE false
 #define INORD	false
-#define ULTOP	true
+#define ULTOP	false
 #include <string>
 #include <cstdio>
 using namespace std;
