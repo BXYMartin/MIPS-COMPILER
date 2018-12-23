@@ -326,3 +326,8 @@ void Semantic::checkFuncReturn(string funcName, ValueType retType) {
 		}
 	}
 }
+
+void Semantic::checkArrayIndex(ValueType type) {
+	if(type != IntType)
+		error.TypeWarning(ArrayIndexConversionWarning, getLine(), getIndex(), type, type);
+}

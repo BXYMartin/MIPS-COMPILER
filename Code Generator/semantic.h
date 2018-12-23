@@ -46,7 +46,7 @@ public:
 			error.TypeWarning(ConflictingComparisonTypeWarning, getLine(), getIndex(), s, t);
 		}
 	}
-
+	void checkArrayIndex(ValueType type);
 	int checkAssignId(string identifier, string funcName);
 
 	void checkCaseEntry(vector<int> cases);

@@ -191,6 +191,9 @@ void Error::TypeWarning(TypeWarningCode warningCode, int currentLine, int index,
 	case IlligalCharWarning:
 		cout << "Illigal Char '" << (char)src << "' Recognized." << endl;
 		break;
+	case ArrayIndexConversionWarning:
+		cout << "Illigal conversion for array index from char to int." << endl;
+		break;
 	default:break;
 	}
 }

@@ -594,6 +594,7 @@ void Syntax::enter_factor(vector<PostfixItem> & obj, string funcName, bool isCac
 			string var;
 			int orderx;
 			if (exp.determined) {
+				semantic.checkArrayIndex(exp.type);
 				orderx = semantic.checkArrayId(id, funcName, true, (exp.type == CharType) ? exp.character : exp.number);
 				string index = (exp.type == CharType) ? to_string(exp.character) : to_string(exp.number);
 				var = index;
@@ -887,14 +888,13 @@ bool Syntax::enter_assignStatement(string funcName, string id, bool isCache, vec
 		int orderx;
 		if (exp.determined) {
 			if (exp.type == CharType) {
+				semantic.checkArrayIndex(exp.type);
 				orderx = semantic.checkArrayId(id, funcName, true, exp.character);
-				
 				string x = to_string(exp.character);
 				code.indexTargetArr = x;
 			}
 			else {
 				orderx = semantic.checkArrayId(id, funcName, true, exp.number);
-				
 				string x = to_string(exp.number);
 				code.indexTargetArr = x;
 			}

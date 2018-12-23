@@ -55,6 +55,7 @@ enum TypeWarningCode {
 	ConflictingParameterTypeWarning,	// 函数参数类型错误
 	ConflictingComparisonTypeWarning,	// 条件表达式比较非整型
 	ConflictingReturnTypeWarning,		// 函数返回值不匹配
+	ArrayIndexConversionWarning			// 数组下标类型转换
 };
 
 class Error
