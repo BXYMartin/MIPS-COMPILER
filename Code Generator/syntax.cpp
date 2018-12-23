@@ -659,7 +659,7 @@ void Syntax::enter_factor(vector<PostfixItem> & obj, string funcName, bool isCac
 					if ((tableElement.getItemType() == Variable || tableElement.getItemType() == Parameter) && tableElement.getValueType() == CharType)
 						item.nonChar = false;
 					item.type = StringType;
-					if (INORD)
+					if (INORD && tableElement.getFuncName() == "GLOBAL")
 						item.str = pushPseudoCode(Pass, cache, isCache, id, '+', "0", "", "", false, false);//id; // TODO 确认计算顺序规则，严重影响效率
 					else
 						item.str = id;

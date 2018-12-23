@@ -6,17 +6,18 @@
 .text
 recursive_cal:
 move $s1 $a0
-sw $a1 40($sp)
-addiu $fp $sp 28
-addiu $sp $sp 48
-bne $s1 $s3 $Label1
-addiu $t1 $gp 8
-lw $t3 0($t1)
+sw $a1 48($sp)
+addiu $fp $sp 36
+addiu $sp $sp 56
+addiu $t3 $s3 0
+bne $s1 $t3 $Label1
+lw $t3 8($gp)
 move $a0 $t3
 li $v0 1
 syscall
 li $s0 1
-bge $s0 $s3 $Label3
+addiu $t3 $s3 0
+bge $s0 $t3 $Label3
 $Label5:
 la $a0 $String7
 li $v0 4
@@ -29,7 +30,8 @@ move $a0 $t3
 li $v0 1
 syscall
 addiu $s0 $s0 1
-blt $s0 $s3 $Label5
+addiu $t3 $s3 0
+blt $s0 $t3 $Label5
 $Label3:
 $Label4:
 la $a0 $String8
@@ -40,16 +42,17 @@ $Label1:
 $Label2:
 lw $t1 12($fp)
 addiu $s0 $t1 0
-addu $t3 $s1 $s2
-subu $t4 $t3 $s3
-addiu $t5 $t4 1
-bgt $s0 $t5 $Label6
+addiu $t3 $s2 0
+addiu $t4 $s3 0
+addu $t5 $s1 $t3
+subu $t6 $t5 $t4
+addiu $t7 $t6 1
+bgt $s0 $t7 $Label6
 $Label8:
-addiu $t0 $gp 8
-sll $t1 $s1 2
-addu $t0 $t0 $t1
 addiu $t1 $s0 0
-sw $t1 0($t0)
+sll $t0 $s1 2
+addu $t0 $gp $t0
+sw $t1 8($t0)
 addiu $t3 $s1 1
 addiu $t4 $s0 1
 move $a0 $t3
@@ -57,23 +60,29 @@ move $a1 $t4
 sw $t3 8($sp)
 sw $t4 12($sp)
 sw $t5 16($sp)
-sw $s0 20($sp)
-sw $s1 24($sp)
-sw $ra 28($sp)
+sw $t6 20($sp)
+sw $t7 24($sp)
+sw $s0 28($sp)
+sw $s1 32($sp)
+sw $ra 36($sp)
 jal recursive_cal
-addiu $sp $fp -28
+addiu $sp $fp -36
 lw $t3 8($sp)
 lw $t4 12($sp)
 lw $t5 16($sp)
-lw $s0 20($sp)
-lw $s1 24($sp)
+lw $t6 20($sp)
+lw $t7 24($sp)
+lw $s0 28($sp)
+lw $s1 32($sp)
 lw $ra 0($fp)
 addiu $fp $sp -20
 addiu $s0 $s0 1
-addu $t3 $s1 $s2
-subu $t4 $t3 $s3
-addiu $t5 $t4 1
-ble $s0 $t5 $Label8
+addiu $t3 $s2 0
+addiu $t4 $s3 0
+addu $t5 $s1 $t3
+subu $t6 $t5 $t4
+addiu $t7 $t6 1
+ble $s0 $t7 $Label8
 $Label6:
 $Label7:
 jr $ra
@@ -84,12 +93,11 @@ addiu $fp $sp 16
 addiu $sp $sp 36
 li $s0 0
 $Label9:
-addiu $t0 $gp 8
-sll $t1 $s0 2
-addu $t0 $t0 $t1
 lw $t1 8($fp)
 addiu $t1 $t1 0
-sw $t1 0($t0)
+sll $t0 $s0 2
+addu $t0 $gp $t0
+sw $t1 8($t0)
 addiu $s0 $s0 1
 ble $s0 $s1 $Label9
 jr $ra
@@ -103,8 +111,9 @@ move $s2 $v0
 li $v0 5
 syscall
 move $s3 $v0
-addiu $t3 $s3 1
-ble $t3 1000 $Label10
+addiu $t3 $s3 0
+addiu $t4 $t3 1
+ble $t4 1000 $Label10
 la $a0 $String9
 li $v0 4
 syscall
@@ -112,9 +121,10 @@ li $v0 10
 syscall
 $Label10:
 $Label11:
-addiu $t3 $s3 1
+addiu $t3 $s3 0
+addiu $t4 $t3 1
 li $a0 0
-move $a1 $t3
+move $a1 $t4
 sw $s0 8($sp)
 sw $s1 12($sp)
 sw $ra 16($sp)
@@ -129,16 +139,20 @@ li $a1 1
 sw $t3 8($sp)
 sw $t4 12($sp)
 sw $t5 16($sp)
-sw $s0 20($sp)
-sw $s1 24($sp)
-sw $ra 28($sp)
+sw $t6 20($sp)
+sw $t7 24($sp)
+sw $s0 28($sp)
+sw $s1 32($sp)
+sw $ra 36($sp)
 jal recursive_cal
-addiu $sp $fp -28
+addiu $sp $fp -36
 lw $t3 8($sp)
 lw $t4 12($sp)
 lw $t5 16($sp)
-lw $s0 20($sp)
-lw $s1 24($sp)
+lw $t6 20($sp)
+lw $t7 24($sp)
+lw $s0 28($sp)
+lw $s1 32($sp)
 lw $ra 0($fp)
 addiu $fp $sp -16
 # End Of MIPS Assembly Code.
