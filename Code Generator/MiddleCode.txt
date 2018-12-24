@@ -1,388 +1,67 @@
-FUNC void pause()
-RET
-FUNC void testdo()
+FUNC void main()
+target[0] = 20 + 0
+target[1] = 1 + 0
+target[2] = 4 + 0
 i = 0 + 0
-LABEL $Label1
-_var_int_arr_1[i] = i + 0
-#0 = i + 1
-i = #0 + 0
-BLEZ i 15 $Label1
-i = 0 + 0
-LABEL $Label2
-#0 = 2 * i
-#1 = #0 - i
-#2 = _var_int_arr_1[#1]
-#3 = 15 - i
-#4 = _var_int_arr_1[#3]
-#5 = #2 + #4
-_var_int_arr_1[i] = #5 + 0
-#0 = _var_int_arr_1[i]
-PRT id #0
-#0 = i + 1
-i = #0 + 0
-BLEZ i 15 $Label2
-#0 = _var_int_arr_1[1]
-#1 = _var_int_arr_1[5]
-BNZ #0 #1 $Label3
-JMP $Label4
+BGEZ i 3 $Label1
 LABEL $Label3
-PRT string "Error in Array & Loop Check!"
-error = 1 + 0
-LABEL $Label4
-#0 = _var_int_arr_1[15]
-BNZ #0 30 $Label5
-PRT string "Array & Loop Check Succeed!"
-JMP $Label6
-LABEL $Label5
-PRT string "Error in Array & Loop Check!"
-error = 1 + 0
+#0 = target[i]
+temp = #0 + 0
+left = 0 + 0
+#0 = i - 1
+right = #0 + 0
+middle = 0 + 0
+BGZ left right $Label4
 LABEL $Label6
-RET
-FUNC void testarithmetic()
-temp = -4 + 0
-BEZ temp 0 $Label7
-PRT string "Arithmetic Check Succeed!"
+#0 = left + right
+#1 = #0 / 2
+middle = #1 + 0
+#0 = target[middle]
+BGEZ temp #0 $Label7
+#0 = middle - 1
+right = #0 + 0
 JMP $Label8
 LABEL $Label7
-PRT string "Arithmetic Check Failed!"
-error = 1 + 0
+#0 = middle + 1
+left = #0 + 0
 LABEL $Label8
-temp = 11 + 0
-BNZ temp 11 $Label9
-PRT string "Division Check Passed!"
+BLEZ left right $Label6
+JMP $Label5
+LABEL $Label4
+LABEL $Label5
+#0 = i - 1
+j = #0 + 0
+BLZ j left $Label9
+LABEL $Label11
+#0 = j + 1
+#1 = target[j]
+target[#0] = #1 + 0
+#0 = j - 1
+j = #0 + 0
+BGEZ j left $Label11
 JMP $Label10
 LABEL $Label9
-PRT string "Error in Division Unit!"
-error = 1 + 0
 LABEL $Label10
-RET
-FUNC void testvalue()
-_var_int_0 = 0 + 0
-#0 = _var_int_0 + 0
-BNZ #0 0 $Label11
-#0 = _var_int_0 + 0
-BGEZ #0 1 $Label13
-#0 = _var_int_0 + 0
-BLEZ #0 -3 $Label15
-PRT string "Value Assignment Succeed!"
-JMP $Label16
-LABEL $Label15
-PRT string "Negative Assignment Failed!"
-error = 1 + 0
-LABEL $Label16
-JMP $Label14
-LABEL $Label13
-PRT string "Positive Assignment Failed!"
-error = 1 + 0
-LABEL $Label14
-JMP $Label12
-LABEL $Label11
-PRT string "Basic Assignment Failed!"
-error = 1 + 0
+BEZ left i $Label12
+target[left] = temp + 0
+JMP $Label13
 LABEL $Label12
-RET
-FUNC void testcaseinsensitive()
-temp = 0 + 0
-temp = 1 + 0
-BEZ temp 0 $Label18
-BEZ temp 1 $Label19
-PRT string "Error in testing Case Insensitive!"
-error = 1 + 0
-JMP $Label17
-LABEL $Label18
-PRT string "Case Sensitive Detected!"
-error = 1 + 0
-JMP $Label17
-LABEL $Label19
-PRT string "Case Insensitive Passed!"
-JMP $Label17
-LABEL $Label17
-RET
-FUNC void testswitch()
-PARA int i
-temp = i + 0
-_var_int_1 = 1 + 0
-#0 = _var_int_1 + 0
-#1 = temp + -3
-#2 = #0 * 1
-#3 = #1 + #2
-BEZ #3 1 $Label22
-PRT string "Switch Logic Error!"
-error = 1 + 0
-JMP $Label21
-LABEL $Label22
-PRT string "Switch Parse Check Succeed!"
-JMP $Label21
-LABEL $Label21
-RET
-FUNC void testif()
-#0 = 6 - 6
-BEZ #0 0 $Label24
-PRT string "If Statement Error!"
-error = 1 + 0
-JMP $Label25
-LABEL $Label24
-PRT string "Passed If Statement Testing!"
-LABEL $Label25
-RET
-FUNC void calrecursive()
-PARA int cur_pointer
-PARA int min
-#0 = amount + 0
-BNZ cur_pointer #0 $Label26
-#0 = f[0]
-PRT id #0
-i = 1 + 0
-#0 = amount + 0
-BGEZ i #0 $Label28
-LABEL $Label30
-#0 = f[i]
-PRT id #0
+LABEL $Label13
 #0 = i + 1
 i = #0 + 0
-#0 = amount + 0
-BLZ i #0 $Label30
-JMP $Label29
-LABEL $Label28
-LABEL $Label29
-PRT string ""
-RET
-JMP $Label27
-LABEL $Label26
-LABEL $Label27
-i = min + 0
-#0 = numbers_to_be_selected + 0
-#1 = amount + 0
-#2 = cur_pointer + #0
-#3 = #2 - #1
-#4 = #3 + 1
-BGZ i #4 $Label31
-LABEL $Label33
-f[cur_pointer] = i + 0
-#0 = cur_pointer + 1
-#1 = i + 1
-PUSH #0
-PUSH #1
-CALL calrecursive
-#2 = i + 1
-i = #2 + 0
-#0 = numbers_to_be_selected + 0
-#1 = amount + 0
-#2 = cur_pointer + #0
-#3 = #2 - #1
-#4 = #3 + 1
-BLEZ i #4 $Label33
-JMP $Label32
-LABEL $Label31
-LABEL $Label32
-RET
-FUNC void initpermutation()
-PARA int var
-PARA int lenth
+BLZ i 3 $Label3
+JMP $Label2
+LABEL $Label1
+LABEL $Label2
 i = 0 + 0
-LABEL $Label34
-f[i] = var + 0
+BGEZ i 3 $Label14
+LABEL $Label16
+#0 = target[i]
+PRT id #0
 #0 = i + 1
 i = #0 + 0
-BLEZ i lenth $Label34
-RET
-RET
-FUNC int seqsum()
-PARA int i
-BNZ i 1 $Label35
-RET int 1
-JMP $Label36
-LABEL $Label35
-#0 = i - 1
-PUSH #0
-CALL seqsum
-#1 = Ret + 0
-#2 = i + #1
-RET id #2
-LABEL $Label36
-FUNC void printtable()
-PRT string "INPUT 0: Basic Test        [Arithmetic, Case Inseneitive, Control Flow Logics]"
-PRT string "INPUT 1: Value Type Test   [Char Return, Char Operation, Char Conversion, Escape Char]"
-PRT string "INPUT 2: Structure Test    [Loop, Array, Structures]"
-PRT string "INPUT 3: Recursive Test    [Permutation, Sequential Sum]"
-PRT string "INPUT 4: Exit Program"
-RET
-FUNC int and()
-PARA int a
-PARA int b
-BNZ b 4 $Label37
-RET int 0
-JMP $Label38
-LABEL $Label37
-BNZ a 0 $Label39
-RET int 1
-JMP $Label40
-LABEL $Label39
-RET int 0
-LABEL $Label40
-LABEL $Label38
-FUNC char helpchar()
-temp = 43 + 0
-RET id temp
-FUNC void typecorrosion()
-_char = 105 + 0
-temp = 8 + 0
-PRT char 'H'
-PRT id _char
-CALL helpchar
-#0 = Ret + 0
-PRT id #0
-PRT string " "
-PRT int 2
-PRT int 0
-PRT int 1
-PRT id temp
-RET
-FUNC void testemptyfunction()
-RET
-FUNC void teststructure()
-PARA int a
-PARA int b
-PARA char c
-PARA char d
-PARA char e
-PRT id a
-PRT id b
-PRT id c
-PRT id d
-PRT id e
-#0 = c - e
-#1 = a + b
-#2 = #1 + d
-#3 = #2 - c
-#4 = #3 - #0
-BEZ #4 66666 $Label42
-BEZ #4 0 $Label43
-error = 1 + 0
-JMP $Label41
-LABEL $Label42
-PRT string "Structure Check Succeed!"
-t1 = 0 + 0
-t2 = 0 + 0
-JMP $Label41
-LABEL $Label43
-PRT string "Error In Register Name!"
-error = 1 + 0
-JMP $Label41
-LABEL $Label41
-RET
-FUNC void main()
-error = 0 + 0
-_char = 48 + 0
-LABEL $Label45
-CALL printtable
-READ int select
-BEZ select 0 $Label47
-BEZ select 1 $Label48
-BEZ select 2 $Label49
-BEZ select 3 $Label50
-BEZ select 4 $Label59
-PRT string "Illigal Input Detected!"
-JMP $Label46
-LABEL $Label47
-CALL testvalue
-CALL testarithmetic
-CALL testif
-PUSH 3
-CALL testswitch
-JMP $Label46
-LABEL $Label48
-PRT string "The Following Test Should Output 'Hi+ 2018'"
-CALL typecorrosion
-PRT string "This Test Should Output '\n\t\r~!@#$%^&*`' Rather Than Escape Them"
-PRT string "#t1"
-PRT string "$t1"
-JMP $Label46
-LABEL $Label49
-_var_char_0 = 49 + 0
-_var_char_1 = 50 + 0
-_var_int_0 = 12345 + 0
-_var_int_1 = 54321 + 0
-CALL testdo
-CALL testemptyfunction
-#0 = _var_int_0 + 0
-#1 = _var_int_1 + 0
-#2 = _var_char_0 + 0
-#3 = _var_char_1 + 0
-#4 = _char + 0
-PUSH #0
-PUSH #1
-PUSH #2
-PUSH #3
-PUSH #4
-CALL teststructure
-JMP $Label46
-LABEL $Label50
-PRT string "INPUT P: Permutation Output"
-PRT string "INPUT S: Sequential Sum"
-READ char choice
-BEZ choice 80 $Label52
-BEZ choice 83 $Label55
-PRT string "Illigal Input Detected!"
-JMP $Label51
-LABEL $Label52
-PRT string "INPUT INT0 INT1: Select INT1 From INT0 To Do Permutation"
-READ int numbers_to_be_selected
-READ int amount
-PRT string ""
-#5 = amount + 0
-#6 = #5 + 1
-BLEZ #6 1000 $Label53
-PRT string "ERROR!"
+BLZ i 3 $Label16
+JMP $Label15
+LABEL $Label14
+LABEL $Label15
 EXIT
-JMP $Label54
-LABEL $Label53
-LABEL $Label54
-#0 = amount + 0
-#1 = #0 + 1
-PUSH 0
-PUSH #1
-CALL initpermutation
-PUSH 0
-PUSH 1
-CALL calrecursive
-JMP $Label51
-LABEL $Label55
-PRT string "INPUT N: Calculate Sum From 1 To N"
-READ int select
-PRT string "Sequential Sum Result is: "
-PUSH select
-CALL seqsum
-#2 = Ret + 0
-PRT id #2
-PUSH 10
-CALL seqsum
-#2 = Ret + 0
-BNZ #2 55 $Label56
-PRT string "Recursive Check Succeed!"
-JMP $Label57
-LABEL $Label56
-error = 1 + 0
-PRT string "Error in Recursive Check!"
-LABEL $Label57
-select = 3 + 0
-JMP $Label51
-LABEL $Label51
-JMP $Label46
-LABEL $Label59
-JMP $Label46
-LABEL $Label46
-#0 = error + 0
-PUSH #0
-PUSH select
-CALL and
-#1 = Ret + 0
-BNZ #1 0 $Label45
-#0 = error + 0
-BLZ #0 1 $Label61
-PRT string "Critical Error Occurred During Testing..."
-JMP $Label62
-LABEL $Label61
-PRT string "Test Passed!"
-LABEL $Label62
-PRT string "Test End"
