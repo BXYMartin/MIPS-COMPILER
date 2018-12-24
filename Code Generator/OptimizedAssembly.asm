@@ -143,8 +143,7 @@ lw $t7 24($sp)
 lw $s0 28($sp)
 lw $ra 0($fp)
 addiu $fp $sp -12
-move $t1 $v0
-addiu $t4 $t1 0
+addiu $t4 $v0 0
 subu $t5 $s0 2
 move $a0 $t5
 sw $t3 8($sp)
@@ -164,8 +163,7 @@ lw $t7 24($sp)
 lw $s0 28($sp)
 lw $ra 0($fp)
 addiu $fp $sp -12
-move $t1 $v0
-addiu $t6 $t1 0
+addiu $t6 $v0 0
 addu $t7 $t4 $t6
 move $v0 $t7
 jr $ra
@@ -174,13 +172,15 @@ move $s0 $a0
 move $s1 $a1
 move $s2 $a2
 move $s3 $a3
-lw $s4 0($k1)
-addiu $fp $sp 44
-addiu $sp $sp 72
+lw $v1 0($k1)
+sw $v1 64($sp)
+addiu $fp $sp 40
+addiu $sp $sp 68
 addu $t3 $s0 $s1
 addu $t4 $t3 $s2
 subu $t5 $t4 $s3
-addu $t6 $t5 $s4
+lw $t2 24($fp)
+addu $t6 $t5 $t2
 move $v0 $t6
 jr $ra
 test_all_cond:
@@ -305,15 +305,15 @@ syscall
 move $a0 $s0
 li $v0 1
 syscall
-li $t1 89
-sw $t1 48($gp)
-lw $a0 48($gp)
+li $s6 89
+addiu $t3 $s6 0
+move $a0 $t3
 li $v0 11
 syscall
 jr $ra
 test_expr:
-addiu $fp $sp 40
-addiu $sp $sp 132
+addiu $fp $sp 44
+addiu $sp $sp 136
 la $a0 $String40
 li $v0 4
 syscall
@@ -356,8 +356,7 @@ lw $t7 24($sp)
 lw $s0 28($sp)
 lw $ra 0($fp)
 addiu $fp $sp -92
-move $t1 $v0
-addiu $t3 $t1 0
+addiu $t3 $v0 0
 li $a0 14
 sw $t3 8($sp)
 sw $t4 12($sp)
@@ -376,8 +375,7 @@ lw $t7 24($sp)
 lw $s0 28($sp)
 lw $ra 0($fp)
 addiu $fp $sp -92
-move $t1 $v0
-addiu $t4 $t1 0
+addiu $t4 $v0 0
 subu $s0 $t3 $t4
 la $a0 $String44
 li $v0 4
@@ -427,8 +425,7 @@ lw $t7 24($sp)
 lw $s0 28($sp)
 lw $ra 0($fp)
 addiu $fp $sp -92
-move $t1 $v0
-addiu $t4 $t1 0
+addiu $t4 $v0 0
 mul $t5 $t3 98
 addu $s0 $t5 $t4
 la $a0 $String48
@@ -437,8 +434,7 @@ syscall
 move $a0 $s0
 li $v0 1
 syscall
-li $t1 5
-sw $t1 0($gp)
+li $s4 5
 li $t1 12
 sw $t1 84($fp)
 li $s1 104
@@ -452,8 +448,7 @@ lw $t3 8($sp)
 lw $s0 12($sp)
 lw $ra 0($fp)
 addiu $fp $sp -92
-move $t1 $v0
-addiu $t3 $t1 0
+addiu $t3 $v0 0
 li $a0 5
 sw $t3 8($sp)
 sw $t4 12($sp)
@@ -472,8 +467,7 @@ lw $t7 24($sp)
 lw $s0 28($sp)
 lw $ra 0($fp)
 addiu $fp $sp -92
-move $t1 $v0
-addiu $t4 $t1 0
+addiu $t4 $v0 0
 li $a0 1
 move $a1 $t4
 sw $t3 8($sp)
@@ -487,13 +481,12 @@ lw $s0 12($sp)
 lw $s1 16($sp)
 lw $ra 0($fp)
 addiu $fp $sp -92
-move $t1 $v0
-addiu $t5 $t1 0
-lw $t6 84($fp)
-lw $t2 0($gp)
-div $t7 $t5 $t2
-addu $t8 $t3 $t7
-subu $s0 $t8 $t6
+addiu $t5 $v0 0
+addiu $t6 $s4 0
+lw $t7 84($fp)
+div $t8 $t5 $t6
+addu $t9 $t3 $t8
+subu $s0 $t9 $t7
 la $a0 $String49
 li $v0 4
 syscall
@@ -553,8 +546,8 @@ jr $ra
 permutation:
 move $s1 $a0
 move $s3 $a1
-addiu $fp $sp 32
-addiu $sp $sp 60
+addiu $fp $sp 28
+addiu $sp $sp 56
 subu $t3 $s3 1
 bge $s1 $t3 $Label25
 addiu $t3 $s1 1
@@ -565,16 +558,14 @@ sw $s0 12($sp)
 sw $s1 16($sp)
 sw $s2 20($sp)
 sw $s3 24($sp)
-sw $s4 28($sp)
-sw $ra 32($sp)
+sw $ra 28($sp)
 jal permutation
-addiu $sp $fp -32
+addiu $sp $fp -28
 lw $t3 8($sp)
 lw $s0 12($sp)
 lw $s1 16($sp)
 lw $s2 20($sp)
 lw $s3 24($sp)
-lw $s4 28($sp)
 lw $ra 0($fp)
 addiu $fp $sp -28
 addiu $s0 $s1 1
@@ -588,14 +579,12 @@ addiu $t1 $gp 252
 sll $t2 $s0 2
 addu $t1 $t1 $t2
 lw $t3 0($t1)
-addiu $t1 $t3 0
 sll $t0 $s1 2
 addu $t0 $gp $t0
-sw $t1 252($t0)
-addiu $t1 $s2 0
+sw $t3 252($t0)
 sll $t0 $s0 2
 addu $t0 $gp $t0
-sw $t1 252($t0)
+sw $s2 252($t0)
 addiu $t3 $s1 1
 move $a0 $t3
 move $a1 $s3
@@ -604,16 +593,14 @@ sw $s0 12($sp)
 sw $s1 16($sp)
 sw $s2 20($sp)
 sw $s3 24($sp)
-sw $s4 28($sp)
-sw $ra 32($sp)
+sw $ra 28($sp)
 jal permutation
-addiu $sp $fp -32
+addiu $sp $fp -28
 lw $t3 8($sp)
 lw $s0 12($sp)
 lw $s1 16($sp)
 lw $s2 20($sp)
 lw $s3 24($sp)
-lw $s4 28($sp)
 lw $ra 0($fp)
 addiu $fp $sp -28
 addiu $t1 $gp 252
@@ -624,14 +611,12 @@ addiu $t1 $gp 252
 sll $t2 $s0 2
 addu $t1 $t1 $t2
 lw $t3 0($t1)
-addiu $t1 $t3 0
 sll $t0 $s1 2
 addu $t0 $gp $t0
-sw $t1 252($t0)
-addiu $t1 $s2 0
+sw $t3 252($t0)
 sll $t0 $s0 2
 addu $t0 $gp $t0
-sw $t1 252($t0)
+sw $s2 252($t0)
 addiu $s0 $s0 1
 blt $s0 $s3 $Label29
 $Label27:
@@ -652,13 +637,13 @@ addiu $sp $fp -12
 lw $s0 8($sp)
 lw $ra 0($fp)
 addiu $fp $sp -28
-move $t1 $v0
-addiu $s4 $t1 0
+sw $v0 24($fp)
 addiu $t1 $gp 252
 sll $t2 $s0 2
 addu $t1 $t1 $t2
 lw $t3 0($t1)
-beq $s4 $t3 $Label31
+lw $a1 24($fp)
+beq $a1 $t3 $Label31
 la $a0 $String34
 li $v0 4
 syscall
@@ -697,11 +682,9 @@ lw $t7 24($sp)
 lw $s0 28($sp)
 lw $ra 0($fp)
 addiu $fp $sp -64
-move $t1 $v0
-addiu $t1 $t1 0
 sll $t0 $s0 2
 addu $t0 $fp $t0
-sw $t1 8($t0)
+sw $v0 8($t0)
 addiu $s0 $s0 1
 blt $s0 10 $Label35
 $Label33:
@@ -761,8 +744,7 @@ lw $s0 12($sp)
 lw $s1 16($sp)
 lw $ra 0($fp)
 addiu $fp $sp -64
-move $t1 $v0
-addiu $t3 $t1 0
+addiu $t3 $v0 0
 move $a0 $t3
 li $v0 1
 syscall
@@ -779,8 +761,7 @@ lw $s0 12($sp)
 lw $s1 16($sp)
 lw $ra 0($fp)
 addiu $fp $sp -64
-move $t1 $v0
-addiu $t3 $t1 0
+addiu $t3 $v0 0
 move $a0 $t3
 li $v0 1
 syscall
@@ -797,8 +778,7 @@ lw $s0 12($sp)
 lw $s1 16($sp)
 lw $ra 0($fp)
 addiu $fp $sp -64
-move $t1 $v0
-addiu $t3 $t1 0
+addiu $t3 $v0 0
 move $a0 $t3
 li $v0 1
 syscall
@@ -812,8 +792,7 @@ lw $t3 8($sp)
 lw $s0 12($sp)
 lw $ra 0($fp)
 addiu $fp $sp -64
-move $t1 $v0
-addiu $t3 $t1 0
+addiu $t3 $v0 0
 move $a0 $t3
 li $v0 1
 syscall
@@ -827,8 +806,7 @@ lw $t3 8($sp)
 lw $s0 12($sp)
 lw $ra 0($fp)
 addiu $fp $sp -64
-move $t1 $v0
-addiu $t3 $t1 0
+addiu $t3 $v0 0
 move $a0 $t3
 li $v0 1
 syscall
@@ -840,8 +818,7 @@ addiu $sp $fp -12
 lw $s0 8($sp)
 lw $ra 0($fp)
 addiu $fp $sp -64
-move $t1 $v0
-addiu $t3 $t1 0
+addiu $t3 $v0 0
 move $a0 $t3
 li $v0 11
 syscall
@@ -870,19 +847,21 @@ sw $t5 16($sp)
 sw $t6 20($sp)
 sw $t7 24($sp)
 sw $t8 28($sp)
-sw $s0 32($sp)
-sw $s1 36($sp)
-sw $ra 40($sp)
+sw $t9 32($sp)
+sw $s0 36($sp)
+sw $s1 40($sp)
+sw $ra 44($sp)
 jal test_expr
-addiu $sp $fp -40
+addiu $sp $fp -44
 lw $t3 8($sp)
 lw $t4 12($sp)
 lw $t5 16($sp)
 lw $t6 20($sp)
 lw $t7 24($sp)
 lw $t8 28($sp)
-lw $s0 32($sp)
-lw $s1 36($sp)
+lw $t9 32($sp)
+lw $s0 36($sp)
+lw $s1 40($sp)
 lw $ra 0($fp)
 addiu $fp $sp -64
 sw $s0 8($sp)
@@ -929,10 +908,9 @@ sw $s0 24($sp)
 sw $s1 28($sp)
 sw $s2 32($sp)
 sw $s3 36($sp)
-sw $s4 40($sp)
-sw $ra 44($sp)
+sw $ra 40($sp)
 jal test_lots_paras
-addiu $sp $fp -44
+addiu $sp $fp -40
 lw $t3 8($sp)
 lw $t4 12($sp)
 lw $t5 16($sp)
@@ -941,11 +919,9 @@ lw $s0 24($sp)
 lw $s1 28($sp)
 lw $s2 32($sp)
 lw $s3 36($sp)
-lw $s4 40($sp)
 lw $ra 0($fp)
 addiu $fp $sp -64
-move $t1 $v0
-addiu $t3 $t1 0
+addiu $t3 $v0 0
 move $a0 $t3
 li $v0 1
 syscall
@@ -984,16 +960,14 @@ sw $s0 12($sp)
 sw $s1 16($sp)
 sw $s2 20($sp)
 sw $s3 24($sp)
-sw $s4 28($sp)
-sw $ra 32($sp)
+sw $ra 28($sp)
 jal permutation
-addiu $sp $fp -32
+addiu $sp $fp -28
 lw $t3 8($sp)
 lw $s0 12($sp)
 lw $s1 16($sp)
 lw $s2 20($sp)
 lw $s3 24($sp)
-lw $s4 28($sp)
 lw $ra 0($fp)
 addiu $fp $sp -64
 li $v0 10

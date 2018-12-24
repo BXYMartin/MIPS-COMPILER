@@ -644,7 +644,7 @@ void bestAssignment(MiddleCode item, ofstream & out) {
 
 			}
 			else if (left == "Ret") {			// 返回值
-				out << "move $t1 $v0" << endl;
+				tempReg = "$v0";
 			}
 			else {								// 标识符
 				map<int, string>::iterator itr = varToRegisterMap.find(locateVariable(left));
@@ -655,19 +655,24 @@ void bestAssignment(MiddleCode item, ofstream & out) {
 					getVariable(left, "$t1", out);
 				}
 			}
-			if (op == '+') {
-				out << "addiu $t1 " << tempReg << " " << integerConversion(right) << endl;
+			if (integerConversion(right) == 0 && (op == '+' || op == '-')) {
+				saveArray(item, tempReg, out);
 			}
-			else if (op == '-') {
-				out << "subu $t1 " << tempReg << " " << integerConversion(right) << endl;
+			else {
+				if (op == '+') {
+					out << "addiu $t1 " << tempReg << " " << integerConversion(right) << endl;
+				}
+				else if (op == '-') {
+					out << "subu $t1 " << tempReg << " " << integerConversion(right) << endl;
+				}
+				else if (op == '*') {
+					out << "mul $t1 " << tempReg << " " << integerConversion(right) << endl;
+				}
+				else if (op == '/') {
+					out << "div $t1 " << tempReg << " " << integerConversion(right) << endl;
+				}
+				saveArray(item, "$t1", out);
 			}
-			else if (op == '*') {
-				out << "mul $t1 " << tempReg << " " << integerConversion(right) << endl;
-			}
-			else if (op == '/') {
-				out << "div $t1 " << tempReg << " " << integerConversion(right) << endl;
-			}
-			saveArray(item, "$t1", out);
 			return;
 		}
 		else if (IsNum(left.at(0))) {
@@ -683,7 +688,7 @@ void bestAssignment(MiddleCode item, ofstream & out) {
 
 			}
 			else if (right == "Ret") {			// 返回值
-				out << "move $t2 $v0" << endl;
+				tempReg = "$v0";
 			}
 			else {								// 标识符
 				map<int, string>::iterator itr = varToRegisterMap.find(locateVariable(right));
@@ -693,6 +698,10 @@ void bestAssignment(MiddleCode item, ofstream & out) {
 				else {
 					getVariable(right, "$t2", out);
 				}
+			}
+			if (op == '+' && integerConversion(left) == 0) {
+				saveArray(item, tempReg, out);
+				return;
 			}
 			if (op == '+') {
 				out << "addiu $t1 " << tempReg << " " << integerConversion(left) << endl;
@@ -723,7 +732,7 @@ void bestAssignment(MiddleCode item, ofstream & out) {
 				}
 			}
 			else if (left == "Ret") {			// 返回值
-				out << "move $t1 $v0" << endl;
+				tempLeft = "$v0";
 			}
 			else {								// 标识符
 				map<int, string>::iterator itr = varToRegisterMap.find(locateVariable(left));
@@ -744,7 +753,7 @@ void bestAssignment(MiddleCode item, ofstream & out) {
 				}
 			}
 			else if (right == "Ret") {			// 返回值
-				out << "move $t2 $v0" << endl;
+				tempRight = "$v0";
 			}
 			else {								// 标识符
 				map<int, string>::iterator itr = varToRegisterMap.find(locateVariable(right));
@@ -982,7 +991,7 @@ void bestAssignment(MiddleCode item, ofstream & out) {
 
 			}
 			else if (left == "Ret") {			// 返回值
-				out << "move $t1 $v0" << endl;
+				tempReg = "$v0";
 			}
 			else {								// 标识符
 				map<int, string>::iterator itr = varToRegisterMap.find(locateVariable(left));
@@ -1008,6 +1017,15 @@ void bestAssignment(MiddleCode item, ofstream & out) {
 				}
 			}
 			else {
+				if (integerConversion(right) == 0 && (op == '+' || op == '-')) {
+					if (item.target.at(0) == '#') {
+						saveTemp(integerConversion(item.target.substr(1)), tempReg, out);
+					}
+					else {
+						saveVariable(item.target, tempReg, 0, out);
+					}
+					return;
+				}
 				if (op == '+') {
 					out << "addiu $t1 " << tempReg << " " << integerConversion(right) << endl;
 				}
@@ -1042,7 +1060,7 @@ void bestAssignment(MiddleCode item, ofstream & out) {
 
 			}
 			else if (right == "Ret") {			// 返回值
-				out << "move $t2 $v0" << endl;
+				tempReg = "$v0";
 			}
 			else {								// 标识符
 				map<int, string>::iterator itr = varToRegisterMap.find(locateVariable(right));
@@ -1070,6 +1088,15 @@ void bestAssignment(MiddleCode item, ofstream & out) {
 				}
 			}
 			else {
+				if (integerConversion(left) == 0 && op == '+') {
+					if (item.target.at(0) == '#') {
+						saveTemp(integerConversion(item.target.substr(1)), tempReg, out);
+					}
+					else {
+						saveVariable(item.target, tempReg, 0, out);
+					}
+					return;
+				}
 				if (op == '+') {
 					out << "addiu $t1 " << tempReg << " " << integerConversion(left) << endl;
 				}
@@ -1105,7 +1132,7 @@ void bestAssignment(MiddleCode item, ofstream & out) {
 				}
 			}
 			else if (left == "Ret") {			// 返回值
-				out << "move $t1 $v0" << endl;
+				tempLeft = "$v0";
 			}
 			else {								// 标识符
 				map<int, string>::iterator itr = varToRegisterMap.find(locateVariable(left));
@@ -1126,7 +1153,7 @@ void bestAssignment(MiddleCode item, ofstream & out) {
 				}
 			}
 			else if (right == "Ret") {			// 返回值
-				out << "move $t2 $v0" << endl;
+				tempRight = "$v0";
 			}
 			else {								// 标识符
 				map<int, string>::iterator itr = varToRegisterMap.find(locateVariable(right));

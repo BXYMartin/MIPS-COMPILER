@@ -15,14 +15,14 @@ using namespace std;
 #define SYM_NUM 39					// 记忆符数量
 
 #define MAX_WORD_LENGTH 1024		// 最长单词长度
-
+#define LEAST_REFERENCE 0
 #define DEBUG	false
 #define NEWLINE false
-#define INORD	false
+#define INORD	true
 #define ULTOP	true
 
-#define VAR_REGISTER 8
-#define TEMP_REGISTER 6 // $t3~$t9
+#define VAR_REGISTER	4	// 0~8
+#define TEMP_REGISTER	6 // $t3~$t9
 #define IsChar(x) ((x >= 32) && (x <= 126) && (x != 34))	// 定义字符的合法范围
 #define IsNum(x) (((x >= '0') && (x <= '9')) || x == '-' || x == '+')
 #define IsAlphaBet(x) ((x == '+') || (x == '-') || (x == '*') || (x == '/') || (x == '_') || isalnum(x))

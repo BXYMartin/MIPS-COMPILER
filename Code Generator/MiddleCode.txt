@@ -156,7 +156,8 @@ para_change = #0 + 0
 PRT string "after change para="
 PRT id para_change
 g_v_char_b = 89 + 0
-PRT id g_v_char_b
+#0 = g_v_char_b + 0
+PRT id #0
 RET
 FUNC void test_expr()
 PRT string "test for expression"
@@ -211,11 +212,12 @@ PUSH 1
 PUSH #1
 CALL add
 #2 = Ret + 0
-#3 = tag[6]
-#4 = #2 / g_v_int_a1
-#5 = #0 + #4
-#6 = #5 - #3
-res_of_expr = #6 + 0
+#3 = g_v_int_a1 + 0
+#4 = tag[6]
+#5 = #2 / #3
+#6 = #0 + #5
+#7 = #6 - #4
+res_of_expr = #7 + 0
 PRT string "addone(g_v_char_h)+add(1, fib(5))/G_v_int_a1 - tag[6]="
 PRT id res_of_expr
 RET

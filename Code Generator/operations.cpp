@@ -77,12 +77,39 @@ int getVariableOrder(string funcName, int offset) {
 	return i;
 }
 
+int getStackLevel(string field) {
+	int level = 0;
+	for (int i = 0; i < stack.size(); i++) {
+		if (stack.at(i).name == field)
+			level++;
+	}
+	return level;
+}
+
 void optimizeRegister() {
 	current = "GLOBAL";
 	globalVarIndexMap.clear();
 	functionVarIndexMap.clear();
 	maxVarOrderMap.clear();
 	varToRegisterMap.clear();
+	map<int, int> pivotDivision;
+	unsigned int p = 0;
+	for (p = 0; p < SymbolTable.size(); p++) {
+		if(SymbolTable.at(p).getArrSize() == 0)
+		if(SymbolTable.at(p).getFuncName() == "GLOBAL")
+			pivotDivision[record[p]] = 0;
+		else
+			pivotDivision[record[p] - getStackLevel(SymbolTable.at(p).getFuncName())] = 1;
+	}
+	p = 0;
+	int RECOMMAND_VAR_REGISTER = 0;
+	for (map<int, int>::reverse_iterator itr = pivotDivision.rbegin(); itr != pivotDivision.rend(); itr++) {
+		if (p >= 8 || itr->first <= 0)
+			break;
+		RECOMMAND_VAR_REGISTER += itr->second;
+		p++;
+	}
+	cout << "*** Determined Pivot Value " << RECOMMAND_VAR_REGISTER << " ***" << endl;
 	unsigned int i = 0;
 	// Ìø¹ý Global ±äÁ¿
 	for (; i < SymbolTable.size(); i++) {
@@ -123,7 +150,7 @@ void optimizeRegister() {
 			}
 		}
 		unsigned int k;
-		for (k = 0; k < iter->second.size() && k < VAR_REGISTER; k++) {
+		for (k = 0; k < iter->second.size() && k < VAR_REGISTER && record[iter->second.at(k)] > getStackLevel(SymbolTable.at(iter->second.at(k)).getFuncName()); k++) {
 			varToRegisterMap.insert(map<int, string>::value_type(SymbolTable.at(iter->second.at(k)).getOrder(), "$s" + to_string(k)));
 		}
 		maxVarOrderMap.insert(map<string, unsigned>::value_type(funcNameTable.at(j), k));
@@ -187,7 +214,7 @@ void logMemory(int addr) {
 	if (addr - reg_file[30].val > 0)
 		order = getVariableOrder(current, addr - reg_file[30].val - 8);
 	else
-		order = getVariableOrder(current, addr - reg_file[28].val);
+		order = getVariableOrder("GLOBAL", addr - reg_file[28].val);
 	if (order < 0)
 		return;
 	record[order] = record[order] + 1;
