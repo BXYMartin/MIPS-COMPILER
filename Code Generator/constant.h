@@ -7,21 +7,21 @@
 
 #ifndef CONSTANT_H
 #define CONSTANT_H
-
+#include <string>
+#include <cstdio>
+using namespace std;
 #define _CRT_SECURE_NO_WARNINGS
 #define KEY_NUM 15					// 保留字数量定义
 #define SYM_NUM 39					// 记忆符数量
 
 #define MAX_WORD_LENGTH 1024		// 最长单词长度
 
-#define DEBUG	true
+#define DEBUG	false
 #define NEWLINE false
-#define INORD	true
-#define ULTOP	false
-#include <string>
-#include <cstdio>
-using namespace std;
-#define VAR_REGISTER 2
+#define INORD	false
+#define ULTOP	true
+
+#define VAR_REGISTER 8
 #define TEMP_REGISTER 6 // $t3~$t9
 #define IsChar(x) ((x >= 32) && (x <= 126) && (x != 34))	// 定义字符的合法范围
 #define IsNum(x) (((x >= '0') && (x <= '9')) || x == '-' || x == '+')
