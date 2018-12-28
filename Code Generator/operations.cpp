@@ -38,52 +38,91 @@ struct instruct_mem *im;
 map<int, int> dm;
 map<int, int> record;
 vector<function> stack;
+map<string, int> outrun;
+map<string, map<int, int>> runtable;
 map<int, int> number;
 bool endProperly = false;
 
-int getVariableOrder(string funcName, int offset) {
+void initVariableOrder() {
 	int number = 0;
 	unsigned int i;
 	for (i = 0; i < SymbolTable.size(); i++) {
 		SymbolTableItem item = SymbolTable.at(i);
-		if (funcName == "GLOBAL") {
-			if (item.getItemType() != Constant)
-				break;
+		if (item.getItemType() == Constant)
+			continue;
+		if (item.getItemType() == Function) {
+			number = 0;
+			continue;
 		}
-		else if (item.getId() == funcName) {
-			if (item.getItemType() == Function) {
-				i++;
-				break;
+		if (item.getArrSize() == 0) {
+			(runtable[item.getFuncName()])[number] = i;
+			number += 4;
+		}
+		else {
+			for(int temp = number;temp < item.getArrSize() * 4 + number;temp += 4)
+				(runtable[item.getFuncName()])[temp] = i;
+			number += item.getArrSize() * 4;
+		}
+	}
+}
+
+int getVariableOrder(string funcName, int offset) {
+	if (SPEED) {
+		if (runtable.count(funcName) > 0 && runtable[funcName].count(offset) > 0)
+			return runtable[funcName][offset];
+		else
+			return -1;
+	}
+	else {
+		int number = 0;
+		unsigned int i;
+		for (i = 0; i < SymbolTable.size(); i++) {
+			SymbolTableItem item = SymbolTable.at(i);
+			if (funcName == "GLOBAL") {
+				if (item.getItemType() != Constant)
+					break;
+			}
+			else if (item.getId() == funcName) {
+				if (item.getItemType() == Function) {
+					i++;
+					break;
+				}
 			}
 		}
-	}
-	for (; i < SymbolTable.size(); i++) {
-		SymbolTableItem item = SymbolTable.at(i);
-		if (item.getItemType() == Function)
-			return -1;
-		if (funcName != "GLOBAL")
-			if (item.getItemType() == Constant)
-				continue;
-		if (number >= offset) {
-			break;
+		for (; i < SymbolTable.size(); i++) {
+			SymbolTableItem item = SymbolTable.at(i);
+			if (item.getItemType() == Function)
+				return -1;
+			if (funcName != "GLOBAL")
+				if (item.getItemType() == Constant)
+					continue;
+			if (number >= offset) {
+				break;
+			}
+			if (item.getArrSize() == 0)
+				number += 4;
+			else
+				number += item.getArrSize() * 4;
 		}
-		if (item.getArrSize() == 0)
-			number += 4;
-		else
-			number += item.getArrSize() * 4;
+		if (i == SymbolTable.size())
+			return -1;
+		return i;
 	}
-	if (i == SymbolTable.size())
-		return -1;
-	return i;
 }
 
 int getStackLevel(string field) {
-	int level = 0;
-	for (int i = 0; i < stack.size(); i++) {
-		if (stack.at(i).name == field)
-			level++;
+	if (SPEED) {
+		return 2 * outrun[field];
 	}
-	return level;
+	else {
+		int level = 0, last_level = 0;
+		for (int i = 0; i < stack.size(); i++) {
+			if (stack.at(i).name == field && stack.at(i).level > last_level)
+				level++;
+			last_level = stack.at(i).level;
+		}
+		return 2 * level;
+	}
 }
 
 void optimizeRegister() {
@@ -224,28 +263,49 @@ void callStack(int inc, string name) {
 	static int level = 0;
 	struct function func;
 	level += inc;
-	if (inc >= 0) {
-		func.level = level;
-		func.line = number[pc];
-		func.name = name;
-		current = name;
-		stack.push_back(func);
-	}
-	else {
-		for (unsigned int i = stack.size() - 1; i >= 0; i--) {
-			if (stack.at(i).level == level + 1) {
-				func.level = level + 1;
-				func.line = number[pc] + 1;
-				func.name = stack.at(i).name;
+	if (SPEED) {
+		if (inc >= 0) {
+			outrun[current] = outrun[current] + 1;
+			if (stack.size() <= 0 || (stack.size() > 0 && !(stack.at(stack.size() - 1).level == level && stack.at(stack.size() - 1).name == name))) {
+				func.level = level;
+				func.name = name;
+				current = name;
 				stack.push_back(func);
 			}
-			if (stack.at(i).level == level) {
-				func.level = level;
-				func.line = number[reg_file[31].val] + 1;
-				func.name = stack.at(i).name;
-				current = stack.at(i).name;
-				stack.push_back(func);
-				break;
+		}
+		else {
+			for (unsigned int i = stack.size() - 1; i >= 0; i--) {
+				if (stack.at(i).level == level) {
+					current = stack.at(i).name;
+					break;
+				}
+			}
+		}
+	}
+	else {
+		if (inc >= 0) {
+			func.level = level;
+			func.line = number[pc];
+			func.name = name;
+			current = name;
+			stack.push_back(func);
+		}
+		else {
+			for (unsigned int i = stack.size() - 1; i >= 0; i--) {
+				if (stack.at(i).level == level + 1) {
+					func.level = level + 1;
+					func.line = number[pc] + 1;
+					func.name = stack.at(i).name;
+					stack.push_back(func);
+				}
+				if (stack.at(i).level == level) {
+					func.level = level;
+					func.line = number[reg_file[31].val] + 1;
+					func.name = stack.at(i).name;
+					current = stack.at(i).name;
+					stack.push_back(func);
+					break;
+				}
 			}
 		}
 	}
@@ -1188,10 +1248,15 @@ void init_reg_file()
 	for (int i = 0; i < SymbolTable.size(); i++) {
 		record[i] = 0;
 	}
+	for (int i = 0; i < funcNameTable.size(); i++) {
+		outrun[funcNameTable[i]] = 0;
+	}
 	for (int i = 0; i < 100; i++) {
 		labels.label[i].name = "";
 		labels.label[i].inst_num = 0;
 	}
+	if(SPEED)
+		initVariableOrder();
 	im = new instruct_mem;
 	endProperly = false;
 	INST_ALU = INST_JUMP = INST_BRANCH = INST_MEM = INST_OTHER = 0;

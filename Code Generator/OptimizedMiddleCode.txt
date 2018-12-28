@@ -1,363 +1,65 @@
-FUNC int foo1()
-PARA int a
-PARA char b
-#0 = a + b
-RET id #0
-FUNC int add()
-PARA int a
-PARA int b
-#0 = a + b
-RET id #0
-FUNC int addchar()
-PARA char a
-PARA char b
-#0 = a + b
-RET id #0
-FUNC int addone()
-PARA char a
-#0 = a + 1
-RET id #0
-FUNC int addint()
-PARA int a
-#0 = a + 1
-RET id #0
-FUNC char foo2()
-PARA char c
-BLEZ c 99 $Label1
-RET char '4'
-JMP $Label2
-LABEL $Label1
-RET char '4'
-LABEL $Label2
-FUNC void test_string_int()
-a = 1 + 0
-PRT id a
-a = 0 + 0
-PRT id a
-a = 0 + 0
-PRT id a
-a = 0 + 0
-PRT id a
-a = 12 + 0
-PRT id a
-a = -12 + 0
-PRT id a
-PRT string "#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~ !"
-RET
-FUNC int fib()
-PARA int n
-BNZ n 1 $Label3
-RET int 1
-JMP $Label4
-LABEL $Label3
-BNZ n 2 $Label5
-RET int 1
+FUNC void recursive_cal()
+PARA int cur_pointer
+PARA int min
+BNZ cur_pointer amount $Label1
+#0 = f[0]
+PRT id #0
+i = 1 + 0
+BGEZ i amount $Label3
 LABEL $Label5
-LABEL $Label6
-LABEL $Label4
-#0 = n - 1
-PUSH #0
-CALL fib
-#1 = Ret + 0
-#2 = n - 2
-PUSH #2
-CALL fib
-#3 = Ret + 0
-#4 = #1 + #3
-RET id #4
-FUNC int test_lots_paras()
-PARA int a
-PARA int b
-PARA char c
-PARA char d
-PARA int e
-#0 = a + b
-#1 = #0 + c
-#2 = #1 - d
-#3 = #2 + e
-RET id #3
-FUNC void test_all_cond()
-a = 1 + 0
-b = 2 + 0
-c = 2 + 0
-d = 65 + 0
-PRT string "test of comp symbol"
-BNZ b c $Label7
-PRT string "a==b"
-LABEL $Label7
-LABEL $Label8
-BGEZ a b $Label9
-PRT string "a<b"
-LABEL $Label9
-LABEL $Label10
-BLEZ c a $Label11
-PRT string "c>a"
-LABEL $Label11
-LABEL $Label12
-BEZ d 0 $Label13
-PRT string "d"
-LABEL $Label13
-LABEL $Label14
-BNZ a 1 $Label15
-PRT string "error"
-LABEL $Label15
-LABEL $Label16
-BEZ a 1 $Label17
-PRT string "error"
-LABEL $Label17
-LABEL $Label18
-BGZ a c $Label19
-PRT string "a<=c"
-LABEL $Label19
-LABEL $Label20
-BLZ a c $Label21
-PRT string "error!"
-LABEL $Label21
-LABEL $Label22
-BLEZ d 66 $Label23
-PRT string "error!"
-LABEL $Label23
-LABEL $Label24
-RET
-FUNC void test_diff_domain()
-PARA int para_change
-PRT char 'b'
-g_v_int_a1 = 222 + 0
-PRT id g_v_int_a1
-PRT string "test global variable and constance"
-PRT int 1
-PRT char 'f'
-PRT char 'b'
-PRT char 'b'
-PRT int 2
-PRT int 3
-g_v_char_arr[2] = 72 + 0
-#0 = g_v_char_arr[2]
-PRT id #0
-g_v_int_arr2[6] = 155 + 0
-#0 = g_v_int_arr2[6]
-PRT id #0
-PRT string "before change para="
-PRT id para_change
-para_change = para_change * 2
-PRT string "after change para="
-PRT id para_change
-g_v_char_b = 89 + 0
-#0 = g_v_char_b + 0
-PRT id #0
-RET
-FUNC void test_expr()
-PRT string "test for expression"
-res_of_expr = 60 + 0
-PRT string "--12--12--12-+12+-12--12--12--12--12="
-PRT id res_of_expr
-res_of_expr = -50 + 0
-PRT string "10*-5="
-PRT id res_of_expr
-res_of_expr = 2 + 0
-PRT string "10/+4="
-PRT id res_of_expr
-PUSH 12
-CALL fib
-#0 = Ret + 0
-PUSH 14
-CALL fib
-#1 = Ret + 0
-res_of_expr = #0 - #1
-PRT string "fib(12)-fib(14)="
-PRT id res_of_expr
-res_of_expr = 111 + 0
-PRT string "c + 12 = "
-PRT id res_of_expr
-res_of_expr = 1188 + 0
-PRT string "c*12/1="
-PRT id res_of_expr
-res_of_expr = -12 + 0
-PRT string "1-(((12+1)))="
-PRT id res_of_expr
-arr[1] = 15 + 0
-#0 = arr[1]
-PUSH 3
-CALL fib
-#1 = Ret + 0
-#2 = #0 * 98
-res_of_expr = #2 + #1
-PRT string "arr[1]*'b'+fib(3)="
-PRT id res_of_expr
-g_v_int_a1 = 5 + 0
-tag[6] = 12 + 0
-g_v_char_h = 104 + 0
-PUSH g_v_char_h
-CALL addone
-#0 = Ret + 0
-PUSH 5
-CALL fib
-#1 = Ret + 0
-PUSH 1
-PUSH #1
-CALL add
-#2 = Ret + 0
-#3 = g_v_int_a1 + 0
-#4 = tag[6]
-#5 = #2 / #3
-#6 = #0 + #5
-res_of_expr = #6 - #4
-PRT string "addone(g_v_char_h)+add(1, fib(5))/G_v_int_a1 - tag[6]="
-PRT id res_of_expr
-RET
-FUNC void test_scanf()
-PRT string "please input an integer"
-READ int a
-PRT id a
-PRT string "please input 2 integers press enter for each integer"
-READ int a
-READ int b
-PRT id a
-PRT id b
-RET
-FUNC char echo_char()
-PARA char a
-PRT id a
-RET id a
-FUNC void really_void()
-RET
-FUNC void really_void2()
-RET
-FUNC void really_void3()
-RET
-FUNC void permutation()
-PARA int m
-PARA int n
-#0 = n - 1
-BGEZ m #0 $Label25
-#0 = m + 1
-PUSH #0
-PUSH n
-CALL permutation
-i = m + 1
-BGEZ i n $Label27
-LABEL $Label29
-t = chs[m]
-#0 = chs[i]
-chs[m] = #0 + 0
-chs[i] = t + 0
-#0 = m + 1
-PUSH #0
-PUSH n
-CALL permutation
-t = chs[m]
-#0 = chs[i]
-chs[m] = #0 + 0
-chs[i] = t + 0
-i = i + 1
-BLZ i n $Label29
-LABEL $Label27
-LABEL $Label28
-JMP $Label26
-LABEL $Label25
-i = 0 + 0
-LABEL $Label30
-#0 = chs[i]
-PUSH #0
-CALL echo_char
-r = Ret + 0
-#0 = chs[i]
-BEZ r #0 $Label31
-PRT string "error"
-LABEL $Label31
-LABEL $Label32
-i = i + 1
-BLZ i 5 $Label30
 PRT string " "
-LABEL $Label26
+#0 = f[i]
+PRT id #0
+i = i + 1
+BLZ i amount $Label5
+LABEL $Label3
+LABEL $Label4
+PRT string "\n"
+RET
+LABEL $Label1
+LABEL $Label2
+i = min + 0
+#0 = cur_pointer + numbers_to_be_selected
+#1 = #0 - amount
+#2 = #1 + 1
+BGZ i #2 $Label6
+LABEL $Label8
+f[cur_pointer] = i + 0
+#0 = cur_pointer + 1
+#1 = i + 1
+PUSH #0
+PUSH #1
+CALL recursive_cal
+i = i + 1
+#0 = cur_pointer + numbers_to_be_selected
+#1 = #0 - amount
+#2 = #1 + 1
+BLEZ i #2 $Label8
+LABEL $Label6
+LABEL $Label7
+RET
+FUNC void initial()
+PARA int var
+PARA int lenth
+i = 0 + 0
+LABEL $Label9
+f[i] = var + 0
+i = i + 1
+BLEZ i lenth $Label9
 RET
 FUNC void main()
-i = 0 + 0
-BGEZ i 10 $Label33
-LABEL $Label35
-#0 = i + 1
-PUSH #0
-CALL fib
-arr[i] = Ret + 0
-i = i + 1
-BLZ i 10 $Label35
-LABEL $Label33
-LABEL $Label34
-PRT string "input the number of fib you want(1~10)"
-READ int user_input1
-READ int user_input2
-i = user_input1 - 1
-LABEL $Label36
-PRT string " "
-#0 = arr[i]
-PRT id #0
-i = i + 1
-BLZ i user_input2 $Label36
-i = user_input2 - 1
-#0 = user_input1 - 1
-BLZ i #0 $Label37
-LABEL $Label39
-PRT string " "
-#0 = arr[i]
-PRT id #0
-i = i - 1
-#0 = user_input1 - 1
-BGEZ i #0 $Label39
-LABEL $Label37
-LABEL $Label38
-PUSH 1
-PUSH 98
-CALL foo1
-#0 = Ret + 0
-PRT id #0
-PUSH 1
-PUSH 2
-CALL add
-#0 = Ret + 0
-PRT id #0
-PUSH 97
-PUSH 98
-CALL addchar
-#0 = Ret + 0
-PRT id #0
-PUSH 70
-CALL addone
-#0 = Ret + 0
-PRT id #0
-PUSH 16
-CALL addint
-#0 = Ret + 0
-PRT id #0
-PUSH 99
-CALL foo2
-#0 = Ret + 0
-PRT id #0
-CALL test_string_int
-PUSH 233
-CALL test_diff_domain
-CALL test_expr
-CALL test_all_cond
-CALL test_scanf
-PUSH 97
-CALL echo_char
-PUSH 1
-PUSH 2
-PUSH 99
-PUSH 100
-PUSH 5
-CALL test_lots_paras
-#0 = Ret + 0
-PRT id #0
-CALL really_void
-CALL really_void2
-CALL really_void3
-chs[0] = 65 + 0
-chs[1] = 66 + 0
-chs[2] = 67 + 0
-chs[3] = 68 + 0
-chs[4] = 69 + 0
-PRT string "this is a permutation of ABCDE"
-PUSH 0
-PUSH 5
-CALL permutation
+READ int numbers_to_be_selected
+READ int amount
+#0 = amount + 1
+BLEZ #0 1000 $Label10
+PRT string "ERROR!"
 EXIT
+LABEL $Label10
+LABEL $Label11
+#0 = amount + 1
+PUSH 0
+PUSH #0
+CALL initial
+PUSH 0
+PUSH 1
+CALL recursive_cal
