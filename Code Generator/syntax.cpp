@@ -630,7 +630,7 @@ void Syntax::enter_factor(vector<PostfixItem> & obj, string funcName, bool isCac
 			pushPseudoCode(FunctionCall, cache, isCache, id);
 			
 			item.type = StringType;
-			item.str = pushPseudoCode(Pass, cache, isCache, "Ret", '+', "0", "", "", false, false);
+			item.str = "Ret";
 			item.nonChar = semantic.checkFuncType(id);
 			
 			obj.push_back(item);
@@ -652,7 +652,7 @@ void Syntax::enter_factor(vector<PostfixItem> & obj, string funcName, bool isCac
 				else if (tableElement.getItemType() == Function) { // 无参数的带返回值的函数调用
 					pushPseudoCode(FunctionCall, cache, isCache, id);
 					item.type = StringType;
-					item.str = pushPseudoCode(Pass, cache, isCache, "Ret", '+', "0", "", "", false, false);
+					item.str = "Ret";
 					item.nonChar = (tableElement.getFuncType() == ReturnCharType) ? false : true;
 				}
 				else {
@@ -1075,8 +1075,8 @@ void Syntax::enter_condition(string funcName, bool isCache, vector<MiddleCode> &
 	cmp = NEQ;
 	semantic.checkCondition(leftExp.type, IntType);
 	if (isFixed) {
-		left = pushPseudoCode(Pass, cache, isCache, left, '+', "0", "", "", false, false);
-		right = "0";
+		right = left;
+		left = "$0";
 		VarCount = 0;
 		return;
 	}

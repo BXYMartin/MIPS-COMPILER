@@ -40,6 +40,7 @@ map<int, int> record;
 vector<function> stack;
 map<string, int> outrun;
 map<string, map<int, int>> runtable;
+map<int, string> runstack;
 map<int, int> number;
 bool endProperly = false;
 
@@ -189,7 +190,7 @@ void optimizeRegister() {
 			}
 		}
 		unsigned int k;
-		for (k = 0; k < iter->second.size() && k < VAR_REGISTER && record[iter->second.at(k)] > getStackLevel(SymbolTable.at(iter->second.at(k)).getFuncName()); k++) {
+		for (k = 0; k < iter->second.size() && k < VAR_REGISTER && record[iter->second.at(k)] > 0; k++) { //  && record[iter->second.at(k)] > getStackLevel(SymbolTable.at(iter->second.at(k)).getFuncName())
 			varToRegisterMap.insert(map<int, string>::value_type(SymbolTable.at(iter->second.at(k)).getOrder(), "$s" + to_string(k)));
 		}
 		maxVarOrderMap.insert(map<string, unsigned>::value_type(funcNameTable.at(j), k));
@@ -261,26 +262,18 @@ void logMemory(int addr) {
 
 void callStack(int inc, string name) {
 	static int level = 0;
+	static int record_level = 4096;
 	struct function func;
 	level += inc;
 	if (SPEED) {
 		if (inc >= 0) {
 			outrun[current] = outrun[current] + 1;
-			if (stack.size() <= 0 || (stack.size() > 0 && !(stack.at(stack.size() - 1).level == level && stack.at(stack.size() - 1).name == name))) {
-				func.level = level;
-				func.name = name;
-				current = name;
-				stack.push_back(func);
-			}
+			runstack[level] = name;
+			current = name;
 		}
-		else {
-			for (unsigned int i = stack.size() - 1; i >= 0; i--) {
-				if (stack.at(i).level == level) {
-					current = stack.at(i).name;
-					break;
-				}
-			}
-		}
+		else
+			current = runstack[level];
+		
 	}
 	else {
 		if (inc >= 0) {
@@ -681,7 +674,7 @@ int runBenchmark() {
 	return INST_ALU + INST_OTHER + 2 * (INST_JUMP + INST_BRANCH + INST_MEM);
 }
 
-void decode(int*encoded_inst)
+void decode(int*encoded_inst, bool optimize)
 {
 	switch (encoded_inst[0])
 	{
@@ -756,11 +749,11 @@ void decode(int*encoded_inst)
 		break;
 	case LW:
 		INST_MEM++;
-		load_word(encoded_inst[1], encoded_inst[2], encoded_inst[3]);
+		load_word(encoded_inst[1], encoded_inst[2], encoded_inst[3], optimize);
 		break;
 	case SW:
 		INST_MEM++;
-		store_word(encoded_inst[1], encoded_inst[2], encoded_inst[3]);
+		store_word(encoded_inst[1], encoded_inst[2], encoded_inst[3], optimize);
 		break;
 	case J:
 		INST_JUMP++;
@@ -768,11 +761,11 @@ void decode(int*encoded_inst)
 		break;
 	case JR:
 		INST_JUMP++;
-		jr(encoded_inst[1]);
+		jr(encoded_inst[1], optimize);
 		break;
 	case JAL:
 		INST_JUMP++;
-		jal(encoded_inst[1]);
+		jal(encoded_inst[1], optimize);
 		break;
 	case BEQ:
 		if (encoded_inst[2] >= 32799 || encoded_inst[2] < -32768)
@@ -1035,7 +1028,7 @@ void move(int dest, int src)
 	return;
 }
 
-void load_word(int dest, int addr, int offset)
+void load_word(int dest, int addr, int offset, bool optimize)
 {
 	if (offset > 0)
 		offset -= 32;
@@ -1045,7 +1038,8 @@ void load_word(int dest, int addr, int offset)
 		cout << "Access To Illegal Memory Address " << reg_file[addr].val + offset << " in Function " << current << endl;
 		//printPosition();
 	}
-	logMemory(reg_file[addr].val + offset);
+	if(optimize)
+		logMemory(reg_file[addr].val + offset);
 	if (dm.find(reg_file[addr].val + offset) != dm.end())
 		reg_file[dest].val = dm[reg_file[addr].val + offset];
 	else {
@@ -1056,7 +1050,7 @@ void load_word(int dest, int addr, int offset)
 	return;
 }
 
-void store_word(int dest, int addr, int offset)
+void store_word(int dest, int addr, int offset, bool optimize)
 {
 	if (offset > 0)
 		offset -= 32;
@@ -1066,7 +1060,8 @@ void store_word(int dest, int addr, int offset)
 		cout << "Access To Illegal Memory Address " << reg_file[addr].val + offset << " in Function " << current << endl;
 		//printPosition();
 	}
-	logMemory(reg_file[addr].val + offset);
+	if(optimize)
+		logMemory(reg_file[addr].val + offset);
 	dm[reg_file[addr].val + offset] = reg_file[dest].val;
 	pc++;
 	return;
@@ -1076,15 +1071,17 @@ void jump(int pc_dest)
 	pc = labels.label[pc_dest].inst_num;
 	return;
 }
-void jr(int pc_dest) {
-	callStack(-1, "Return");
+void jr(int pc_dest, bool optimize) {
+	if(optimize)
+		callStack(-1, "Return");
 	pc = reg_file[pc_dest].val;
 	return;
 }
-void jal(int pc_dest) {
+void jal(int pc_dest, bool optimize) {
 	reg_file[31].val = pc + 1;
 	pc = labels.label[pc_dest].inst_num;
-	callStack(1, labels.label[pc_dest].name);
+	if(optimize)
+		callStack(1, labels.label[pc_dest].name);
 	return;
 }
 
@@ -1215,7 +1212,7 @@ void syscall()
 	return;
 }
 
-void execute(int fin)
+void execute(int fin, bool optimize)
 {
 	pc = 0;
 	for (int i = 0; i <= label_num; i++)
@@ -1231,7 +1228,7 @@ void execute(int fin)
 	// Starts with the program totaler at zero
 	while (pc < fin && endProperly == false)
 	{
-		decode(im->mem[pc].cod);
+		decode(im->mem[pc].cod, optimize);
 	}
 
 	cout << endl;
@@ -1325,7 +1322,7 @@ void runSimulation() {
 	fopen_s(&f, mipsCodeToFileName.c_str(), "r");
 	int len = read_file(f);	// len stores the largest possible value of pc.
 	fclose(f);
-	execute(len);
+	execute(len, true);
 	printResult(true);
 }
 
@@ -1336,7 +1333,7 @@ void checkSimulation(){
 	fopen_s(&f, simuCodeToFileName.c_str(), "r");
 	int len = read_file(f);	// len stores the largest possible value of pc.
 	fclose(f);
-	execute(len);
+	execute(len, false);
 	printResult(false);
 }
 
@@ -1347,6 +1344,6 @@ void checkOptimization() {
 	fopen_s(&f, finalCodeToFileName.c_str(), "r");
 	int len = read_file(f);	// len stores the largest possible value of pc.
 	fclose(f);
-	execute(len);
+	execute(len, false);
 	printResult(false);
 }

@@ -33,13 +33,13 @@ void div(int dest, int reg1, int reg2);
 void li(int dest,int val);
 
 // Load/Store instruction
-void load_word(int dest,int addr, int offset);
-void store_word(int dest,int addr, int offset);
+void load_word(int dest,int addr, int offset, bool optimize);
+void store_word(int dest,int addr, int offset, bool optimize);
 
 // Branch & Jump instructions
 void jump(int num);
-void jr(int num);
-void jal(int num);
+void jr(int num, bool optimize);
+void jal(int num, bool optimize);
 void beq(int reg1, int reg2, int pc_dest);
 void bne(int reg1, int reg2, int pc_dest);
 void blt(int reg1, int reg2, int pc_dest);
@@ -64,11 +64,11 @@ struct instruct_mem
 };
 
 void encode(char*input, int *coded, int num);	 //Function to convert text into opcodes.
-void decode(int*encoded_inst);	// Decode and perform the instructions.
+void decode(int*encoded_inst, bool optimize);	// Decode and perform the instructions.
 
 int read_file(FILE*file);
 void load_instruct_mem(int mem_pos, int*instruct);  //Function to load the instruction into the instruction memory. 
-void execute(int fin);
+void execute(int fin, bool optimize);
 
 int label_pos(char*name);			// Returns the index of the label structure storing the label-name
 

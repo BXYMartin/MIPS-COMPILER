@@ -202,7 +202,10 @@ private:
 								break;
 							}
 							expItem.type = StringType;
-							expItem.str = pushPseudoCode(Pass, cache, isCache, left, inputItem.number, right, "", "", false, false);
+							if (inputItem.number == '+' && right == "0")
+								expItem.str = left;
+							else
+								expItem.str = pushPseudoCode(Pass, cache, isCache, left, inputItem.number, right, "", "", false, false);
 							tmp.push_back(expItem);
 						}
 						break;
@@ -248,7 +251,10 @@ private:
 								break;
 							}
 							expItem.type = StringType;
-							expItem.str = pushPseudoCode(Pass, cache, isCache, left, inputItem.number, right, "", "", false, false);
+							if (inputItem.number == '+' && right == "0")
+								expItem.str = left;
+							else
+								expItem.str = pushPseudoCode(Pass, cache, isCache, left, inputItem.number, right, "", "", false, false);
 							tmp.push_back(expItem);
 						}
 						break;

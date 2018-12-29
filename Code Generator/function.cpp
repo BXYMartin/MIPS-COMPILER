@@ -1799,6 +1799,8 @@ void handleBranch(MiddleCode item, ofstream & out) {
 				branchReg0 = "$t" + to_string(g + 3);
 			}
 		}
+		else if (obj == "Ret")
+			branchReg0 = "$v0";
 		else {
 			getVariable(obj, branchReg0, out);
 		}
@@ -1823,6 +1825,8 @@ void handleBranch(MiddleCode item, ofstream & out) {
 				branchReg1 = "$t" + to_string(g + 3);
 			}
 		}
+		else if (obj == "Ret")
+			branchReg1 = "$v0";
 		else {
 			getVariable(obj, branchReg1, out);
 		}
@@ -1831,7 +1835,7 @@ void handleBranch(MiddleCode item, ofstream & out) {
 	switch (item.type)
 	{
 	case BEZ:
-		out << "beq " << branchReg0 << " " << branchReg1 <<" " << item.target << endl;
+		out << "beq " << branchReg0 << " " << branchReg1 << " " << item.target << endl;
 		break;
 	case BNZ:
 		out << "bne " << branchReg0 << " " << branchReg1 << " " << item.target << endl;

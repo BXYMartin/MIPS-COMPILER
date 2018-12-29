@@ -335,7 +335,8 @@ void reduceExpression(int start, int end) {
 		Node node = nodeGraph.at(i);
 		if (node.isLeftLeaf && node.isInitial) {// 叶子结点
 			map<string, int>::iterator iter = nodeTable.table.find(node.value);
-			if (iter->second != node.code) {//需要保存
+			if (iter->second != node.code) {//需要保存 Caution!
+				/*
 				MiddleCode tempMiddleCode;
 				tempMiddleCode.isTargetArr = tempMiddleCode.isLeftArr = false;
 				tempMiddleCode.type = Pass;
@@ -345,6 +346,8 @@ void reduceExpression(int start, int end) {
 				tempMiddleCode.op = '+';
 				cache.push_back(tempMiddleCode);
 				nodeGraph.at(i).value = tempMiddleCode.target;
+				*/
+				nodeGraph.at(i).value = node.value;
 			}
 		}
 		else if (!node.isLeftLeaf)
@@ -481,12 +484,66 @@ void printOptimize(MiddleCode item) {
 		cout << "Deleted Quater Code " << item.target << " = " << item.left << " " << item.op << " " << item.right << endl;
 }
 
+void prefixTemp() {
+	if (MiddleCodeArr.size() <= 2)
+		return;
+	for (vector<MiddleCode>::iterator itr = MiddleCodeArr.begin() + 1; itr != MiddleCodeArr.end() && itr != MiddleCodeArr.end() - 1 && itr != MiddleCodeArr.end() - 2; itr++) {
+		switch (itr->type) {
+		case Pass:
+
+			if (itr->target == itr->left && itr->op == '+' && itr->right == "0") {
+				itr--;
+				printOptimize(*(itr + 1));
+				MiddleCodeArr.erase(itr + 1);
+			}
+			if (itr->target == (itr + 1)->left && (itr->isLeftArr == false || (itr + 1)->isTargetArr == false) && (itr + 1)->op == '+' && (itr + 1)->right == "0" && (itr->target.at(0) == '#'))
+			{
+				itr->target = (itr + 1)->target;
+				itr->isTargetArr = (itr + 1)->isTargetArr;
+				itr->indexTargetArr = (itr + 1)->indexTargetArr;
+				itr->isVal = (itr + 1)->isVal;
+				printOptimize(*(itr + 1));
+				MiddleCodeArr.erase(itr + 1);
+			}
+			if (itr->target == (itr + 1)->right && itr->target.at(0) == '#' && itr->isLeftArr == false && itr->op == '+' && itr->right == "0")
+			{
+				(itr + 1)->right = itr->left;
+				itr--;
+				printOptimize(*(itr + 1));
+				MiddleCodeArr.erase(itr + 1);
+			}
+			if (itr->target == (itr + 1)->left && itr->target.at(0) == '#' && itr->isLeftArr == false && itr->op == '+' && itr->right == "0")
+			{
+				(itr + 1)->left = itr->left;
+				itr--;
+				printOptimize(*(itr + 1));
+				MiddleCodeArr.erase(itr + 1);
+			}
+			break;
+		case Return:
+			if ((itr + 1)->type == Return) {
+				printOptimize(*(itr + 1));
+				MiddleCodeArr.erase(itr + 1);
+			}
+			break;
+		case Jump:
+			if ((itr + 1)->type == Label && (itr + 2)->target == itr->target && (itr + 1)->type == Label)
+			{
+				itr--;
+				printOptimize(*(itr + 1));
+				MiddleCodeArr.erase(itr + 1);
+			}
+		}
+	}
+}
+
 void fixTemp() {
 	if (optimizedMiddleCodeArr.size() <= 2)
 		return;
 	for (vector<MiddleCode>::iterator itr = optimizedMiddleCodeArr.begin()+1; itr != optimizedMiddleCodeArr.end() && itr != optimizedMiddleCodeArr.end() - 1 && itr != optimizedMiddleCodeArr.end() - 2; itr++) {
 		switch (itr->type) {
 		case Pass:
+			
 			if (itr->target == itr->left && itr->op == '+' && itr->right == "0") {
 				itr--;
 				printOptimize(*(itr + 1));
@@ -498,6 +555,20 @@ void fixTemp() {
 				itr->isTargetArr = (itr + 1)->isTargetArr;
 				itr->indexTargetArr = (itr + 1)->indexTargetArr;
 				itr->isVal = (itr + 1)->isVal;
+				printOptimize(*(itr + 1));
+				optimizedMiddleCodeArr.erase(itr + 1);
+			}
+			if (itr->target == (itr + 1)->right && itr->target.at(0) == '#' && itr->isLeftArr == false && itr->op == '+' && itr->right == "0")
+			{
+				(itr + 1)->right = itr->left;
+				itr--;
+				printOptimize(*(itr + 1));
+				optimizedMiddleCodeArr.erase(itr + 1);
+			}
+			if (itr->target == (itr + 1)->left && itr->target.at(0) == '#' && itr->isLeftArr == false && itr->op == '+' && itr->right == "0")
+			{
+				(itr + 1)->left = itr->left;
+				itr--;
 				printOptimize(*(itr + 1));
 				optimizedMiddleCodeArr.erase(itr + 1);
 			}
@@ -538,7 +609,9 @@ void evaluateOptimization() {
 		cout << "--- Recommend  | Expand Register-Variable Mapping Limit" << endl;
 }
 
+
 void runOptimization() {
+	prefixTemp();
 	blockDivision();
 	optimizeMiddleCode();
 	fixTemp();
