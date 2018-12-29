@@ -1,143 +1,115 @@
-FUNC int factorial()
+FUNC int add()
+FUNC char get()
+FUNC int fib()
 PARA int n
-BGZ n 1 $Label1
-RET int 1
+BGEZ n 0 $Label1
+RET int 0
 JMP $Label2
 LABEL $Label1
+BLEZ n 0 $Label3
 #0 = n - 1
 PUSH #0
-CALL factorial
-#2 = n * Ret
-RET id #2
-LABEL $Label2
-FUNC int mod()
-FUNC void swap()
-PARA int x
-PARA int y
-PRT string " x = "
-PRT id x
-PRT string " y = "
-PRT id y
-temp = x + 0
-x = y + 0
-y = temp + 0
-PRT string " SWAP x = "
-PRT id x
-PRT string " SWAP y = "
-PRT id y
-RET
-FUNC void complete_num()
-PARA int val
-j = val + 0
+CALL fib
+#1 = Ret + 0
+#2 = n - 2
+PUSH #2
+CALL fib
+#4 = #1 + Ret
+RET id #4
+JMP $Label4
 LABEL $Label3
-n = -1 + 0
-s = j + 0
-i = 1 + 0
+RET int 1
 LABEL $Label4
-#0 = j / i
-x1 = #0 * i
-PUSH j
-PUSH i
-CALL mod
-#0 = x / y
-#1 = #0 * y
-x = x - #1
-RET id x
-BNZ Ret 0 $Label5
-n = n + 1
-s = s - i
-BLZ n 128 $Label7
-PRT string " OVERFLOW!          "
-JMP $Label8
-LABEL $Label7
-k[n] = i + 0
-LABEL $Label8
+LABEL $Label2
+FUNC void testexpr()
+PRT string "test expr"
+PUSH 10
+PUSH 20
+CALL add
+#0 = a + b
+RET id #0
+intarray[0] = Ret + 0
+intarray[1] = -10 + 0
+PUSH 200
+PUSH 20
+CALL add
+#0 = a + b
+RET id #0
+intarray[2] = Ret + 0
+PUSH 85
+PUSH 20
+CALL add
+#0 = a + b
+RET id #0
+intarray[3] = Ret + 0
+#0 = intarray[0]
+#1 = #0 + 18
+#2 = 2 * #1
+intarray[5] = 3 + #2
+PUSH 5
+CALL fib
+#0 = Ret + 0
+PUSH -1
+CALL fib
+intarray[6] = #0 + Ret
+j = 0 + 0
 LABEL $Label5
-LABEL $Label6
-i = i + 1
-BLZ i j $Label4
-BNZ s 0 $Label9
-PRT string " complete number: "
-PRT id j
+#0 = intarray[j]
+PRT id #0
+j = j + 1
+BLEZ j 6 $Label5
+RET
+FUNC void testempty()
+FUNC void main()
 i = 0 + 0
-LABEL $Label11
-PRT string "  "
-#0 = k[i]
+k = 0 + 0
+z = 10 + 0
+chararray[0] = 104 + 0
+chararray[1] = 101 + 0
+chararray[2] = 108 + 0
+chararray[3] = 108 + 0
+chararray[4] = 111 + 0
+READ int x
+READ int y
+READ char op
+LABEL $Label6
+#0 = chararray[i]
 PRT id #0
 i = i + 1
-BLEZ i n $Label11
-PRT string "          "
+BLZ i 5 $Label6
+BEZ op 43 $Label8
+BEZ op 45 $Label9
+z = x * y
+JMP $Label7
+LABEL $Label8
+z = x + y
+JMP $Label7
 LABEL $Label9
-LABEL $Label10
-j = j + 1
-BLZ j 1024 $Label3
-PRT string " ---------------------------------------------------------------          "
-a = 0 + 0
-i = 0 + 0
+z = x - y
+JMP $Label7
+LABEL $Label7
+PRT string "test switch result:"
+PRT id z
+BLZ z 0 $Label11
+k = k + 1
+JMP $Label12
+LABEL $Label11
+k = k + 3
 LABEL $Label12
-c = j * n
-b = a * i
-#0 = b + b
-a = #0 + c
-i = i + 1
-BLZ i 1024 $Label12
-b = a + 0
-i = 0 + 0
+CALL get
+k = k + 1
+#0 = chararray[k]
+RET id #0
+tem = Ret + 0
+BEZ tem 108 $Label13
+PRT string "test string\n"
+PRT string " !#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~"
+JMP $Label14
 LABEL $Label13
-b = b + i
-i = i + 1
-BLZ i 1024 $Label13
-PRT string " b = "
-PRT id b
-PRT string " ---------------------------------------------------------------          "
-h = 0 + 0
-leap = 1 + 0
-m = 2 + 0
+PRT string "print string and expr, got char: "
+PRT id tem
 LABEL $Label14
-k2 = m / 2
-i = 2 + 0
-LABEL $Label15
-#0 = m / i
-x2 = #0 * i
-PUSH m
-PUSH i
-CALL mod
-#0 = x / y
-#1 = #0 * y
-x = x - #1
-RET id x
-BNZ Ret 0 $Label16
-leap = 0 + 0
-LABEL $Label16
-LABEL $Label17
-i = i + 1
-BLEZ i k2 $Label15
-BNZ leap 1 $Label18
-PRT string " "
-PRT id m
-h = h + 1
-#0 = h / 10
-x2 = #0 * 10
-BNZ x2 h $Label20
-PRT string "          "
-LABEL $Label20
-LABEL $Label21
-LABEL $Label18
-LABEL $Label19
-leap = 1 + 0
-m = m + 1
-BLEZ m 1024 $Label14
-PRT string "          The total is "
-PRT id h
+CALL testexpr
+CALL testempty
 RET
-FUNC void main()
-PUSH 10
-CALL factorial
-n = Ret + 0
-PRT string " 10! = "
-PRT id n
-PUSH 5
-PUSH 10
-CALL swap
-PUSH 2
-CALL complete_num
+EXIT

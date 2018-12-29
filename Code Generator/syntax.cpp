@@ -630,10 +630,7 @@ void Syntax::enter_factor(vector<PostfixItem> & obj, string funcName, bool isCac
 			pushPseudoCode(FunctionCall, cache, isCache, id);
 			
 			item.type = StringType;
-			if (INORD)
-				item.str = pushPseudoCode(Pass, cache, isCache, "Ret", '+', "0", "", "", false, false);//id; // TODO 确认计算顺序规则，严重影响效率
-			else
-				item.str = "Ret";
+			item.str = pushPseudoCode(Pass, cache, isCache, "Ret", '+', "0", "", "", false, false);//id; // TODO 确认计算顺序规则，严重影响效率
 			item.nonChar = semantic.checkFuncType(id);
 			
 			obj.push_back(item);
@@ -655,10 +652,7 @@ void Syntax::enter_factor(vector<PostfixItem> & obj, string funcName, bool isCac
 				else if (tableElement.getItemType() == Function) { // 无参数的带返回值的函数调用
 					pushPseudoCode(FunctionCall, cache, isCache, id);
 					item.type = StringType;
-					if (INORD)
-						item.str = pushPseudoCode(Pass, cache, isCache, "Ret", '+', "0", "", "", false, false);//id; // TODO 确认计算顺序规则，严重影响效率
-					else
-						item.str = "Ret";
+					item.str = pushPseudoCode(Pass, cache, isCache, "Ret", '+', "0", "", "", false, false);//id; // TODO 确认计算顺序规则，严重影响效率
 					item.nonChar = (tableElement.getFuncType() == ReturnCharType) ? false : true;
 				}
 				else {

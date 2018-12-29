@@ -84,7 +84,7 @@ extern vector<MiddleCode> optimizedMiddleCodeArr;
 extern map<int, string> varToRegisterMap;
 extern map<string, bool> inlinable;
 extern map<int, string> inlineRegisterMap;
-extern map<string, unsigned> maxTempUsingMap;
+extern map<string, int> maxTempUsingMap;
 static string inlineName = "GLOBAL";
 
 map<string, int> framePointerOffset;
@@ -111,12 +111,12 @@ int getMaxTemp(string funcName) {
 	int maxTempOrder = 0;
 	int maxTempUsed = 0;
 	map<string, unsigned int>::iterator itr;
-	map<string, unsigned>::iterator f = maxTempUsingMap.find(funcName);
+	map<string, int>::iterator f = maxTempUsingMap.find(funcName);
 	if (f != maxTempUsingMap.end()) {
 		maxTempUsed = f->second;
 	}
 	else {
-		maxTempUsed = 0;
+		maxTempUsed = VAR_REGISTER;
 	}
 	for (itr = maxTempOrderMap.begin(); itr != maxTempOrderMap.end(); itr++) {
 		if (itr->first == funcName) {
@@ -127,7 +127,7 @@ int getMaxTemp(string funcName) {
 	if (itr == maxTempOrderMap.end())
 		return 0;
 	else {
-		maxTempOrder = (maxTempOrder < (maxTempUsed-1)) ? maxTempOrder : maxTempUsed - 1 ;
+		maxTempOrder = (maxTempOrder < maxTempUsed) ? maxTempOrder : maxTempUsed ;
 		return (maxTempOrder > TEMP_REGISTER) ? TEMP_REGISTER + 1 : maxTempOrder + 1;
 	}
 }

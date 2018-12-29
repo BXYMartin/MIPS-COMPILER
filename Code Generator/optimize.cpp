@@ -16,7 +16,7 @@ extern map<string, unsigned> maxVarOrderMap;
 map<string, vector<int>> functionVarIndexMap;
 vector<int> globalVarIndexMap;
 map<int, string> varToRegisterMap;
-map<string, unsigned> maxTempUsingMap;
+map<string, int> maxTempUsingMap;
 vector<string> funcNameTable;
 vector<MiddleCode> optimizedMiddleCodeArr;
 
@@ -487,13 +487,41 @@ void printOptimize(MiddleCode item) {
 		cout << "Deleted Quater Code " << item.target << " = " << item.left << " " << item.op << " " << item.right << endl;
 }
 
+void renameTemp(vector<MiddleCode>::iterator itr, string target, string altname) {
+	for (itr++; itr != optimizedMiddleCodeArr.end(); itr++) {
+		if (itr->type == Pass || (itr->type >= BEZ && itr->type <= BGEZ))
+		{
+			if (itr->left == target)
+				itr->left = altname;
+			if (itr->right == target)
+				itr->right = altname;
+			if (itr->isLeftArr && itr->indexLeftArr == target)
+				itr->indexLeftArr = altname;
+			if (itr->isTargetArr && itr->indexTargetArr == target)
+				itr->indexTargetArr = altname;
+			if (itr->target == target)
+				return;
+		}
+		else if (itr->type == ParamPass || itr->type == Print) {
+			if (itr->target == target)
+				itr->target = altname;
+		}
+		else if (itr->type == Return) {
+			if (itr->target == target)
+				itr->target = altname;
+			return;
+		}
+		else
+			return;
+	}
+}
+
 void fixTemp() {
 	if (optimizedMiddleCodeArr.size() <= 2)
 		return;
 	for (vector<MiddleCode>::iterator itr = optimizedMiddleCodeArr.begin()+1; itr != optimizedMiddleCodeArr.end() && itr != optimizedMiddleCodeArr.end() - 1 && itr != optimizedMiddleCodeArr.end() - 2; itr++) {
 		switch (itr->type) {
 		case Pass:
-			
 			if (itr->target == itr->left && itr->op == '+' && itr->right == "0") {
 				itr--;
 				printOptimize(*(itr + 1));
@@ -501,15 +529,18 @@ void fixTemp() {
 			}
 			if (itr->target == (itr + 1)->left && (itr->isLeftArr == false || (itr + 1)->isTargetArr == false) && (itr + 1)->op == '+' && (itr + 1)->right == "0" && (itr->target.at(0) == '#'))
 			{
+				renameTemp(itr + 1, itr->target, (itr + 1)->target);
 				itr->target = (itr + 1)->target;
 				itr->isTargetArr = (itr + 1)->isTargetArr;
 				itr->indexTargetArr = (itr + 1)->indexTargetArr;
 				itr->isVal = (itr + 1)->isVal;
 				printOptimize(*(itr + 1));
 				optimizedMiddleCodeArr.erase(itr + 1);
+				
 			}
 			if (itr->target == (itr + 1)->right && itr->target.at(0) == '#' && itr->isLeftArr == false && itr->op == '+' && itr->right == "0")
 			{
+				renameTemp(itr + 1, itr->target, itr->left);
 				(itr + 1)->right = itr->left;
 				itr--;
 				printOptimize(*(itr + 1));
@@ -517,6 +548,7 @@ void fixTemp() {
 			}
 			if (itr->target == (itr + 1)->left && itr->target.at(0) == '#' && itr->isLeftArr == false && itr->op == '+' && itr->right == "0")
 			{
+				renameTemp(itr + 1, itr->target, itr->left);
 				(itr + 1)->left = itr->left;
 				itr--;
 				printOptimize(*(itr + 1));
@@ -561,7 +593,7 @@ void evaluateOptimization() {
 
 int variableCount(string target) {
 	int count = 0;
-	for (vector<SymbolTableItem>::iterator itr = SymbolTable.begin(); itr != SymbolTable.begin(); itr++) {
+	for (vector<SymbolTableItem>::iterator itr = SymbolTable.begin(); itr != SymbolTable.end(); itr++) {
 		if (itr->getFuncName() == target && itr->getItemType() != Constant)
 			count++;
 		if (itr->getFuncName() == target && itr->getArrSize() != 0)
@@ -612,6 +644,8 @@ void inlineDetection() {
 		}
 	}
 	map<string, vector<MiddleCode>> insert;
+	map<string, int> reference;
+	map<string, int>::iterator r;
 	for (vector<MiddleCode>::iterator itr = optimizedMiddleCodeArr.begin(); itr != optimizedMiddleCodeArr.end(); itr++) {
 		map<string, bool>::iterator f;
 		switch (itr->type) {
@@ -629,7 +663,21 @@ void inlineDetection() {
 			}
 			continue;
 		case FunctionCall:
+			reference[itr->target] = reference[itr->target] + 1;
 			f = inlinable.find(itr->target);
+			for (vector<MiddleCode>::iterator i = insert[itr->target].begin(); i != insert[itr->target].end(); i++) {
+				switch (i->type) {
+				case Label:
+				case Jump:
+				case BEZ:
+				case BGEZ:
+				case BNZ:
+				case BLZ:
+				case BLEZ:
+				case BGZ:
+					i->target += "_" + to_string(reference[itr->target]);
+				}
+			}
 			if (f != inlinable.end() && f->second) {
 				unsigned int offset = itr - optimizedMiddleCodeArr.begin();
 				optimizedMiddleCodeArr.insert(itr + 1, insert[itr->target].begin(), insert[itr->target].end());
@@ -655,7 +703,10 @@ void fixTempOrder() {
 	vector<MiddleCode>::iterator scanner;
 	map<string, bool>::iterator f;
 	for (vector<MiddleCode>::iterator itr = optimizedMiddleCodeArr.begin(); itr != optimizedMiddleCodeArr.end(); itr++) {
-		if (itr->type == FunctionCall) {
+		if (itr->type == FunctionDef) {
+			maxTempUsingMap[itr->target] = -1;
+		}
+		else if (itr->type == FunctionCall) {
 			scanner = itr;
 			f = inlinable.find(itr->target);
 			if (f != inlinable.end() && f->second) {
@@ -663,11 +714,34 @@ void fixTempOrder() {
 			}
 			for (scanner++; scanner != optimizedMiddleCodeArr.end(); scanner++) {
 				if (scanner->type == Pass) {
+					bool flag = false;
 					if (scanner->target.at(0) == '#') {
-						if (maxTempUsingMap[itr->target] < atoi((scanner->target).substr(1).c_str()))
-							maxTempUsingMap[itr->target] = atoi((scanner->target).substr(1).c_str());
-						break;
+						flag = true;
+						if (maxTempUsingMap[itr->target] <= atoi((scanner->target).substr(1).c_str()) - 1)
+							maxTempUsingMap[itr->target] = atoi((scanner->target).substr(1).c_str()) - 1;
 					}
+					if (scanner->left.at(0) == '#') {
+						flag = true;
+						if (maxTempUsingMap[itr->target] <= atoi((scanner->left).substr(1).c_str()))
+							maxTempUsingMap[itr->target] = atoi((scanner->left).substr(1).c_str());
+					}
+					if (scanner->right.at(0) == '#') {
+						flag = true;
+						if (maxTempUsingMap[itr->target] <= atoi((scanner->right).substr(1).c_str()))
+							maxTempUsingMap[itr->target] = atoi((scanner->right).substr(1).c_str());
+					}
+					if (scanner->isLeftArr && scanner->indexLeftArr.at(0) == '#') {
+						flag = true;
+						if (maxTempUsingMap[itr->target] <= atoi((scanner->indexLeftArr).substr(1).c_str()))
+							maxTempUsingMap[itr->target] = atoi((scanner->indexLeftArr).substr(1).c_str());
+					}
+					if (scanner->isTargetArr && scanner->indexTargetArr.at(0) == '#') {
+						flag = true;
+						if (maxTempUsingMap[itr->target] <= atoi((scanner->indexTargetArr).substr(1).c_str()))
+							maxTempUsingMap[itr->target] = atoi((scanner->indexTargetArr).substr(1).c_str());
+					}
+					if (flag)
+						break;
 				}
 				else
 					break;
@@ -685,6 +759,7 @@ void runOptimization() {
 	if (INLINE) {
 		inlineDetection();
 	}
-	fixTempOrder();
+	if(ULTOP)
+		fixTempOrder();
 	evaluateOptimization();
 }

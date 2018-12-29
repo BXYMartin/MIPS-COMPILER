@@ -1,354 +1,323 @@
 .data
-	$String1:.asciiz " x = "
-	$String2:.asciiz " y = "
-	$String3:.asciiz " SWAP x = "
-	$String4:.asciiz " SWAP y = "
-	$String5:.asciiz " OVERFLOW!          "
-	$String6:.asciiz " complete number: "
-	$String7:.asciiz "  "
-	$String8:.asciiz "          "
-	$String9:.asciiz " ---------------------------------------------------------------          "
-	$String10:.asciiz " b = "
-	$String11:.asciiz " "
-	$String12:.asciiz "          The total is "
-	$String13:.asciiz " 10! = "
+	$String1:.asciiz "test expr"
+	$String2:.asciiz "test switch result:"
+	$String3:.asciiz "test string\\n"
+	$String4:.asciiz " !#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~"
+	$String5:.asciiz "print string and expr, got char: "
 .globl main
 .text
-factorial:
-sw $a0 16($sp)
-addiu $fp $sp 8
+add:
+sw $a0 20($sp)
+sw $a1 24($sp)
+addiu $fp $sp 12
+addiu $sp $sp 28
+lw $t1 8($fp)
+lw $t2 12($fp)
+addu $t3 $t1 $t2
+move $v0 $t3
+jr $ra
+get:
+addiu $fp $sp 12
 addiu $sp $sp 20
+lw $t1 8($gp)
+addiu $t3 $t1 1
+sw $t3 8($gp)
+addiu $t1 $gp 56
+lw $t2 8($gp)
+sll $t2 $t2 2
+addu $t1 $t1 $t2
+lw $t3 0($t1)
+move $v0 $t3
+jr $ra
+fib:
+sw $a0 36($sp)
+addiu $fp $sp 28
+addiu $sp $sp 40
 lw $a1 8($fp)
-bgt $a1 1 $Label1
-li $v0 1
+bge $a1 0 $Label1
+li $v0 0
 jr $ra
 j $Label2
 $Label1:
+lw $a1 8($fp)
+ble $a1 0 $Label3
 lw $t1 8($fp)
 subu $t3 $t1 1
 move $a0 $t3
-sw $ra 8($sp)
-jal factorial
-addiu $sp $fp -8
+sw $t3 8($sp)
+sw $t4 12($sp)
+sw $t5 16($sp)
+sw $t6 20($sp)
+sw $t7 24($sp)
+sw $ra 28($sp)
+jal fib
+addiu $sp $fp -28
+lw $t3 8($sp)
+lw $t4 12($sp)
+lw $t5 16($sp)
+lw $t6 20($sp)
+lw $t7 24($sp)
 lw $ra 0($fp)
 addiu $fp $sp -12
 addiu $t4 $v0 0
 lw $t1 8($fp)
-mul $t5 $t1 $t4
-move $v0 $t5
+subu $t5 $t1 2
+move $a0 $t5
+sw $t3 8($sp)
+sw $t4 12($sp)
+sw $t5 16($sp)
+sw $t6 20($sp)
+sw $t7 24($sp)
+sw $ra 28($sp)
+jal fib
+addiu $sp $fp -28
+lw $t3 8($sp)
+lw $t4 12($sp)
+lw $t5 16($sp)
+lw $t6 20($sp)
+lw $t7 24($sp)
+lw $ra 0($fp)
+addiu $fp $sp -12
+addiu $t6 $v0 0
+addu $t7 $t4 $t6
+move $v0 $t7
 jr $ra
+j $Label4
+$Label3:
+li $v0 1
+jr $ra
+$Label4:
 $Label2:
-mod:
-sw $a0 16($sp)
-sw $a1 20($sp)
-addiu $fp $sp 8
-addiu $sp $sp 24
-lw $t1 8($fp)
-lw $t2 12($fp)
-div $t3 $t1 $t2
-lw $t2 12($fp)
-mul $t4 $t3 $t2
-lw $t1 8($fp)
-subu $t5 $t1 $t4
-sw $t5 8($fp)
-lw $v0 8($fp)
-jr $ra
-swap:
-sw $a0 16($sp)
-sw $a1 20($sp)
-addiu $fp $sp 8
-addiu $sp $sp 28
+testexpr:
+addiu $fp $sp 24
+addiu $sp $sp 32
 la $a0 $String1
 li $v0 4
 syscall
-lw $a0 8($fp)
-li $v0 1
-syscall
-la $a0 $String2
-li $v0 4
-syscall
-lw $a0 12($fp)
-li $v0 1
-syscall
-lw $t1 8($fp)
-sw $t1 16($fp)
-lw $t1 12($fp)
-sw $t1 8($fp)
-lw $t1 16($fp)
-sw $t1 12($fp)
-la $a0 $String3
-li $v0 4
-syscall
-lw $a0 8($fp)
-li $v0 1
-syscall
-la $a0 $String4
-li $v0 4
-syscall
-lw $a0 12($fp)
-li $v0 1
-syscall
-jr $ra
-complete_num:
-sw $a0 16($sp)
-addiu $fp $sp 8
-addiu $sp $sp 584
-lw $t1 8($fp)
-sw $t1 528($fp)
-$Label3:
-li $t1 -1
-sw $t1 532($fp)
-lw $t1 528($fp)
-sw $t1 536($fp)
-li $t1 1
-sw $t1 524($fp)
-$Label4:
-lw $t1 528($fp)
-lw $t2 524($fp)
-div $t3 $t1 $t2
-lw $t2 524($fp)
-mul $t4 $t3 $t2
-sw $t4 540($fp)
-lw $a0 528($fp)
-lw $a1 524($fp)
-sw $ra 8($sp)
-jal mod
-addiu $sp $fp -8
+li $a0 10
+li $a1 20
+sw $t3 8($sp)
+sw $ra 12($sp)
+jal add
+addiu $sp $fp -12
+lw $t3 8($sp)
 lw $ra 0($fp)
-addiu $fp $sp -576
+addiu $fp $sp -8
 addiu $t3 $v0 0
-bne $t3 0 $Label5
-lw $t1 532($fp)
-addiu $t3 $t1 1
-sw $t3 532($fp)
-lw $t1 536($fp)
-lw $t2 524($fp)
-subu $t3 $t1 $t2
-sw $t3 536($fp)
-lw $a1 532($fp)
-blt $a1 128 $Label7
-la $a0 $String5
-li $v0 4
-syscall
-j $Label8
-$Label7:
-lw $t1 524($fp)
-lw $t0 532($fp)
-sll $t0 $t0 2
-addu $t0 $fp $t0
-sw $t1 12($t0)
-$Label8:
-j $Label6
-$Label5:
-$Label6:
-lw $t1 524($fp)
-addiu $t3 $t1 1
-sw $t3 524($fp)
-lw $a1 524($fp)
-lw $a2 528($fp)
-blt $a1 $a2 $Label4
-lw $a1 536($fp)
-bne $a1 0 $Label9
-la $a0 $String6
-li $v0 4
-syscall
-lw $a0 528($fp)
-li $v0 1
-syscall
+sw $t3 12($gp)
+li $t1 -10
+sw $t1 16($gp)
+li $a0 200
+li $a1 20
+sw $t3 8($sp)
+sw $ra 12($sp)
+jal add
+addiu $sp $fp -12
+lw $t3 8($sp)
+lw $ra 0($fp)
+addiu $fp $sp -8
+addiu $t3 $v0 0
+sw $t3 20($gp)
+li $a0 85
+li $a1 20
+sw $t3 8($sp)
+sw $ra 12($sp)
+jal add
+addiu $sp $fp -12
+lw $t3 8($sp)
+lw $ra 0($fp)
+addiu $fp $sp -8
+addiu $t3 $v0 0
+sw $t3 24($gp)
+lw $t3 12($gp)
+addiu $t4 $t3 18
+mul $t5 $t4 2
+addiu $t6 $t5 3
+sw $t6 32($gp)
+li $a0 5
+sw $t3 8($sp)
+sw $t4 12($sp)
+sw $t5 16($sp)
+sw $t6 20($sp)
+sw $t7 24($sp)
+sw $ra 28($sp)
+jal fib
+addiu $sp $fp -28
+lw $t3 8($sp)
+lw $t4 12($sp)
+lw $t5 16($sp)
+lw $t6 20($sp)
+lw $t7 24($sp)
+lw $ra 0($fp)
+addiu $fp $sp -8
+addiu $t3 $v0 0
+li $a0 -1
+sw $t3 8($sp)
+sw $t4 12($sp)
+sw $t5 16($sp)
+sw $t6 20($sp)
+sw $t7 24($sp)
+sw $ra 28($sp)
+jal fib
+addiu $sp $fp -28
+lw $t3 8($sp)
+lw $t4 12($sp)
+lw $t5 16($sp)
+lw $t6 20($sp)
+lw $t7 24($sp)
+lw $ra 0($fp)
+addiu $fp $sp -8
+addiu $t4 $v0 0
+addu $t5 $t3 $t4
+sw $t5 36($gp)
 li $t1 0
-sw $t1 524($fp)
-$Label11:
-la $a0 $String7
-li $v0 4
-syscall
-addiu $t1 $fp 12
-lw $t2 524($fp)
+sw $t1 4($gp)
+$Label5:
+addiu $t1 $gp 12
+lw $t2 4($gp)
 sll $t2 $t2 2
 addu $t1 $t1 $t2
 lw $t3 0($t1)
 move $a0 $t3
 li $v0 1
 syscall
-lw $t1 524($fp)
+lw $t1 4($gp)
 addiu $t3 $t1 1
-sw $t3 524($fp)
-lw $a1 524($fp)
-lw $a2 532($fp)
-ble $a1 $a2 $Label11
-la $a0 $String8
-li $v0 4
-syscall
-j $Label10
-$Label9:
-$Label10:
-lw $t1 528($fp)
-addiu $t3 $t1 1
-sw $t3 528($fp)
-lw $a1 528($fp)
-blt $a1 1024 $Label3
-la $a0 $String9
-li $v0 4
-syscall
-li $t1 0
-sw $t1 564($fp)
-li $t1 0
-sw $t1 524($fp)
-$Label12:
-lw $t1 564($fp)
-lw $t2 524($fp)
-mul $t3 $t1 $t2
-sw $t3 568($fp)
-lw $t1 528($fp)
-lw $t2 532($fp)
-mul $t3 $t1 $t2
-sw $t3 572($fp)
-lw $t1 564($fp)
-lw $t2 524($fp)
-mul $t3 $t1 $t2
-sw $t3 564($fp)
-lw $t1 564($fp)
-lw $t2 568($fp)
-addu $t3 $t1 $t2
-lw $t2 572($fp)
-addu $t4 $t3 $t2
-sw $t4 564($fp)
-lw $t1 524($fp)
-addiu $t3 $t1 1
-sw $t3 524($fp)
-lw $a1 524($fp)
-blt $a1 1024 $Label12
-lw $t1 564($fp)
-sw $t1 568($fp)
-li $t1 0
-sw $t1 524($fp)
-$Label13:
-lw $t1 568($fp)
-lw $t2 524($fp)
-addu $t3 $t1 $t2
-sw $t3 568($fp)
-lw $t1 524($fp)
-addiu $t3 $t1 1
-sw $t3 524($fp)
-lw $a1 524($fp)
-blt $a1 1024 $Label13
-la $a0 $String10
-li $v0 4
-syscall
-lw $a0 568($fp)
-li $v0 1
-syscall
-la $a0 $String9
-li $v0 4
-syscall
-li $t1 0
-sw $t1 552($fp)
-li $t1 1
-sw $t1 556($fp)
-li $t1 2
-sw $t1 544($fp)
-$Label14:
-lw $t1 544($fp)
-div $t3 $t1 2
-sw $t3 548($fp)
-li $t1 2
-sw $t1 524($fp)
-$Label15:
-lw $t1 544($fp)
-lw $t2 524($fp)
-div $t3 $t1 $t2
-lw $t2 524($fp)
-mul $t4 $t3 $t2
-sw $t4 560($fp)
-lw $a0 544($fp)
-lw $a1 524($fp)
-sw $ra 8($sp)
-jal mod
-addiu $sp $fp -8
-lw $ra 0($fp)
-addiu $fp $sp -576
-addiu $t3 $v0 0
-bne $t3 0 $Label16
-li $t1 0
-sw $t1 556($fp)
-j $Label17
-$Label16:
-$Label17:
-lw $t1 524($fp)
-addiu $t3 $t1 1
-sw $t3 524($fp)
-lw $a1 524($fp)
-lw $a2 548($fp)
-ble $a1 $a2 $Label15
-lw $a1 556($fp)
-bne $a1 1 $Label18
-la $a0 $String11
-li $v0 4
-syscall
-lw $a0 544($fp)
-li $v0 1
-syscall
-lw $t1 552($fp)
-addiu $t3 $t1 1
-sw $t3 552($fp)
-lw $t1 552($fp)
-div $t3 $t1 10
-mul $t4 $t3 10
-sw $t4 560($fp)
-lw $a1 560($fp)
-lw $a2 552($fp)
-bne $a1 $a2 $Label20
-la $a0 $String8
-li $v0 4
-syscall
-j $Label21
-$Label20:
-$Label21:
-j $Label19
-$Label18:
-$Label19:
-li $t1 1
-sw $t1 556($fp)
-lw $t1 544($fp)
-addiu $t3 $t1 1
-sw $t3 544($fp)
-lw $a1 544($fp)
-ble $a1 1024 $Label14
-la $a0 $String12
-li $v0 4
-syscall
-lw $a0 552($fp)
-li $v0 1
-syscall
+sw $t3 4($gp)
+lw $a1 4($gp)
+ble $a1 6 $Label5
+jr $ra
+jr $ra
+testempty:
+addiu $fp $sp 8
+addiu $sp $sp 16
 jr $ra
 main:
-li $k1 268501200
-addiu $fp $gp 0
-addiu $sp $fp 12
-li $a0 10
-sw $ra 8($sp)
-jal factorial
-addiu $sp $fp -8
-lw $ra 0($fp)
-addiu $fp $sp -12
-addiu $t3 $v0 0
-sw $t3 8($fp)
-la $a0 $String13
+li $k1 268501172
+addiu $fp $gp 76
+addiu $sp $fp 24
+li $t1 0
+sw $t1 0($gp)
+li $t1 0
+sw $t1 8($gp)
+li $t1 10
+sw $t1 16($fp)
+li $t1 104
+sw $t1 56($gp)
+li $t1 101
+sw $t1 60($gp)
+li $t1 108
+sw $t1 64($gp)
+li $t1 108
+sw $t1 68($gp)
+li $t1 111
+sw $t1 72($gp)
+li $v0 5
+syscall
+sw $v0 8($fp)
+li $v0 5
+syscall
+sw $v0 12($fp)
+li $v0 12
+syscall
+sw $v0 52($gp)
+$Label6:
+addiu $t1 $gp 56
+lw $t2 0($gp)
+sll $t2 $t2 2
+addu $t1 $t1 $t2
+lw $t3 0($t1)
+move $a0 $t3
+li $v0 11
+syscall
+lw $t1 0($gp)
+addiu $t3 $t1 1
+sw $t3 0($gp)
+lw $a1 0($gp)
+blt $a1 5 $Label6
+lw $a1 52($gp)
+beq $a1 43 $Label8
+lw $a1 52($gp)
+beq $a1 45 $Label9
+lw $t1 8($fp)
+lw $t2 12($fp)
+mul $t3 $t1 $t2
+sw $t3 16($fp)
+j $Label7
+$Label8:
+lw $t1 8($fp)
+lw $t2 12($fp)
+addu $t3 $t1 $t2
+sw $t3 16($fp)
+j $Label7
+$Label9:
+lw $t1 8($fp)
+lw $t2 12($fp)
+subu $t3 $t1 $t2
+sw $t3 16($fp)
+j $Label7
+$Label7:
+la $a0 $String2
 li $v0 4
 syscall
-lw $a0 8($fp)
+lw $a0 16($fp)
 li $v0 1
 syscall
-li $a0 5
-li $a1 10
+lw $a1 16($fp)
+blt $a1 0 $Label11
+lw $t1 8($gp)
+addiu $t3 $t1 1
+sw $t3 8($gp)
+j $Label12
+$Label11:
+lw $t1 8($gp)
+addiu $t3 $t1 3
+sw $t3 8($gp)
+$Label12:
+sw $t3 8($sp)
+sw $ra 12($sp)
+jal get
+addiu $sp $fp -12
+lw $t3 8($sp)
+lw $ra 0($fp)
+addiu $fp $sp -24
+addiu $t3 $v0 0
+sw $t3 20($fp)
+lw $a1 20($fp)
+beq $a1 108 $Label13
+la $a0 $String3
+li $v0 4
+syscall
+la $a0 $String4
+li $v0 4
+syscall
+j $Label14
+$Label13:
+la $a0 $String5
+li $v0 4
+syscall
+lw $a0 20($fp)
+li $v0 11
+syscall
+$Label14:
+sw $t3 8($sp)
+sw $t4 12($sp)
+sw $t5 16($sp)
+sw $t6 20($sp)
+sw $ra 24($sp)
+jal testexpr
+addiu $sp $fp -24
+lw $t3 8($sp)
+lw $t4 12($sp)
+lw $t5 16($sp)
+lw $t6 20($sp)
+lw $ra 0($fp)
+addiu $fp $sp -24
 sw $ra 8($sp)
-jal swap
+jal testempty
 addiu $sp $fp -8
 lw $ra 0($fp)
-addiu $fp $sp -12
-li $a0 2
-sw $ra 8($sp)
-jal complete_num
-addiu $sp $fp -8
-lw $ra 0($fp)
-addiu $fp $sp -12
+addiu $fp $sp -24
+li $v0 10
+syscall
 # End Of MIPS Assembly Code.
