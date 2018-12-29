@@ -36,21 +36,15 @@ lw $t4 12($sp)
 lw $s0 16($sp)
 lw $ra 0($fp)
 addiu $fp $sp -12
-mul $t4 $s0 $v0
-move $v0 $t4
+mul $t5 $s0 $v0
+move $v0 $t5
 jr $ra
 $Label2:
 mod:
 move $a0 $a0
 move $a1 $a1
-addiu $fp $sp 24
-addiu $sp $sp 40
-div $t3 $a0 $a1
-mul $t4 $t3 $a1
-subu $a0 $a0 $t4
-move $v0 $a0
-lw $t3 8($sp)
-lw $t4 12($sp)
+addiu $fp $sp 16
+addiu $sp $sp 32
 swap:
 move $s0 $a0
 move $s1 $a1
@@ -85,9 +79,9 @@ li $v0 1
 syscall
 jr $ra
 complete_num:
-sw $a0 56($sp)
-addiu $fp $sp 48
-addiu $sp $sp 624
+sw $a0 48($sp)
+addiu $fp $sp 40
+addiu $sp $sp 616
 lw $t1 8($fp)
 addiu $s2 $t1 0
 $Label3:
@@ -100,14 +94,10 @@ mul $t1 $t3 $s0
 sw $t1 540($fp)
 move $a0 $s2
 move $a1 $s0
-sw $t3 8($sp)
-sw $t4 12($sp)
 div $t3 $a0 $a1
 mul $t4 $t3 $a1
 subu $a0 $a0 $t4
 move $v0 $a0
-lw $t3 8($sp)
-lw $t4 12($sp)
 bne $v0 0 $Label5
 addiu $s1 $s1 1
 subu $s4 $s4 $s0
@@ -203,14 +193,10 @@ div $t3 $s3 $s0
 mul $s6 $t3 $s0
 move $a0 $s3
 move $a1 $s0
-sw $t3 8($sp)
-sw $t4 12($sp)
 div $t3 $a0 $a1
 mul $t4 $t3 $a1
 subu $a0 $a0 $t4
 move $v0 $a0
-lw $t3 8($sp)
-lw $t4 12($sp)
 bne $v0 0 $Label16
 li $s5 0
 $Label16:
@@ -286,29 +272,25 @@ lw $s2 16($sp)
 lw $ra 0($fp)
 addiu $fp $sp -12
 li $a0 2
-sw $t3 8($sp)
-sw $t4 12($sp)
-sw $s0 16($sp)
-sw $s1 20($sp)
-sw $s2 24($sp)
-sw $s3 28($sp)
-sw $s4 32($sp)
-sw $s5 36($sp)
-sw $s6 40($sp)
-sw $s7 44($sp)
-sw $ra 48($sp)
+sw $s0 8($sp)
+sw $s1 12($sp)
+sw $s2 16($sp)
+sw $s3 20($sp)
+sw $s4 24($sp)
+sw $s5 28($sp)
+sw $s6 32($sp)
+sw $s7 36($sp)
+sw $ra 40($sp)
 jal complete_num
-addiu $sp $fp -48
-lw $t3 8($sp)
-lw $t4 12($sp)
-lw $s0 16($sp)
-lw $s1 20($sp)
-lw $s2 24($sp)
-lw $s3 28($sp)
-lw $s4 32($sp)
-lw $s5 36($sp)
-lw $s6 40($sp)
-lw $s7 44($sp)
+addiu $sp $fp -40
+lw $s0 8($sp)
+lw $s1 12($sp)
+lw $s2 16($sp)
+lw $s3 20($sp)
+lw $s4 24($sp)
+lw $s5 28($sp)
+lw $s6 32($sp)
+lw $s7 36($sp)
 lw $ra 0($fp)
 addiu $fp $sp -12
 # End Of MIPS Assembly Code.

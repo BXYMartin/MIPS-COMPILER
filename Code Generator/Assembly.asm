@@ -15,9 +15,9 @@
 .globl main
 .text
 factorial:
-sw $a0 24($sp)
-addiu $fp $sp 16
-addiu $sp $sp 28
+sw $a0 16($sp)
+addiu $fp $sp 8
+addiu $sp $sp 20
 lw $a1 8($fp)
 bgt $a1 1 $Label1
 li $v0 1
@@ -27,25 +27,22 @@ $Label1:
 lw $t1 8($fp)
 subu $t3 $t1 1
 move $a0 $t3
-sw $t3 8($sp)
-sw $t4 12($sp)
-sw $ra 16($sp)
+sw $ra 8($sp)
 jal factorial
-addiu $sp $fp -16
-lw $t3 8($sp)
-lw $t4 12($sp)
+addiu $sp $fp -8
 lw $ra 0($fp)
 addiu $fp $sp -12
+addiu $t4 $v0 0
 lw $t1 8($fp)
-mul $t4 $t1 $v0
-move $v0 $t4
+mul $t5 $t1 $t4
+move $v0 $t5
 jr $ra
 $Label2:
 mod:
-sw $a0 28($sp)
-sw $a1 32($sp)
-addiu $fp $sp 20
-addiu $sp $sp 36
+sw $a0 16($sp)
+sw $a1 20($sp)
+addiu $fp $sp 8
+addiu $sp $sp 24
 lw $t1 8($fp)
 lw $t2 12($fp)
 div $t3 $t1 $t2
@@ -93,9 +90,9 @@ li $v0 1
 syscall
 jr $ra
 complete_num:
-sw $a0 24($sp)
-addiu $fp $sp 16
-addiu $sp $sp 592
+sw $a0 16($sp)
+addiu $fp $sp 8
+addiu $sp $sp 584
 lw $t1 8($fp)
 sw $t1 528($fp)
 $Label3:
@@ -114,18 +111,13 @@ mul $t4 $t3 $t2
 sw $t4 540($fp)
 lw $a0 528($fp)
 lw $a1 524($fp)
-sw $t3 8($sp)
-sw $t4 12($sp)
-sw $t5 16($sp)
-sw $ra 20($sp)
+sw $ra 8($sp)
 jal mod
-addiu $sp $fp -20
-lw $t3 8($sp)
-lw $t4 12($sp)
-lw $t5 16($sp)
+addiu $sp $fp -8
 lw $ra 0($fp)
 addiu $fp $sp -576
-bne $v0 0 $Label5
+addiu $t3 $v0 0
+bne $t3 0 $Label5
 lw $t1 532($fp)
 addiu $t3 $t1 1
 sw $t3 532($fp)
@@ -269,18 +261,13 @@ mul $t4 $t3 $t2
 sw $t4 560($fp)
 lw $a0 544($fp)
 lw $a1 524($fp)
-sw $t3 8($sp)
-sw $t4 12($sp)
-sw $t5 16($sp)
-sw $ra 20($sp)
+sw $ra 8($sp)
 jal mod
-addiu $sp $fp -20
-lw $t3 8($sp)
-lw $t4 12($sp)
-lw $t5 16($sp)
+addiu $sp $fp -8
 lw $ra 0($fp)
 addiu $fp $sp -576
-bne $v0 0 $Label16
+addiu $t3 $v0 0
+bne $t3 0 $Label16
 li $t1 0
 sw $t1 556($fp)
 j $Label17
@@ -338,16 +325,13 @@ li $k1 268501200
 addiu $fp $gp 0
 addiu $sp $fp 12
 li $a0 10
-sw $t3 8($sp)
-sw $t4 12($sp)
-sw $ra 16($sp)
+sw $ra 8($sp)
 jal factorial
-addiu $sp $fp -16
-lw $t3 8($sp)
-lw $t4 12($sp)
+addiu $sp $fp -8
 lw $ra 0($fp)
 addiu $fp $sp -12
-sw $v0 8($fp)
+addiu $t3 $v0 0
+sw $t3 8($fp)
 la $a0 $String13
 li $v0 4
 syscall
@@ -362,13 +346,9 @@ addiu $sp $fp -8
 lw $ra 0($fp)
 addiu $fp $sp -12
 li $a0 2
-sw $t3 8($sp)
-sw $t4 12($sp)
-sw $ra 16($sp)
+sw $ra 8($sp)
 jal complete_num
-addiu $sp $fp -16
-lw $t3 8($sp)
-lw $t4 12($sp)
+addiu $sp $fp -8
 lw $ra 0($fp)
 addiu $fp $sp -12
 # End Of MIPS Assembly Code.

@@ -7,8 +7,9 @@ LABEL $Label1
 #0 = n - 1
 PUSH #0
 CALL factorial
-#1 = n * Ret
-RET id #1
+#1 = Ret + 0
+#2 = n * #1
+RET id #2
 LABEL $Label2
 FUNC int mod()
 PARA int x
@@ -47,7 +48,8 @@ x1 = #1 + 0
 PUSH j
 PUSH i
 CALL mod
-BNZ Ret 0 $Label5
+#0 = Ret + 0
+BNZ #0 0 $Label5
 #0 = n + 1
 n = #0 + 0
 #0 = s - i
@@ -123,7 +125,8 @@ x2 = #1 + 0
 PUSH m
 PUSH i
 CALL mod
-BNZ Ret 0 $Label16
+#0 = Ret + 0
+BNZ #0 0 $Label16
 leap = 0 + 0
 JMP $Label17
 LABEL $Label16
@@ -157,7 +160,8 @@ RET
 FUNC void main()
 PUSH 10
 CALL factorial
-n = Ret + 0
+#0 = Ret + 0
+n = #0 + 0
 PRT string " 10! = "
 PRT id n
 PUSH 5

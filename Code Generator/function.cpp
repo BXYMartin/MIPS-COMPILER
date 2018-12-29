@@ -84,6 +84,7 @@ extern vector<MiddleCode> optimizedMiddleCodeArr;
 extern map<int, string> varToRegisterMap;
 extern map<string, bool> inlinable;
 extern map<int, string> inlineRegisterMap;
+extern map<string, unsigned> maxTempUsingMap;
 static string inlineName = "GLOBAL";
 
 map<string, int> framePointerOffset;
@@ -108,7 +109,15 @@ string getStringLabel() {
 
 int getMaxTemp(string funcName) {
 	int maxTempOrder = 0;
+	int maxTempUsed = 0;
 	map<string, unsigned int>::iterator itr;
+	map<string, unsigned>::iterator f = maxTempUsingMap.find(funcName);
+	if (f != maxTempUsingMap.end()) {
+		maxTempUsed = f->second;
+	}
+	else {
+		maxTempUsed = 0;
+	}
 	for (itr = maxTempOrderMap.begin(); itr != maxTempOrderMap.end(); itr++) {
 		if (itr->first == funcName) {
 			maxTempOrder = itr->second;
@@ -117,8 +126,10 @@ int getMaxTemp(string funcName) {
 	}
 	if (itr == maxTempOrderMap.end())
 		return 0;
-	else
-		return (maxTempOrder > TEMP_REGISTER)? TEMP_REGISTER + 1:maxTempOrder + 1;
+	else {
+		maxTempOrder = (maxTempOrder < (maxTempUsed-1)) ? maxTempOrder : maxTempUsed - 1 ;
+		return (maxTempOrder > TEMP_REGISTER) ? TEMP_REGISTER + 1 : maxTempOrder + 1;
+	}
 }
 
 
@@ -2192,7 +2203,6 @@ void getTextSegment(ofstream & out, vector<MiddleCode> QuaterCode) {
 }
 
 void writeOptimizedMiddleCode() {
-	maxTempOrderMap.clear();
 	constStringSet.clear();
 	stringWithLabel.clear();
 	ofstream out(opCodeToFileName, ios::out);

@@ -196,6 +196,9 @@ void optimizeRegister() {
 		}
 		maxVarOrderMap.insert(map<string, unsigned>::value_type(funcNameTable.at(j), k));
 	}
+	for (map<int, string>::iterator itr = inlineRegisterMap.begin(); itr != inlineRegisterMap.end(); itr++) {
+		varToRegisterMap[itr->first] = itr->second;
+	}
 	if (globalVarIndexMap.size() == 0)
 		return;
 	for (unsigned int k = 0; k < globalVarIndexMap.size() - 1; k++) {
@@ -211,9 +214,6 @@ void optimizeRegister() {
 	}
 	for (unsigned int k = 0; k < globalVarIndexMap.size() && k < 8 - VAR_REGISTER; k++) {
 		varToRegisterMap.insert(map<int, string>::value_type(SymbolTable.at(globalVarIndexMap.at(k)).getOrder(), "$s" + to_string(k + VAR_REGISTER)));
-	}
-	for (map<int, string>::iterator itr = inlineRegisterMap.begin(); itr != inlineRegisterMap.end(); itr++) {
-		varToRegisterMap[itr->first] = itr->second;
 	}
 	return;
 }

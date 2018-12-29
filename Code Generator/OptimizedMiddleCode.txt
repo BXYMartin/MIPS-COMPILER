@@ -7,16 +7,10 @@ LABEL $Label1
 #0 = n - 1
 PUSH #0
 CALL factorial
-#1 = n * Ret
-RET id #1
+#2 = n * Ret
+RET id #2
 LABEL $Label2
 FUNC int mod()
-PARA int x
-PARA int y
-#0 = x / y
-#1 = #0 * y
-x = x - #1
-RET id x
 FUNC void swap()
 PARA int x
 PARA int y

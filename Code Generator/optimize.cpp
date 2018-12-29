@@ -16,7 +16,7 @@ extern map<string, unsigned> maxVarOrderMap;
 map<string, vector<int>> functionVarIndexMap;
 vector<int> globalVarIndexMap;
 map<int, string> varToRegisterMap;
-
+map<string, unsigned> maxTempUsingMap;
 vector<string> funcNameTable;
 vector<MiddleCode> optimizedMiddleCodeArr;
 
@@ -623,6 +623,10 @@ void inlineDetection() {
 				analysis = "";
 			continue;
 		case ParamDef:
+			if (analysis != "") {
+				itr--;
+				optimizedMiddleCodeArr.erase(itr + 1);
+			}
 			continue;
 		case FunctionCall:
 			f = inlinable.find(itr->target);
@@ -635,6 +639,8 @@ void inlineDetection() {
 		default:
 			if (analysis != "") {
 				insert[analysis].push_back(*itr);
+				itr--;
+				optimizedMiddleCodeArr.erase(itr + 1);
 			}
 			continue;
 		}
@@ -643,16 +649,42 @@ void inlineDetection() {
 	for (map<int, string>::iterator itr = inlineRegisterMap.begin(); itr != inlineRegisterMap.end(); itr++) {
 		varToRegisterMap[itr->first] = itr->second;
 	}
-	cout << "End" << endl;
 }
 
+void fixTempOrder() {
+	vector<MiddleCode>::iterator scanner;
+	map<string, bool>::iterator f;
+	for (vector<MiddleCode>::iterator itr = optimizedMiddleCodeArr.begin(); itr != optimizedMiddleCodeArr.end(); itr++) {
+		if (itr->type == FunctionCall) {
+			scanner = itr;
+			f = inlinable.find(itr->target);
+			if (f != inlinable.end() && f->second) {
+				for (; scanner != optimizedMiddleCodeArr.end() && scanner->type != Return; scanner++);
+			}
+			for (scanner++; scanner != optimizedMiddleCodeArr.end(); scanner++) {
+				if (scanner->type == Pass) {
+					if (scanner->target.at(0) == '#') {
+						if (maxTempUsingMap[itr->target] < atoi((scanner->target).substr(1).c_str()))
+							maxTempUsingMap[itr->target] = atoi((scanner->target).substr(1).c_str());
+						break;
+					}
+				}
+				else
+					break;
+			}
+		}
+	}
+	cout << endl;
+}
 
 void runOptimization() {
 	blockDivision();
 	optimizeMiddleCode();
 	fixTemp();
 	allocateRegister();
-	if(INLINE)
+	if (INLINE) {
 		inlineDetection();
+	}
+	fixTempOrder();
 	evaluateOptimization();
 }
