@@ -20,6 +20,8 @@ map<int, string> varToRegisterMap;
 vector<string> funcNameTable;
 vector<MiddleCode> optimizedMiddleCodeArr;
 
+map<string, bool> inlinable;
+map<int, string> inlineRegisterMap;
 map<string, vector<Block>> functionTable;
 map<string, vector<Block>>::iterator currentFunction;
 
@@ -32,6 +34,7 @@ string funcName = "GLOBAL";
 void allocateRegister() {
 	funcName = "GLOBAL";
 	unsigned int i = 0;
+	unsigned int a = 0;
 	// 跳过 Global 变量
 	for (; i < SymbolTable.size(); i++) {
 		SymbolTableItem item = SymbolTable.at(i);
@@ -484,59 +487,6 @@ void printOptimize(MiddleCode item) {
 		cout << "Deleted Quater Code " << item.target << " = " << item.left << " " << item.op << " " << item.right << endl;
 }
 
-void prefixTemp() {
-	if (MiddleCodeArr.size() <= 2)
-		return;
-	for (vector<MiddleCode>::iterator itr = MiddleCodeArr.begin() + 1; itr != MiddleCodeArr.end() && itr != MiddleCodeArr.end() - 1 && itr != MiddleCodeArr.end() - 2; itr++) {
-		switch (itr->type) {
-		case Pass:
-
-			if (itr->target == itr->left && itr->op == '+' && itr->right == "0") {
-				itr--;
-				printOptimize(*(itr + 1));
-				MiddleCodeArr.erase(itr + 1);
-			}
-			if (itr->target == (itr + 1)->left && (itr->isLeftArr == false || (itr + 1)->isTargetArr == false) && (itr + 1)->op == '+' && (itr + 1)->right == "0" && (itr->target.at(0) == '#'))
-			{
-				itr->target = (itr + 1)->target;
-				itr->isTargetArr = (itr + 1)->isTargetArr;
-				itr->indexTargetArr = (itr + 1)->indexTargetArr;
-				itr->isVal = (itr + 1)->isVal;
-				printOptimize(*(itr + 1));
-				MiddleCodeArr.erase(itr + 1);
-			}
-			if (itr->target == (itr + 1)->right && itr->target.at(0) == '#' && itr->isLeftArr == false && itr->op == '+' && itr->right == "0")
-			{
-				(itr + 1)->right = itr->left;
-				itr--;
-				printOptimize(*(itr + 1));
-				MiddleCodeArr.erase(itr + 1);
-			}
-			if (itr->target == (itr + 1)->left && itr->target.at(0) == '#' && itr->isLeftArr == false && itr->op == '+' && itr->right == "0")
-			{
-				(itr + 1)->left = itr->left;
-				itr--;
-				printOptimize(*(itr + 1));
-				MiddleCodeArr.erase(itr + 1);
-			}
-			break;
-		case Return:
-			if ((itr + 1)->type == Return) {
-				printOptimize(*(itr + 1));
-				MiddleCodeArr.erase(itr + 1);
-			}
-			break;
-		case Jump:
-			if ((itr + 1)->type == Label && (itr + 2)->target == itr->target && (itr + 1)->type == Label)
-			{
-				itr--;
-				printOptimize(*(itr + 1));
-				MiddleCodeArr.erase(itr + 1);
-			}
-		}
-	}
-}
-
 void fixTemp() {
 	if (optimizedMiddleCodeArr.size() <= 2)
 		return;
@@ -609,12 +559,100 @@ void evaluateOptimization() {
 		cout << "--- Recommend  | Expand Register-Variable Mapping Limit" << endl;
 }
 
+int variableCount(string target) {
+	int count = 0;
+	for (vector<SymbolTableItem>::iterator itr = SymbolTable.begin(); itr != SymbolTable.begin(); itr++) {
+		if (itr->getFuncName() == target && itr->getItemType() != Constant)
+			count++;
+		if (itr->getFuncName() == target && itr->getArrSize() != 0)
+			return 5;
+	}
+	return count;
+}
+
+// 函数内联性检查：要求无输入输出，局部变量个数小于等于4且临时变量个数小于等于6，函数不调用其他函数且函数内无数组
+void inlineDetection() {
+	string analysis = "";
+	for (vector<MiddleCode>::iterator itr = optimizedMiddleCodeArr.begin(); itr != optimizedMiddleCodeArr.end(); itr++) {
+		switch (itr->type) {
+		case FunctionDef:
+			analysis = itr->target;
+			if (analysis == "main") {
+				inlinable[analysis] = false;
+				break;
+			}
+			else
+				inlinable[analysis] = true;
+			continue;
+		case Print:
+		case Read:
+		case FunctionCall:
+			inlinable[analysis] = false;
+			continue;
+		case Return:
+			if (((itr + 1) != (optimizedMiddleCodeArr.end() - 1)) && ((itr + 1)->type) != FunctionDef)
+				inlinable[analysis] = false;
+			continue;
+		}
+	}
+	for (map<string, bool>::iterator itr = inlinable.begin(); itr != inlinable.end(); itr++) {
+		if (maxTempOrderMap[itr->first] > TEMP_REGISTER || variableCount(itr->first) > 4)
+			itr->second = false;	
+	}
+	int mapCount = 0;
+	for (map<string, bool>::iterator itr = inlinable.begin(); itr != inlinable.end(); itr++) {
+		mapCount = 0;
+		if (itr->second) {
+			cout << "%%% Inline Optimization Available for Function " << itr->first << endl;
+			for (vector<SymbolTableItem>::iterator sym = SymbolTable.begin(); sym != SymbolTable.end(); sym++) {
+				if (sym->getFuncName() == itr->first && sym->getItemType() != Constant) {
+					inlineRegisterMap[sym->getOrder()] = "$a" + to_string(mapCount++);
+				}
+			}
+		}
+	}
+	map<string, vector<MiddleCode>> insert;
+	for (vector<MiddleCode>::iterator itr = optimizedMiddleCodeArr.begin(); itr != optimizedMiddleCodeArr.end(); itr++) {
+		map<string, bool>::iterator f;
+		switch (itr->type) {
+		case FunctionDef:
+			f = inlinable.find(itr->target);
+			if (f != inlinable.end() && f->second)
+				analysis = itr->target;
+			else
+				analysis = "";
+			continue;
+		case ParamDef:
+			continue;
+		case FunctionCall:
+			f = inlinable.find(itr->target);
+			if (f != inlinable.end() && f->second) {
+				unsigned int offset = itr - optimizedMiddleCodeArr.begin();
+				optimizedMiddleCodeArr.insert(itr + 1, insert[itr->target].begin(), insert[itr->target].end());
+				itr = optimizedMiddleCodeArr.begin() + offset + 1;
+			}
+			continue;
+		default:
+			if (analysis != "") {
+				insert[analysis].push_back(*itr);
+			}
+			continue;
+		}
+	}
+	// Replace varToRegisterMap
+	for (map<int, string>::iterator itr = inlineRegisterMap.begin(); itr != inlineRegisterMap.end(); itr++) {
+		varToRegisterMap[itr->first] = itr->second;
+	}
+	cout << "End" << endl;
+}
+
 
 void runOptimization() {
-	prefixTemp();
 	blockDivision();
 	optimizeMiddleCode();
 	fixTemp();
 	allocateRegister();
+	if(INLINE)
+		inlineDetection();
 	evaluateOptimization();
 }

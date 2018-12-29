@@ -21,6 +21,7 @@ using namespace std;
 #define INORD	false
 #define ULTOP	true
 #define SPEED	true
+#define INLINE	true
 
 #define VAR_REGISTER	8	// 0~8
 #define TEMP_REGISTER	6 // $t3~$t9

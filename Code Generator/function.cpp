@@ -82,6 +82,9 @@ extern vector<SymbolTableItem> SymbolTable;
 vector<MiddleCode> MiddleCodeArr; // 中间代码生成集合
 extern vector<MiddleCode> optimizedMiddleCodeArr;
 extern map<int, string> varToRegisterMap;
+extern map<string, bool> inlinable;
+extern map<int, string> inlineRegisterMap;
+static string inlineName = "GLOBAL";
 
 map<string, int> framePointerOffset;
 vector<string> constStringSet; // 程序需要打印的常量字符串集合,放在.data域
@@ -561,6 +564,10 @@ void locateArray(MiddleCode item, ofstream & out) {
 			out << "sll $t1 " << itr->second << " 2" << endl;
 			out << "addu $t0 $t0 $t1" << endl;
 		}
+		else if (indexTargetArr == "Ret") {
+			out << "sll $t1 $v0 2" << endl;
+			out << "addu $t0 $t0 $t1" << endl;
+		}
 		else {
 			// 地址放在$t1
 			getVariable(indexTargetArr, "$t1", out);
@@ -595,6 +602,9 @@ void saveArray(MiddleCode item, string value, ofstream & out) {
 		map<int, string>::iterator itr = varToRegisterMap.find(locateVariable(indexTargetArr));
 		if (itr != varToRegisterMap.end()) {
 			out << "sll $t0 " << itr->second << " 2" << endl;
+		}
+		else if (indexTargetArr == "Ret") {
+			out << "sll $t0 $v0 2" << endl;
 		}
 		else {
 			// 地址放在$t1
@@ -902,6 +912,10 @@ void bestAssignment(MiddleCode item, ofstream & out) {
 				map<int, string>::iterator itr = varToRegisterMap.find(locateVariable(indexLeftArr));
 				if (itr != varToRegisterMap.end()) {
 					out << "sll $t2 " << itr->second << " 2" << endl;
+					out << "addu $t1 $t1 $t2" << endl;
+				}
+				else if (indexLeftArr == "Ret") {
+					out << "sll $t2 $v0 2" << endl;
 					out << "addu $t1 $t1 $t2" << endl;
 				}
 				else {
@@ -1423,6 +1437,10 @@ void handleAssignment(MiddleCode item, ofstream & out) {
 						out << "sll $t2 " << itr->second << " 2" << endl;
 						out << "addu $t1 $t1 $t2" << endl;
 					}
+					else if (indexLeftArr == "Ret") {
+						out << "sll $t2 $v0 2" << endl;
+						out << "addu $t1 $t1 $t2" << endl;
+					}
 					else {
 						getVariable(indexLeftArr, "$t2", out);
 						out << "sll $t2 $t2 2" << endl;
@@ -1801,6 +1819,8 @@ void handleBranch(MiddleCode item, ofstream & out) {
 		}
 		else if (obj == "Ret")
 			branchReg0 = "$v0";
+		else if (obj == "$0")
+			branchReg0 = obj;
 		else {
 			getVariable(obj, branchReg0, out);
 		}
@@ -1866,6 +1886,7 @@ void handleReturn(ofstream & out) {
 // 生成最终的Text段代码
 void getTextSegment(ofstream & out, vector<MiddleCode> QuaterCode) {
 	framePointerOffset.clear();
+	map<string, bool>::iterator f;
 	for (unsigned int i = 0; i < QuaterCode.size(); i++) {
 		MiddleCode item = QuaterCode.at(i);
 		map<int, string>::iterator itr;
@@ -1896,6 +1917,11 @@ void getTextSegment(ofstream & out, vector<MiddleCode> QuaterCode) {
 						currentFunctionStackAddress += 4;
 						break;
 					}
+				}
+				else if (item.target == "Ret") {
+					out << "move " << aReg << " $v0" << endl;
+					currentFunctionStackAddress += 4;
+					break;
 				}
 				else {							// 标识符
 					getVariable(item.target, aReg, out);
@@ -1931,6 +1957,11 @@ void getTextSegment(ofstream & out, vector<MiddleCode> QuaterCode) {
 						break;
 					}
 				}
+				else if (item.target == "Ret") {
+					out << "sw $v0 " << currentFunctionStackAddress - 16 << "($k1)" << endl;
+					currentFunctionStackAddress += 4;
+					break;
+				}
 				else {							// 标识符
 					getVariable(item.target, "$v0", out);
 					out << "sw $v0 " << currentFunctionStackAddress - 16 << "($k1)" << endl;
@@ -1941,39 +1972,49 @@ void getTextSegment(ofstream & out, vector<MiddleCode> QuaterCode) {
 			
 		case FunctionCall:
 			currentFunctionStackAddress = 0;// 重置函数栈
+			f = inlinable.find(item.target);
+			if (f != inlinable.end() && f->second) {
+				for (int i = 0; i < getMaxTemp(item.target); i++)
+					out << "sw $t" << i + 3 << " " << 8 + 4 * i << "($sp)" << endl;
+				inlineName = funcName;
+				funcName = item.target;
+			}
+			else {
 
-															   // 将$k0,$k1寄存器的值保存入栈
-			//out << "sw $k0 0($sp)" << endl;
-			//out << "sw $k1 4($sp)" << endl;
+				// 将$k0,$k1寄存器的值保存入栈
+				//out << "sw $k0 0($sp)" << endl;
+				//out << "sw $k1 4($sp)" << endl;
 
-			for (int i = 0; i < getMaxTemp(item.target); i++)
-				out << "sw $t" << i + 3 << " " << 8 + 4 * i << "($sp)" << endl;
-			for (int i = 0; i < getMaxVar(item.target); i++)
-				out << "sw $s" << i << " " << 8 + 4 * getMaxTemp(item.target) + 4 * i << "($sp)" << endl;
-			out << "sw $ra " << 8 + 4 * getMaxTemp(item.target) + 4 * getMaxVar(item.target) << "($sp)" << endl;
-			//out << "sw $fp " << 12 + 4 * getMaxTemp(item.target) + 4 * getMaxVar(item.target) << "($sp)" << endl;
+				for (int i = 0; i < getMaxTemp(item.target); i++)
+					out << "sw $t" << i + 3 << " " << 8 + 4 * i << "($sp)" << endl;
+				for (int i = 0; i < getMaxVar(item.target); i++)
+					out << "sw $s" << i << " " << 8 + 4 * getMaxTemp(item.target) + 4 * i << "($sp)" << endl;
+				out << "sw $ra " << 8 + 4 * getMaxTemp(item.target) + 4 * getMaxVar(item.target) << "($sp)" << endl;
+				//out << "sw $fp " << 12 + 4 * getMaxTemp(item.target) + 4 * getMaxVar(item.target) << "($sp)" << endl;
 
-										  // 函数调用,跳转,生成所跳转的目标函数运行栈空间的首地址
-			out << "jal " << item.target << endl;
+				// 函数调用,跳转,生成所跳转的目标函数运行栈空间的首地址
+				out << "jal " << item.target << endl;
 
-			// 栈指针恢复到$fp
-			//out << "move $sp $fp" << endl;
-			// $k0 $k1寄存器值恢复
-			out << "addiu $sp $fp -" << 8 + 4 * getMaxTemp(item.target) + 4 * getMaxVar(item.target) << endl;
-			//out << "lw $k0 0($sp)" << endl;
-			//out << "lw $k1 4($sp)" << endl;
-			for (int i = 0; i < getMaxTemp(item.target); i++)
-				out << "lw $t" << i + 3 << " " << 8 + 4 * i << "($sp)" << endl;
-			for (int i = 0; i < getMaxVar(item.target); i++)
-				out << "lw $s" << i << " " << 8 + 4 * getMaxTemp(item.target) + 4 * i << "($sp)" << endl;
-			// 返回地址存入$ra
-			out << "lw $ra 0($fp)" << endl;
-			// 函数栈区起始地址恢复--->上一级函数基地址$fp恢复
-			//out << "lw $fp 4($fp)" << endl;
-			if (funcName == "main")
-				out << "addiu $fp $sp -" << framePointerOffset[funcName] << endl;
-			else
-				out << "addiu $fp $sp -" << framePointerOffset[funcName] - (8 + 4 * getMaxTemp(funcName) + 4 * getMaxVar(funcName)) << endl;
+				// 栈指针恢复到$fp
+				//out << "move $sp $fp" << endl;
+				// $k0 $k1寄存器值恢复
+				out << "addiu $sp $fp -" << 8 + 4 * getMaxTemp(item.target) + 4 * getMaxVar(item.target) << endl;
+				//out << "lw $k0 0($sp)" << endl;
+				//out << "lw $k1 4($sp)" << endl;
+				for (int i = 0; i < getMaxTemp(item.target); i++)
+					out << "lw $t" << i + 3 << " " << 8 + 4 * i << "($sp)" << endl;
+				for (int i = 0; i < getMaxVar(item.target); i++)
+					out << "lw $s" << i << " " << 8 + 4 * getMaxTemp(item.target) + 4 * i << "($sp)" << endl;
+				// 返回地址存入$ra
+				out << "lw $ra 0($fp)" << endl;
+				// 函数栈区起始地址恢复--->上一级函数基地址$fp恢复
+				//out << "lw $fp 4($fp)" << endl;
+				if (funcName == "main")
+					out << "addiu $fp $sp -" << framePointerOffset[funcName] << endl;
+				else
+					out << "addiu $fp $sp -" << framePointerOffset[funcName] - (8 + 4 * getMaxTemp(funcName) + 4 * getMaxVar(funcName)) << endl;
+			}
+
 			break;
 		case Pass:
 			if(ULTOP)
@@ -2044,6 +2085,9 @@ void getTextSegment(ofstream & out, vector<MiddleCode> QuaterCode) {
 						out << "move $a0 " << "$t" << (g + 3) << endl;
 					}
 				}
+				else if (item.target == "Ret") {
+					out << "move $a0 $v0" << endl;
+				}
 				else {
 					getVariable(item.target, "$a0", out);
 				}
@@ -2081,7 +2125,14 @@ void getTextSegment(ofstream & out, vector<MiddleCode> QuaterCode) {
 				itr = varToRegisterMap.find(locateVariable(item.target));
 				if (itr != varToRegisterMap.end()) {
 					out << "move $v0 " << itr->second << endl;
-					handleReturn(out);
+					f = inlinable.find(funcName);
+					if (f != inlinable.end() && f->second) {
+						for (int i = 0; i < getMaxTemp(funcName); i++)
+							out << "lw $t" << i + 3 << " " << 8 + 4 * i << "($sp)" << endl;
+						funcName = inlineName;
+					}
+					else
+						handleReturn(out);
 					break;
 				}
 				else if (item.target.at(0) == '#') {
@@ -2093,19 +2144,43 @@ void getTextSegment(ofstream & out, vector<MiddleCode> QuaterCode) {
 						out << "move $v0 $t" << (g + 3) << endl;
 					}
 				}
+				else if (item.target == "Ret") {
+					;
+				}
 				else {
 					getVariable(item.target, "$v0", out);
 				}
 				// 返回地址
-				handleReturn(out);
+				f = inlinable.find(funcName);
+				if (f != inlinable.end() && f->second) {
+					for (int i = 0; i < getMaxTemp(funcName); i++)
+						out << "lw $t" << i + 3 << " " << 8 + 4 * i << "($sp)" << endl;
+					funcName = inlineName;
+				}
+				else
+					handleReturn(out);
 			}
 			else if (item.funcType == VoidType) {
-				handleReturn(out);
+				f = inlinable.find(funcName);
+				if (f != inlinable.end() && f->second) {
+					for (int i = 0; i < getMaxTemp(funcName); i++)
+						out << "lw $t" << i + 3 << " " << 8 + 4 * i << "($sp)" << endl;
+					funcName = inlineName;
+				}
+				else
+					handleReturn(out);
 			}
 			else {
 				out << "li $v0 " << integerConversion(item.target) << endl;
 				// 返回地址
-				handleReturn(out);
+				f = inlinable.find(funcName);
+				if (f != inlinable.end() && f->second) {
+					for (int i = 0; i < getMaxTemp(funcName); i++)
+						out << "lw $t" << i + 3 << " " << 8 + 4 * i << "($sp)" << endl;
+					funcName = inlineName;
+				}
+				else
+					handleReturn(out);
 			}
 			break;
 		case End:

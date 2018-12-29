@@ -41,15 +41,16 @@ move $v0 $t4
 jr $ra
 $Label2:
 mod:
-move $s0 $a0
-move $s1 $a1
+move $a0 $a0
+move $a1 $a1
 addiu $fp $sp 24
 addiu $sp $sp 40
-div $t3 $s0 $s1
-mul $t4 $t3 $s1
-subu $s0 $s0 $t4
-move $v0 $s0
-jr $ra
+div $t3 $a0 $a1
+mul $t4 $t3 $a1
+subu $a0 $a0 $t4
+move $v0 $a0
+lw $t3 8($sp)
+lw $t4 12($sp)
 swap:
 move $s0 $a0
 move $s1 $a1
@@ -84,9 +85,9 @@ li $v0 1
 syscall
 jr $ra
 complete_num:
-sw $a0 52($sp)
-addiu $fp $sp 44
-addiu $sp $sp 620
+sw $a0 56($sp)
+addiu $fp $sp 48
+addiu $sp $sp 624
 lw $t1 8($fp)
 addiu $s2 $t1 0
 $Label3:
@@ -101,17 +102,12 @@ move $a0 $s2
 move $a1 $s0
 sw $t3 8($sp)
 sw $t4 12($sp)
-sw $s0 16($sp)
-sw $s1 20($sp)
-sw $ra 24($sp)
-jal mod
-addiu $sp $fp -24
+div $t3 $a0 $a1
+mul $t4 $t3 $a1
+subu $a0 $a0 $t4
+move $v0 $a0
 lw $t3 8($sp)
 lw $t4 12($sp)
-lw $s0 16($sp)
-lw $s1 20($sp)
-lw $ra 0($fp)
-addiu $fp $sp -576
 bne $v0 0 $Label5
 addiu $s1 $s1 1
 subu $s4 $s4 $s0
@@ -209,17 +205,12 @@ move $a0 $s3
 move $a1 $s0
 sw $t3 8($sp)
 sw $t4 12($sp)
-sw $s0 16($sp)
-sw $s1 20($sp)
-sw $ra 24($sp)
-jal mod
-addiu $sp $fp -24
+div $t3 $a0 $a1
+mul $t4 $t3 $a1
+subu $a0 $a0 $t4
+move $v0 $a0
 lw $t3 8($sp)
 lw $t4 12($sp)
-lw $s0 16($sp)
-lw $s1 20($sp)
-lw $ra 0($fp)
-addiu $fp $sp -576
 bne $v0 0 $Label16
 li $s5 0
 $Label16:
@@ -296,26 +287,28 @@ lw $ra 0($fp)
 addiu $fp $sp -12
 li $a0 2
 sw $t3 8($sp)
-sw $s0 12($sp)
-sw $s1 16($sp)
-sw $s2 20($sp)
-sw $s3 24($sp)
-sw $s4 28($sp)
-sw $s5 32($sp)
-sw $s6 36($sp)
-sw $s7 40($sp)
-sw $ra 44($sp)
+sw $t4 12($sp)
+sw $s0 16($sp)
+sw $s1 20($sp)
+sw $s2 24($sp)
+sw $s3 28($sp)
+sw $s4 32($sp)
+sw $s5 36($sp)
+sw $s6 40($sp)
+sw $s7 44($sp)
+sw $ra 48($sp)
 jal complete_num
-addiu $sp $fp -44
+addiu $sp $fp -48
 lw $t3 8($sp)
-lw $s0 12($sp)
-lw $s1 16($sp)
-lw $s2 20($sp)
-lw $s3 24($sp)
-lw $s4 28($sp)
-lw $s5 32($sp)
-lw $s6 36($sp)
-lw $s7 40($sp)
+lw $t4 12($sp)
+lw $s0 16($sp)
+lw $s1 20($sp)
+lw $s2 24($sp)
+lw $s3 28($sp)
+lw $s4 32($sp)
+lw $s5 36($sp)
+lw $s6 40($sp)
+lw $s7 44($sp)
 lw $ra 0($fp)
 addiu $fp $sp -12
 # End Of MIPS Assembly Code.

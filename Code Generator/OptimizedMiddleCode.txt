@@ -45,6 +45,10 @@ x1 = #0 * i
 PUSH j
 PUSH i
 CALL mod
+#0 = x / y
+#1 = #0 * y
+x = x - #1
+RET id x
 BNZ Ret 0 $Label5
 n = n + 1
 s = s - i
@@ -104,6 +108,10 @@ x2 = #0 * i
 PUSH m
 PUSH i
 CALL mod
+#0 = x / y
+#1 = #0 * y
+x = x - #1
+RET id x
 BNZ Ret 0 $Label16
 leap = 0 + 0
 LABEL $Label16

@@ -10,6 +10,7 @@ extern const string simuCodeToFileName;
 extern const string finalCodeToFileName;
 extern vector<SymbolTableItem> SymbolTable;
 extern map<int, string> varToRegisterMap;
+extern map<int, string> inlineRegisterMap;
 extern map<string, unsigned> maxTempOrderMap;
 extern map<string, unsigned> maxVarOrderMap;
 extern map<string, vector<int>> functionVarIndexMap;
@@ -210,6 +211,9 @@ void optimizeRegister() {
 	}
 	for (unsigned int k = 0; k < globalVarIndexMap.size() && k < 8 - VAR_REGISTER; k++) {
 		varToRegisterMap.insert(map<int, string>::value_type(SymbolTable.at(globalVarIndexMap.at(k)).getOrder(), "$s" + to_string(k + VAR_REGISTER)));
+	}
+	for (map<int, string>::iterator itr = inlineRegisterMap.begin(); itr != inlineRegisterMap.end(); itr++) {
+		varToRegisterMap[itr->first] = itr->second;
 	}
 	return;
 }
