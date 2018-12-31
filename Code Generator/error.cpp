@@ -21,7 +21,7 @@ void Error::reportPosition(int index) {
 		
 
 	begin++;
-	for (end = index; end < targetFile.size() - 2 && targetFile[end] != '\n' && (end - index) <= SURROUND; end++);
+	for (end = index; end < (int)targetFile.size() - 2 && targetFile[end] != '\n' && (end - index) <= SURROUND; end++);
 
 	for (i = begin; i < end; i++)
 		cout << targetFile[i];

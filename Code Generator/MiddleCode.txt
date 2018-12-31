@@ -1,455 +1,187 @@
-FUNC int foo1()
-PARA int a
-PARA char b
-#0 = a + b
-RET id #0
-FUNC int add()
+FUNC char test_if()
 PARA int a
 PARA int b
-#0 = a + b
-RET id #0
-FUNC int addchar()
-PARA char a
-PARA char b
-#0 = a + b
-RET id #0
-FUNC int addone()
-PARA char a
-#0 = a + 1
-RET id #0
-FUNC int addint()
-PARA int a
-#0 = a + 1
-RET id #0
-FUNC char foo2()
-PARA char c
-BLEZ c 99 $Label1
-RET char '4'
+BLZ a b $Label1
+RET char '9'
 JMP $Label2
 LABEL $Label1
-RET char '4'
+RET char '9'
 LABEL $Label2
-FUNC void test_string_int()
-a = 1 + 0
-PRT id a
-ENTER
-a = 0 + 0
-PRT id a
-ENTER
-a = 0 + 0
-PRT id a
-ENTER
-a = 0 + 0
-PRT id a
-ENTER
-a = 12 + 0
-PRT id a
-ENTER
-a = -12 + 0
-PRT id a
-ENTER
-PRT string "#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~ !"
-ENTER
-RET
-RET
-FUNC int fib()
+FUNC int test_factorial()
 PARA int n
-BNZ n 1 $Label3
+BNZ n 0 $Label3
 RET int 1
 JMP $Label4
 LABEL $Label3
-BNZ n 2 $Label5
-RET int 1
-JMP $Label6
-LABEL $Label5
-LABEL $Label6
+#0 = n - 1
+PUSH #0
+CALL test_factorial
+#1 = Ret + 0
+RET id #1
 LABEL $Label4
+FUNC int test_while()
+n = 3 + 0
+LABEL $Label5
 #0 = n - 1
-PUSH #0
-CALL fib
-#1 = Ret + 0
-#2 = n - 2
-PUSH #2
-CALL fib
-#3 = Ret + 0
-#4 = #1 + #3
-RET id #4
-FUNC int test_lots_paras()
-PARA int a
-PARA int b
+n = #0 + 0
+PRT id n
+ENTER
+BNZ n 0 $Label5
+RET int 666
+FUNC void test_switch_char()
 PARA char c
-PARA char d
-PARA int e
-#0 = a + b
-#1 = #0 + c
-#2 = #1 - d
-#3 = #2 + e
-RET id #3
-FUNC void test_all_cond()
-a = 1 + 0
-b = 2 + 0
-c = 2 + 0
-d = 65 + 0
-PRT string "test of comp symbol"
+BEZ c 97 $Label7
+BEZ c 98 $Label8
+PRT string "cat"
 ENTER
-BNZ b c $Label7
-PRT string "a==b"
-ENTER
-JMP $Label8
+JMP $Label6
 LABEL $Label7
+PRT string "apple"
+ENTER
+PRT string "ali"
+ENTER
+JMP $Label6
 LABEL $Label8
-BGEZ a b $Label9
-PRT string "a<b"
+PRT string "boy"
 ENTER
-JMP $Label10
-LABEL $Label9
-LABEL $Label10
-BLEZ c a $Label11
-PRT string "c>a"
-ENTER
-JMP $Label12
-LABEL $Label11
-LABEL $Label12
-BEZ d 0 $Label13
-PRT string "d"
-ENTER
-JMP $Label14
-LABEL $Label13
-LABEL $Label14
-BNZ a 1 $Label15
-PRT string "error"
-ENTER
-JMP $Label16
-LABEL $Label15
-LABEL $Label16
-BEZ a 1 $Label17
-PRT string "error"
-ENTER
-JMP $Label18
-LABEL $Label17
-LABEL $Label18
-BGZ a c $Label19
-PRT string "a<=c"
-ENTER
-JMP $Label20
-LABEL $Label19
-LABEL $Label20
-BLZ a c $Label21
-PRT string "error!"
-ENTER
-JMP $Label22
-LABEL $Label21
-LABEL $Label22
-BLEZ d 66 $Label23
-PRT string "error!"
-ENTER
-JMP $Label24
-LABEL $Label23
-LABEL $Label24
+JMP $Label6
+LABEL $Label6
 RET
-RET
-FUNC void test_diff_domain()
-PARA int para_change
-PRT char 'b'
-ENTER
-g_v_int_a1 = 222 + 0
-PRT id g_v_int_a1
-ENTER
-PRT string "test global variable and constance"
-ENTER
-PRT int 1
-ENTER
-PRT char 'f'
-ENTER
-PRT char 'b'
-ENTER
-PRT char 'b'
-ENTER
-PRT int 2
-ENTER
-PRT int 3
-ENTER
-g_v_char_arr[2] = 72 + 0
-#0 = g_v_char_arr[2]
-PRT id #0
-ENTER
-g_v_int_arr2[6] = 155 + 0
-#0 = g_v_int_arr2[6]
-PRT id #0
-ENTER
-PRT string "before change para="
-PRT id para_change
-ENTER
-#0 = para_change * 2
-para_change = #0 + 0
-PRT string "after change para="
-PRT id para_change
-ENTER
-g_v_char_b = 89 + 0
-PRT id g_v_char_b
-ENTER
-RET
-FUNC void test_expr()
-PRT string "test for expression"
-ENTER
-res_of_expr = 60 + 0
-PRT string "--12--12--12-+12+-12--12--12--12--12="
-PRT id res_of_expr
-ENTER
-res_of_expr = -50 + 0
-PRT string "10*-5="
-PRT id res_of_expr
-ENTER
-res_of_expr = 2 + 0
-PRT string "10/+4="
-PRT id res_of_expr
-ENTER
-PUSH 12
-CALL fib
-#0 = Ret + 0
-PUSH 14
-CALL fib
-#1 = Ret + 0
-#2 = #0 - #1
-res_of_expr = #2 + 0
-PRT string "fib(12)-fib(14)="
-PRT id res_of_expr
-ENTER
-res_of_expr = 111 + 0
-PRT string "c + 12 = "
-PRT id res_of_expr
-ENTER
-res_of_expr = 1188 + 0
-PRT string "c*12/1="
-PRT id res_of_expr
-ENTER
-res_of_expr = -12 + 0
-PRT string "1-(((12+1)))="
-PRT id res_of_expr
-ENTER
-arr[1] = 15 + 0
-#0 = arr[1]
-PUSH 3
-CALL fib
-#1 = Ret + 0
-#2 = #0 * 98
-#3 = #2 + #1
-res_of_expr = #3 + 0
-PRT string "arr[1]*'b'+fib(3)="
-PRT id res_of_expr
-ENTER
-g_v_int_a1 = 5 + 0
-tag[6] = 12 + 0
-g_v_char_h = 104 + 0
-PUSH g_v_char_h
-CALL addone
-#0 = Ret + 0
-PUSH 5
-CALL fib
-#1 = Ret + 0
-PUSH 1
-PUSH #1
-CALL add
-#2 = Ret + 0
-#3 = tag[6]
-#4 = #2 / g_v_int_a1
-#5 = #0 + #4
-#6 = #5 - #3
-res_of_expr = #6 + 0
-PRT string "addone(g_v_char_h)+add(1, fib(5))/G_v_int_a1 - tag[6]="
-PRT id res_of_expr
-ENTER
-RET
-RET
-FUNC void test_scanf()
-PRT string "please input an integer"
-ENTER
-READ int a
-PRT id a
-ENTER
-PRT string "please input 2 integers press enter for each integer"
-ENTER
-READ int a
-READ int b
-PRT id a
-ENTER
-PRT id b
-ENTER
-RET
-RET
-FUNC char echo_char()
-PARA char a
-PRT id a
-ENTER
-RET id a
-FUNC void really_void()
-RET
-FUNC void really_void2()
-RET
-FUNC void really_void3()
-RET
-FUNC void permutation()
-PARA int m
+FUNC void test_relation()
 PARA int n
-#0 = n - 1
-BGEZ m #0 $Label25
-#0 = m + 1
-PUSH #0
-PUSH n
-CALL permutation
-#1 = m + 1
-i = #1 + 0
-BGEZ i n $Label27
-LABEL $Label29
-#0 = chs[m]
-t = #0 + 0
-#0 = chs[i]
-chs[m] = #0 + 0
-chs[i] = t + 0
-#0 = m + 1
-PUSH #0
-PUSH n
-CALL permutation
-#1 = chs[m]
-t = #1 + 0
-#0 = chs[i]
-chs[m] = #0 + 0
-chs[i] = t + 0
-#0 = i + 1
-i = #0 + 0
-BLZ i n $Label29
-JMP $Label28
-LABEL $Label27
-LABEL $Label28
-JMP $Label26
-LABEL $Label25
-i = 0 + 0
-LABEL $Label30
-#0 = chs[i]
-PUSH #0
-CALL echo_char
+BGEZ n 3 $Label10
+PRT string "<"
+ENTER
+JMP $Label11
+LABEL $Label10
+LABEL $Label11
+BGZ n 4 $Label12
+PRT string "<="
+ENTER
+JMP $Label13
+LABEL $Label12
+LABEL $Label13
+BLEZ n 5 $Label14
+PRT string ">"
+ENTER
+JMP $Label15
+LABEL $Label14
+LABEL $Label15
+BLZ n 6 $Label16
+PRT string ">="
+ENTER
+JMP $Label17
+LABEL $Label16
+LABEL $Label17
+BEZ n 7 $Label18
+PRT string "!="
+ENTER
+JMP $Label19
+LABEL $Label18
+LABEL $Label19
+BNZ n 8 $Label20
+PRT string "=="
+ENTER
+JMP $Label21
+LABEL $Label20
+LABEL $Label21
+RET
+FUNC void test_expression()
+var_int_array_1[0] = 3 + 0
+#0 = var_int_array_1[0]
+PUSH 3
+CALL test_factorial
 #1 = Ret + 0
-r = #1 + 0
-#0 = chs[i]
-BEZ r #0 $Label31
-PRT string "error"
+#2 = -1 - #0
+#3 = #2 + 5
+#4 = #3 + 97
+#5 = #4 + #1
+#6 = #5 + -3
+res = #6 + 0
+PRT string "The result is "
+PRT id res
 ENTER
-JMP $Label32
-LABEL $Label31
-LABEL $Label32
-#0 = i + 1
-i = #0 + 0
-BLZ i 5 $Label30
-PRT string " "
+PRT string " !#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~"
 ENTER
-LABEL $Label26
 RET
 FUNC void main()
-i = 0 + 0
-BGEZ i 10 $Label33
-LABEL $Label35
-#0 = i + 1
-PUSH #0
-CALL fib
-#1 = Ret + 0
-arr[i] = #1 + 0
-#0 = i + 1
-i = #0 + 0
-BLZ i 10 $Label35
-JMP $Label34
-LABEL $Label33
-LABEL $Label34
-PRT string "input the number of fib you want(1~10)"
+READ int op
+BEZ op 1 $Label23
+BEZ op 2 $Label24
+BEZ op 3 $Label25
+BEZ op 4 $Label26
+BEZ op 5 $Label27
+BEZ op 6 $Label28
+PRT string "Please input 1~6"
 ENTER
-READ int user_input1
-READ int user_input2
-#0 = user_input1 - 1
-i = #0 + 0
-LABEL $Label36
-PRT string " "
-#0 = arr[i]
-PRT id #0
+JMP $Label22
+LABEL $Label23
+PRT string "test_if"
 ENTER
-#0 = i + 1
-i = #0 + 0
-BLZ i user_input2 $Label36
-#0 = user_input2 - 1
-i = #0 + 0
-#0 = user_input1 - 1
-BLZ i #0 $Label37
-LABEL $Label39
-PRT string " "
-#0 = arr[i]
-PRT id #0
-ENTER
-#0 = i - 1
-i = #0 + 0
-#0 = user_input1 - 1
-BGEZ i #0 $Label39
-JMP $Label38
-LABEL $Label37
-LABEL $Label38
-PUSH 1
-PUSH 98
-CALL foo1
+READ int var_int_1
+READ int var_int_2
+PUSH var_int_1
+PUSH var_int_2
+CALL test_if
 #0 = Ret + 0
-PRT id #0
+var_char_res = #0 + 0
+PRT id var_char_res
 ENTER
-PUSH 1
-PUSH 2
-CALL add
+PUSH var_int_2
+PUSH var_int_1
+CALL test_if
 #0 = Ret + 0
-PRT id #0
+var_char_res = #0 + 0
+PRT id var_char_res
 ENTER
-PUSH 97
-PUSH 98
-CALL addchar
+JMP $Label22
+LABEL $Label24
+PRT string "test_factorial"
+ENTER
+READ int var_int_1
+PUSH var_int_1
+CALL test_factorial
 #0 = Ret + 0
-PRT id #0
+var_int_res = #0 + 0
+PRT id var_int_res
 ENTER
-PUSH 70
-CALL addone
+JMP $Label22
+LABEL $Label25
+PRT string "test_while"
+ENTER
+CALL test_while
 #0 = Ret + 0
-PRT id #0
+var_int_res = #0 + 0
+PRT id var_int_res
 ENTER
-PUSH 16
-CALL addint
-#0 = Ret + 0
-PRT id #0
+JMP $Label22
+LABEL $Label26
+PRT string "test_switch_char"
 ENTER
-PUSH 99
-CALL foo2
-#0 = Ret + 0
-PRT id #0
+READ char var_char_1
+PUSH var_char_1
+CALL test_switch_char
+READ char var_char_1
+PUSH var_char_1
+CALL test_switch_char
+READ char var_char_1
+PUSH var_char_1
+CALL test_switch_char
+JMP $Label22
+LABEL $Label27
+PRT string "test_relation"
 ENTER
-CALL test_string_int
-PUSH 233
-CALL test_diff_domain
-CALL test_expr
-CALL test_all_cond
-CALL test_scanf
-PUSH 97
-CALL echo_char
-PUSH 1
-PUSH 2
-PUSH 99
-PUSH 100
-PUSH 5
-CALL test_lots_paras
-#0 = Ret + 0
-PRT id #0
+READ int var_int_1
+PUSH var_int_1
+CALL test_relation
+READ int var_int_1
+PUSH var_int_1
+CALL test_relation
+JMP $Label22
+LABEL $Label28
+PRT string "test_expression"
 ENTER
-CALL really_void
-CALL really_void2
-CALL really_void3
-chs[0] = 65 + 0
-chs[1] = 66 + 0
-chs[2] = 67 + 0
-chs[3] = 68 + 0
-chs[4] = 69 + 0
-PRT string "this is a permutation of ABCDE"
-ENTER
-PUSH 0
-PUSH 5
-CALL permutation
+CALL test_expression
+JMP $Label22
+LABEL $Label22
 EXIT
