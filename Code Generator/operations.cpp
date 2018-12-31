@@ -33,7 +33,7 @@ int total = 0;
 
 int INST_ALU = 0, INST_JUMP = 0, INST_BRANCH = 0, INST_MEM = 0, INST_OTHER = 0;
 int label_num;
-int pc;
+int pc, lo;
 map<string, string> strings[MAX_STR];
 struct instruct_mem *im;
 map<int, int> dm;
@@ -722,11 +722,18 @@ void decode(int*encoded_inst, bool optimize)
 		mul(encoded_inst[1], encoded_inst[2], encoded_inst[3]);
 		break;
 	case DIVOP:
-		if (encoded_inst[3] >= 32 || encoded_inst[3] < 0)
+		if (encoded_inst[3] == 32) {
+			divu(encoded_inst[1], encoded_inst[2]);
+			INST_ALU += 1;
+		}
+		else {
 			INST_ALU += 3;
-		else
-			INST_ALU += 4;
-		div(encoded_inst[1], encoded_inst[2], encoded_inst[3]);
+			div(encoded_inst[1], encoded_inst[2], encoded_inst[3]);
+		}
+		break;
+	case MFLO:
+		INST_ALU += 1;
+		mflo(encoded_inst[1]);
 		break;
 	case SLT:
 	case SLTI:
@@ -1009,6 +1016,18 @@ void div(int dest, int reg1, int reg2) {
 	return;
 }
 
+void divu(int reg1, int reg2) {
+	lo = reg_file[reg1].val / reg_file[reg2].val;
+	pc++;
+	return;
+}
+
+void mflo(int dest) {
+	reg_file[dest].val = lo;
+	pc++;
+	return;
+}
+
 void sll(int dest, int reg1, int reg2) {
 	int a = (reg1<32) ? reg_file[reg1].val : reg1 - 32;
 	int b = (reg2<32 && reg2 >= 0) ? reg_file[reg2].val : (reg2 >= 32) ? reg2 - 32 : reg2;
@@ -1242,6 +1261,7 @@ void execute(int fin, bool optimize)
 
 void init_reg_file()
 {
+	dm.clear();
 	for (int i = 0; i < total; i++) {
 		strings[i].clear();
 	}

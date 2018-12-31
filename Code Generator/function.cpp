@@ -736,7 +736,8 @@ void bestAssignment(MiddleCode item, ofstream & out) {
 			}
 			else if (op == '/') {
 				out << "li $t1 " << integerConversion(left) << endl;
-				out << "div $t1 $t1 " << tempReg << endl;
+				out << "div $t1 " << tempReg << endl;
+				out << "mflo $t1" << endl;
 			}
 			saveArray(item, "$t1", out);
 			return;
@@ -796,7 +797,8 @@ void bestAssignment(MiddleCode item, ofstream & out) {
 				out << "mul $t1 " << tempLeft << " " << tempRight << endl;
 			}
 			else if (op == '/') {
-				out << "div $t1 " << tempLeft << " " << tempRight << endl;
+				out << "div " << tempLeft << " " << tempRight << endl;
+				out << "mflo $t1" << endl;
 			}
 			saveArray(item, "$t1", out);
 			return;
@@ -1109,7 +1111,8 @@ void bestAssignment(MiddleCode item, ofstream & out) {
 				}
 				else if (op == '/') {
 					out << "li $t0 " << integerConversion(left) << endl;
-					out << "div " << targetReg << " $t0 " << tempReg << endl;
+					out << "div $t0 " << tempReg << endl;
+					out << "mflo " << targetReg << endl;
 				}
 			}
 			else {
@@ -1134,7 +1137,8 @@ void bestAssignment(MiddleCode item, ofstream & out) {
 				}
 				else if (op == '/') {
 					out << "li $t1 " << integerConversion(left) << endl;
-					out << "div $t1 $t1 " << tempReg << endl;
+					out << "div $t1 " << tempReg << endl;
+					out << "mflo $t1" << endl;
 				}
 				if (item.target.at(0) == '#') {
 					saveTemp(integerConversion(item.target.substr(1)), "$t1", out);
@@ -1200,7 +1204,8 @@ void bestAssignment(MiddleCode item, ofstream & out) {
 					out << "mul " << targetReg << " " << tempLeft << " " << tempRight << endl;
 				}
 				else if (op == '/') {
-					out << "div " << targetReg << " " << tempLeft << " " << tempRight << endl;
+					out << "div " << tempLeft << " " << tempRight << endl;
+					out << "mflo " << targetReg << endl;
 				}
 			}
 			else {
@@ -1214,7 +1219,8 @@ void bestAssignment(MiddleCode item, ofstream & out) {
 					out << "mul $t1 " << tempLeft << " " << tempRight << endl;
 				}
 				else if (op == '/') {
-					out << "div $t1 " << tempLeft << " " << tempRight << endl;
+					out << "div " << tempLeft << " " << tempRight << endl;
+					out << "mflo $t1" << endl;
 				}
 				if (item.target.at(0) == '#') {
 					saveTemp(integerConversion(item.target.substr(1)), "$t1", out);
@@ -1329,7 +1335,8 @@ void handleAssignment(MiddleCode item, ofstream & out) {
 			}
 			else if (op == '/') {
 				out << "li $t1 " << integerConversion(left) << endl;
-				out << "div $t1 $t1 " << tempReg << endl;
+				out << "div $t1 " << tempReg << endl;
+				out << "mflo $t1" << endl;
 			}
 			out << "sw $t1 0($t0)" << endl;
 			return;
@@ -1389,7 +1396,8 @@ void handleAssignment(MiddleCode item, ofstream & out) {
 				out << "mul $t1 " << tempLeft << " " << tempRight << endl;
 			}
 			else if (op == '/') {
-				out << "div $t1 " << tempLeft << " " << tempRight << endl;
+				out << "div " << tempLeft << " " << tempRight << endl;
+				out << "mflo $t1" << endl;
 			}
 			out << "sw $t1 0($t0)" << endl;
 			return;
@@ -1603,7 +1611,8 @@ void handleAssignment(MiddleCode item, ofstream & out) {
 					}
 					else if (op == '/') {
 						out << "li $t0 " << integerConversion(left) << endl;
-						out << "div " << targetReg << " $t0 " << tempReg << endl;
+						out << "div $t0 " << tempReg << endl;
+						out << "mflo " << targetReg << endl;
 					}
 				}
 				else {
@@ -1621,7 +1630,8 @@ void handleAssignment(MiddleCode item, ofstream & out) {
 					}
 					else if (op == '/') {
 						out << "li $t1 " << integerConversion(left) << endl;
-						out << "div $t1 $t1 " << tempReg << endl;
+						out << "div $t1 " << tempReg << endl;
+						out << "mflo $t1" << endl;
 					}
 					out << "sw $t1 0($t0)" << endl;
 				}
@@ -1682,7 +1692,8 @@ void handleAssignment(MiddleCode item, ofstream & out) {
 						out << "mul " << targetReg << " " << tempLeft << " " << tempRight << endl;
 					}
 					else if (op == '/') {
-						out << "div " << targetReg << " " << tempLeft << " " << tempRight << endl;
+						out << "div " << tempLeft << " " << tempRight << endl;
+						out << "mflo " << targetReg << endl;
 					}
 				}
 				else {
@@ -1696,7 +1707,8 @@ void handleAssignment(MiddleCode item, ofstream & out) {
 						out << "mul $t1 " << tempLeft << " " << tempRight << endl;
 					}
 					else if (op == '/') {
-						out << "div $t1 " << tempLeft << " " << tempRight << endl;
+						out << "div " << tempLeft << " " << tempRight << endl;
+						out << "mflo $t1" << endl;
 					}
 					out << "sw $t1 0($t0)" << endl;
 				}
@@ -1811,9 +1823,9 @@ void handleFunctionDefinition(string funcName, ofstream & out) {
 }
 // 处理分支类指令
 void handleBranch(MiddleCode item, ofstream & out) {
-	// 把判断的变量值存入$a1寄存器中,再调用转移函数
+	// 把判断的变量值存入$t1寄存器中,再调用转移函数
 	string obj = item.left;
-	string branchReg0 = "$a1";
+	string branchReg0 = "$t1";
 	map<int, string>::iterator itr = varToRegisterMap.find(locateVariable(obj));
 	if (itr != varToRegisterMap.end()) {
 		branchReg0 = itr->second;
@@ -1838,7 +1850,7 @@ void handleBranch(MiddleCode item, ofstream & out) {
 	}
 
 	obj = item.right;
-	string branchReg1 = "$a2";
+	string branchReg1 = "$t2";
 	itr = varToRegisterMap.find(locateVariable(obj));
 	if (itr != varToRegisterMap.end()) {
 		branchReg1 = itr->second;
@@ -2034,6 +2046,9 @@ void getTextSegment(ofstream & out, vector<MiddleCode> QuaterCode) {
 				handleAssignment(item, out);
 			break;
 		case Label:
+			if (item.target.at(0) == '$' && item.target.at(1) == '_') {
+				funcName = inlineName;
+			}
 			out << item.target << ":" << endl;
 			break;
 		case FunctionDef:
@@ -2069,23 +2084,22 @@ void getTextSegment(ofstream & out, vector<MiddleCode> QuaterCode) {
 			if(ULTOP)
 				saveVariable(item.target, "$v0", 0, out);
 			else {
-				locateVariableAddress(item.target, "$a3", out);
-				out << "sw $v0 0($a3)" << endl;
+				locateVariableAddress(item.target, "$t0", out);
+				out << "sw $v0 0($t0)" << endl;
 			}
 			
 			break;
 		}
 		case Print: {
+			map<string, bool>::iterator f;
+			f = inlinable.find(funcName);
+			if (f != inlinable.end() && f->second) {
+				out << "move $k0 $a0" << endl;
+			}
 			if (item.isVal) {
 				itr = varToRegisterMap.find(locateVariable(item.target));
 				if (itr != varToRegisterMap.end()) {
 					out << "move $a0 " << itr->second << endl;
-					if (item.valueType == CharType)
-						out << "li $v0 11" << endl;
-					else
-						out << "li $v0 1" << endl;
-					out << "syscall" << endl;
-					break;
 				}
 				else if (item.target.at(0) == '#') {
 					int g = integerConversion(item.target.substr(1));
@@ -2128,6 +2142,9 @@ void getTextSegment(ofstream & out, vector<MiddleCode> QuaterCode) {
 				out << "li $v0 1" << endl;
 				out << "syscall" << endl;
 			}
+			if (f != inlinable.end() && f->second) {
+				out << "move $a0 $k0" << endl;
+			}
 			break;
 		}
 		
@@ -2140,7 +2157,7 @@ void getTextSegment(ofstream & out, vector<MiddleCode> QuaterCode) {
 					if (f != inlinable.end() && f->second) {
 						for (int i = 0; i < getMaxTemp(funcName); i++)
 							out << "lw $t" << i + 3 << " " << 8 + 4 * i << "($sp)" << endl;
-						funcName = inlineName;
+						
 					}
 					else
 						handleReturn(out);
@@ -2166,7 +2183,7 @@ void getTextSegment(ofstream & out, vector<MiddleCode> QuaterCode) {
 				if (f != inlinable.end() && f->second) {
 					for (int i = 0; i < getMaxTemp(funcName); i++)
 						out << "lw $t" << i + 3 << " " << 8 + 4 * i << "($sp)" << endl;
-					funcName = inlineName;
+					
 				}
 				else
 					handleReturn(out);
@@ -2176,7 +2193,7 @@ void getTextSegment(ofstream & out, vector<MiddleCode> QuaterCode) {
 				if (f != inlinable.end() && f->second) {
 					for (int i = 0; i < getMaxTemp(funcName); i++)
 						out << "lw $t" << i + 3 << " " << 8 + 4 * i << "($sp)" << endl;
-					funcName = inlineName;
+					
 				}
 				else
 					handleReturn(out);
@@ -2188,7 +2205,7 @@ void getTextSegment(ofstream & out, vector<MiddleCode> QuaterCode) {
 				if (f != inlinable.end() && f->second) {
 					for (int i = 0; i < getMaxTemp(funcName); i++)
 						out << "lw $t" << i + 3 << " " << 8 + 4 * i << "($sp)" << endl;
-					funcName = inlineName;
+				
 				}
 				else
 					handleReturn(out);

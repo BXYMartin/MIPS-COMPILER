@@ -29,6 +29,8 @@ void or_ (int dest,int reg1,int reg2);		// Stores the 'or' of values in reg1 and
 void sll(int dest, int reg1, int reg2);
 void mul(int dest, int reg1, int reg2);
 void div(int dest, int reg1, int reg2);
+void divu(int reg1, int reg2);
+void mflo(int dest);
 // Load Immediate
 void li(int dest,int val);
 
@@ -84,9 +86,9 @@ int reg_num(char*alt_name);	// Returns the number of the register given the alte
 
 enum Instruction
 {
-	NOP, ADDOP, ADDU, ADDIU, SUBOP, SUBU, SUBIU, SLT, SLTI, SLL, MUL, DIVOP, AND, OR, ORI, SYSCALL, LW, SW, LI, LA, MOVE, J, JAL, JR, BEQ, BNE, BLT, BLE, BGT, BGE
+	NOP, ADDOP, ADDU, ADDIU, SUBOP, SUBU, SUBIU, SLT, SLTI, SLL, MUL, DIVOP, MFLO, AND, OR, ORI, SYSCALL, LW, SW, LI, LA, MOVE, J, JAL, JR, BEQ, BNE, BLT, BLE, BGT, BGE
 };
-const string Instr[] = { "nop", "add", "addu", "addiu", "sub", "subu", "subiu", "slt", "slti", "sll", "mul", "div", "and", "or", "ori", "syscall", "lw", "sw", "li", "la", "move", "j", "jal", "jr", "beq", "bne", "blt", "ble", "bgt", "bge" };
+const string Instr[] = { "nop", "add", "addu", "addiu", "sub", "subu", "subiu", "slt", "slti", "sll", "mul", "div", "mflo", "and", "or", "ori", "syscall", "lw", "sw", "li", "la", "move", "j", "jal", "jr", "beq", "bne", "blt", "ble", "bgt", "bge" };
 
 struct function {
 	int level;

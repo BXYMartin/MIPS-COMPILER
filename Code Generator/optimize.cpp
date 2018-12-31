@@ -562,11 +562,19 @@ void fixTemp() {
 			}
 			break;
 		case Jump:
-			if ((itr + 1)->type == Label && (itr + 2)->target == itr->target && (itr + 1)->type == Label)
+			if ((itr + 1)->type == Label && (itr + 1)->target == itr->target)
 			{
 				itr--;
 				printOptimize(*(itr + 1));
 				optimizedMiddleCodeArr.erase(itr + 1);
+				break;
+			}
+			if ((itr + 1)->type == Label && (itr + 2)->target == itr->target && (itr + 2)->type == Label)
+			{
+				itr--;
+				printOptimize(*(itr + 1));
+				optimizedMiddleCodeArr.erase(itr + 1);
+				break;
 			}
 		}
 	}
@@ -616,14 +624,8 @@ void inlineDetection() {
 			else
 				inlinable[analysis] = true;
 			continue;
-		case Print:
-		case Read:
 		case FunctionCall:
 			inlinable[analysis] = false;
-			continue;
-		case Return:
-			if (((itr + 1) != (optimizedMiddleCodeArr.end() - 1)) && ((itr + 1)->type) != FunctionDef)
-				inlinable[analysis] = false;
 			continue;
 		}
 	}
@@ -646,10 +648,17 @@ void inlineDetection() {
 	map<string, vector<MiddleCode>> insert;
 	map<string, int> reference;
 	map<string, int>::iterator r;
+	analysis = "";
 	for (vector<MiddleCode>::iterator itr = optimizedMiddleCodeArr.begin(); itr != optimizedMiddleCodeArr.end(); itr++) {
 		map<string, bool>::iterator f;
 		switch (itr->type) {
 		case FunctionDef:
+			if (analysis != "") {
+				MiddleCode temp;
+				temp.type = Label;
+				temp.target = "$_" + analysis;
+				insert[analysis].push_back(temp);
+			}
 			f = inlinable.find(itr->target);
 			if (f != inlinable.end() && f->second)
 				analysis = itr->target;
@@ -665,20 +674,20 @@ void inlineDetection() {
 		case FunctionCall:
 			reference[itr->target] = reference[itr->target] + 1;
 			f = inlinable.find(itr->target);
-			for (vector<MiddleCode>::iterator i = insert[itr->target].begin(); i != insert[itr->target].end(); i++) {
-				switch (i->type) {
-				case Label:
-				case Jump:
-				case BEZ:
-				case BGEZ:
-				case BNZ:
-				case BLZ:
-				case BLEZ:
-				case BGZ:
-					i->target += "_" + to_string(reference[itr->target]);
-				}
-			}
 			if (f != inlinable.end() && f->second) {
+				for (vector<MiddleCode>::iterator i = insert[itr->target].begin(); i != insert[itr->target].end(); i++) {
+					switch (i->type) {
+					case Label:
+					case Jump:
+					case BEZ:
+					case BGEZ:
+					case BNZ:
+					case BLZ:
+					case BLEZ:
+					case BGZ:
+						i->target += "_" + to_string(reference[itr->target]);
+					}
+				}
 				unsigned int offset = itr - optimizedMiddleCodeArr.begin();
 				optimizedMiddleCodeArr.insert(itr + 1, insert[itr->target].begin(), insert[itr->target].end());
 				itr = optimizedMiddleCodeArr.begin() + offset + 1;
@@ -687,6 +696,12 @@ void inlineDetection() {
 		default:
 			if (analysis != "") {
 				insert[analysis].push_back(*itr);
+				if (itr->type == Return) {
+					MiddleCode temp;
+					temp.type = Jump;
+					temp.target = "$_" + analysis;
+					insert[analysis].push_back(temp);
+				}
 				itr--;
 				optimizedMiddleCodeArr.erase(itr + 1);
 			}
@@ -754,12 +769,12 @@ void fixTempOrder() {
 void runOptimization() {
 	blockDivision();
 	optimizeMiddleCode();
-	fixTemp();
 	allocateRegister();
+	if (ULTOP)
+		fixTempOrder();
 	if (INLINE) {
 		inlineDetection();
 	}
-	if(ULTOP)
-		fixTempOrder();
+	fixTemp();
 	evaluateOptimization();
 }
