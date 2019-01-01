@@ -18,7 +18,7 @@ using namespace std;
 #define LEAST_REFERENCE 0
 #define DEBUG	false
 #define NEWLINE true
-#define INORD	false
+#define INORD	true
 #define ULTOP	true
 #define SPEED	true
 #define INLINE	true

@@ -1,248 +1,331 @@
-FUNC char test_if()
-FUNC int test_factorial()
-PARA int n
-BNZ n 0 $Label3
-RET int 1
-JMP $Label4
-LABEL $Label3
-#0 = n - 1
+FUNC int limit2char()
+FUNC int m()
+FUNC void randomset()
+#0 = v1 + 0
+#1 = u1 + 0
 PUSH #0
-CALL test_factorial
+PUSH #1
+CALL m
+BGEZ x 0 $Label1_1
+LABEL $Label3_1
+x = x + m1
+BLZ x 0 $Label3_1
+LABEL $Label1_1
+LABEL $Label2_1
+BGEZ x m1 $Label4_1
+RET id x
+JMP $_m_1
+JMP $Label5_1
+LABEL $Label4_1
+#0 = x / m1
+#1 = #0 * m1
+x = x - #1
+LABEL $Label5_1
+RET id x
+LABEL $_m_1
+#2 = Ret + 0
+b = s[#2]
+RET
+FUNC int normal()
+PARA int c
+PUSH c
+CALL limit2char
+#0 = x / 256
+#1 = #0 * 256
+#2 = x - #1
+RET id #2
+LABEL $_limit2char_1
+c = Ret + 0
+BEZ c 0 $Label6
+JMP $Label7
+LABEL $Label6
+BNZ c 0 $Label8
+PUSH 36
+CALL normal
+#0 = Ret + 0
+PUSH #0
+CALL limit2char
+#0 = x / 256
+#1 = #0 * 256
+#2 = x - #1
+RET id #2
+LABEL $_limit2char_1_2
+RET id Ret
+LABEL $Label8
+LABEL $Label9
+LABEL $Label7
+BEZ c 43 $Label10
+CALL randomset
+LABEL $Label10
+LABEL $Label11
+BLEZ c 47 $Label12
+BGZ c 57 $Label14
+PUSH c
+CALL limit2char
+#0 = x / 256
+#1 = #0 * 256
+#2 = x - #1
+RET id #2
+LABEL $_limit2char_1_2_3
+RET id Ret
+LABEL $Label14
+LABEL $Label15
+LABEL $Label12
+LABEL $Label13
+#0 = c - 32
+PUSH #0
+PUSH 95
+CALL m
+BGEZ x 0 $Label1_1_2
+LABEL $Label3_1_2
+x = x + m1
+BLZ x 0 $Label3_1_2
+LABEL $Label1_1_2
+LABEL $Label2_1_2
+BGEZ x m1 $Label4_1_2
+RET id x
+JMP $_m_1_2
+JMP $Label5_1_2
+LABEL $Label4_1_2
+#0 = x / m1
+#1 = #0 * m1
+x = x - #1
+LABEL $Label5_1_2
+RET id x
+LABEL $_m_1_2
+#2 = Ret + 32
+PUSH #2
+CALL limit2char
+#0 = x / 256
+#1 = #0 * 256
+#2 = x - #1
+RET id #2
+LABEL $_limit2char_1_2_3_4
+RET id Ret
+FUNC void acc()
+PARA int x
+PUSH x
+PUSH 4
+CALL m
+BGEZ x 0 $Label1_1_2_3
+LABEL $Label3_1_2_3
+x = x + m1
+BLZ x 0 $Label3_1_2_3
+LABEL $Label1_1_2_3
+LABEL $Label2_1_2_3
+BGEZ x m1 $Label4_1_2_3
+RET id x
+JMP $_m_1_2_3
+JMP $Label5_1_2_3
+LABEL $Label4_1_2_3
+#0 = x / m1
+#1 = #0 * m1
+x = x - #1
+LABEL $Label5_1_2_3
+RET id x
+LABEL $_m_1_2_3
+#0 = Ret + 0
+PUSH x
+PUSH 4
+CALL m
+BGEZ x 0 $Label1_1_2_3_4
+LABEL $Label3_1_2_3_4
+x = x + m1
+BLZ x 0 $Label3_1_2_3_4
+LABEL $Label1_1_2_3_4
+LABEL $Label2_1_2_3_4
+BGEZ x m1 $Label4_1_2_3_4
+RET id x
+JMP $_m_1_2_3_4
+JMP $Label5_1_2_3_4
+LABEL $Label4_1_2_3_4
+#0 = x / m1
+#1 = #0 * m1
+x = x - #1
+LABEL $Label5_1_2_3_4
+RET id x
+LABEL $_m_1_2_3_4
 #1 = Ret + 0
-RET id #1
-LABEL $Label4
-FUNC int test_while()
-FUNC void test_switch_char()
-FUNC void test_relation()
-FUNC void test_expression()
-var_int_array_1[0] = 3 + 0
-#0 = var_int_array_1[0]
-PUSH 3
-CALL test_factorial
-#1 = Ret + 0
-#2 = -1 - #0
-#3 = #2 + 5
-#4 = #3 + 97
-#5 = #4 + #1
-res = #5 + -3
-PRT string "The result is "
-PRT id res
-ENTER
-PRT string " !#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~"
-ENTER
+#2 = w1[#1]
+w1[#0] = #2 + x
+RET
+FUNC int f()
+PARA int x
+PARA char y
+PUSH y
+CALL normal
+u1 = Ret + 0
+PUSH u1
+CALL acc
+#0 = x * 13
+#1 = #0 + u1
+PUSH #1
+PUSH 100007
+CALL m
+BGEZ x 0 $Label1_1_2_3_4_5
+LABEL $Label3_1_2_3_4_5
+x = x + m1
+BLZ x 0 $Label3_1_2_3_4_5
+LABEL $Label1_1_2_3_4_5
+LABEL $Label2_1_2_3_4_5
+BGEZ x m1 $Label4_1_2_3_4_5
+RET id x
+JMP $_m_1_2_3_4_5
+JMP $Label5_1_2_3_4_5
+LABEL $Label4_1_2_3_4_5
+#0 = x / m1
+#1 = #0 * m1
+x = x - #1
+LABEL $Label5_1_2_3_4_5
+RET id x
+LABEL $_m_1_2_3_4_5
+RET id Ret
+FUNC void hash()
+PARA int seed
+BGZ u1 0 $Label16
+RET
+LABEL $Label16
+LABEL $Label17
+v1 = seed + 0
+i = 0 + 0
+BGEZ i u1 $Label18
+LABEL $Label20
+#0 = v1 + 0
+#1 = s[i]
+PUSH #0
+PUSH #1
+CALL f
+v1 = Ret + 0
+i = i + 1
+BLZ i u1 $Label20
+LABEL $Label18
+LABEL $Label19
 RET
 FUNC void main()
-READ int op
-BEZ op 1 $Label23
-BEZ op 2 $Label24
-BEZ op 3 $Label25
-BEZ op 4 $Label26
-BEZ op 5 $Label27
-BEZ op 6 $Label28
-PRT string "Please input 1~6"
-ENTER
-JMP $Label22
+u1 = 0 + 0
+PUSH 391
+CALL hash
+READ int u1
+i = 0 + 0
+BGEZ i u1 $Label21
 LABEL $Label23
-PRT string "test_if"
-ENTER
-READ int var_int_1
-READ int var_int_2
-PUSH var_int_1
-PUSH var_int_2
-CALL test_if
-BLZ a b $Label1_1
-RET char '9'
-JMP $_test_if_1
-JMP $Label2_1
-LABEL $Label1_1
-RET char '9'
-LABEL $Label2_1
-LABEL $_test_if_1
-var_char_res = Ret + 0
-PRT id var_char_res
-ENTER
-PUSH var_int_2
-PUSH var_int_1
-CALL test_if
-BLZ a b $Label1_1_2
-RET char '9'
-JMP $_test_if_1_2
-JMP $Label2_1_2
-LABEL $Label1_1_2
-RET char '9'
-LABEL $Label2_1_2
-LABEL $_test_if_1_2
-var_char_res = Ret + 0
-PRT id var_char_res
-ENTER
-JMP $Label22
-LABEL $Label24
-PRT string "test_factorial"
-ENTER
-READ int var_int_1
-PUSH var_int_1
-CALL test_factorial
-var_int_res = Ret + 0
-PRT id var_int_res
-ENTER
-JMP $Label22
-LABEL $Label25
-PRT string "test_while"
-ENTER
-CALL test_while
-n = 3 + 0
-LABEL $Label5_1
-n = n - 1
-PRT id n
-ENTER
-BNZ n 0 $Label5_1
-RET int 666
-LABEL $_test_while_1
-var_int_res = Ret + 0
-PRT id var_int_res
-ENTER
-JMP $Label22
-LABEL $Label26
-PRT string "test_switch_char"
-ENTER
-READ char var_char_1
-PUSH var_char_1
-CALL test_switch_char
-BEZ c 97 $Label7_1
-BEZ c 98 $Label8_1
-PRT string "cat"
-ENTER
-JMP $Label6_1
-LABEL $Label7_1
-PRT string "apple"
-ENTER
-PRT string "ali"
-ENTER
-JMP $Label6_1
-LABEL $Label8_1
-PRT string "boy"
-ENTER
-LABEL $Label6_1
-RET
-LABEL $_test_switch_char_1
-READ char var_char_1
-PUSH var_char_1
-CALL test_switch_char
-BEZ c 97 $Label7_1_2
-BEZ c 98 $Label8_1_2
-PRT string "cat"
-ENTER
-JMP $Label6_1_2
-LABEL $Label7_1_2
-PRT string "apple"
-ENTER
-PRT string "ali"
-ENTER
-JMP $Label6_1_2
-LABEL $Label8_1_2
-PRT string "boy"
-ENTER
-LABEL $Label6_1_2
-RET
-LABEL $_test_switch_char_1_2
-READ char var_char_1
-PUSH var_char_1
-CALL test_switch_char
-BEZ c 97 $Label7_1_2_3
-BEZ c 98 $Label8_1_2_3
-PRT string "cat"
-ENTER
-JMP $Label6_1_2_3
-LABEL $Label7_1_2_3
-PRT string "apple"
-ENTER
-PRT string "ali"
-ENTER
-JMP $Label6_1_2_3
-LABEL $Label8_1_2_3
-PRT string "boy"
-ENTER
-LABEL $Label6_1_2_3
-RET
-LABEL $_test_switch_char_1_2_3
-JMP $Label22
-LABEL $Label27
-PRT string "test_relation"
-ENTER
-READ int var_int_1
-PUSH var_int_1
-CALL test_relation
-BGEZ n 3 $Label10_1
-PRT string "<"
-ENTER
-LABEL $Label10_1
-LABEL $Label11_1
-BGZ n 4 $Label12_1
-PRT string "<="
-ENTER
-LABEL $Label12_1
-LABEL $Label13_1
-BLEZ n 5 $Label14_1
-PRT string ">"
-ENTER
-LABEL $Label14_1
-LABEL $Label15_1
-BLZ n 6 $Label16_1
-PRT string ">="
-ENTER
-LABEL $Label16_1
-LABEL $Label17_1
-BEZ n 7 $Label18_1
-PRT string "!="
-ENTER
-LABEL $Label18_1
-LABEL $Label19_1
-BNZ n 8 $Label20_1
-PRT string "=="
-ENTER
-LABEL $Label20_1
-LABEL $Label21_1
-RET
-LABEL $_test_relation_1
-READ int var_int_1
-PUSH var_int_1
-CALL test_relation
-BGEZ n 3 $Label10_1_2
-PRT string "<"
-ENTER
-LABEL $Label10_1_2
-LABEL $Label11_1_2
-BGZ n 4 $Label12_1_2
-PRT string "<="
-ENTER
-LABEL $Label12_1_2
-LABEL $Label13_1_2
-BLEZ n 5 $Label14_1_2
-PRT string ">"
-ENTER
-LABEL $Label14_1_2
-LABEL $Label15_1_2
-BLZ n 6 $Label16_1_2
-PRT string ">="
-ENTER
-LABEL $Label16_1_2
-LABEL $Label17_1_2
-BEZ n 7 $Label18_1_2
-PRT string "!="
-ENTER
-LABEL $Label18_1_2
-LABEL $Label19_1_2
-BNZ n 8 $Label20_1_2
-PRT string "=="
-ENTER
-LABEL $Label20_1_2
-LABEL $Label21_1_2
-RET
-LABEL $_test_relation_1_2
-JMP $Label22
-LABEL $Label28
-PRT string "test_expression"
-ENTER
-CALL test_expression
+READ char p
+s[i] = p + 0
+i = i + 1
+BLZ i u1 $Label23
+LABEL $Label21
 LABEL $Label22
-EXIT
+PUSH -20
+PUSH 2
+CALL m
+BGEZ x 0 $Label1_1_2_3_4_5_6
+LABEL $Label3_1_2_3_4_5_6
+x = x + m1
+BLZ x 0 $Label3_1_2_3_4_5_6
+LABEL $Label1_1_2_3_4_5_6
+LABEL $Label2_1_2_3_4_5_6
+BGEZ x m1 $Label4_1_2_3_4_5_6
+RET id x
+JMP $_m_1_2_3_4_5_6
+JMP $Label5_1_2_3_4_5_6
+LABEL $Label4_1_2_3_4_5_6
+#0 = x / m1
+#1 = #0 * m1
+x = x - #1
+LABEL $Label5_1_2_3_4_5_6
+RET id x
+LABEL $_m_1_2_3_4_5_6
+i = Ret + 0
+PUSH 1
+PUSH 2
+CALL m
+BGEZ x 0 $Label1_1_2_3_4_5_6_7
+LABEL $Label3_1_2_3_4_5_6_7
+x = x + m1
+BLZ x 0 $Label3_1_2_3_4_5_6_7
+LABEL $Label1_1_2_3_4_5_6_7
+LABEL $Label2_1_2_3_4_5_6_7
+BGEZ x m1 $Label4_1_2_3_4_5_6_7
+RET id x
+JMP $_m_1_2_3_4_5_6_7
+JMP $Label5_1_2_3_4_5_6_7
+LABEL $Label4_1_2_3_4_5_6_7
+#0 = x / m1
+#1 = #0 * m1
+x = x - #1
+LABEL $Label5_1_2_3_4_5_6_7
+RET id x
+LABEL $_m_1_2_3_4_5_6_7
+i = Ret + 0
+PUSH 3
+PUSH 2
+CALL m
+BGEZ x 0 $Label1_1_2_3_4_5_6_7_8
+LABEL $Label3_1_2_3_4_5_6_7_8
+x = x + m1
+BLZ x 0 $Label3_1_2_3_4_5_6_7_8
+LABEL $Label1_1_2_3_4_5_6_7_8
+LABEL $Label2_1_2_3_4_5_6_7_8
+BGEZ x m1 $Label4_1_2_3_4_5_6_7_8
+RET id x
+JMP $_m_1_2_3_4_5_6_7_8
+JMP $Label5_1_2_3_4_5_6_7_8
+LABEL $Label4_1_2_3_4_5_6_7_8
+#0 = x / m1
+#1 = #0 * m1
+x = x - #1
+LABEL $Label5_1_2_3_4_5_6_7_8
+RET id x
+LABEL $_m_1_2_3_4_5_6_7_8
+i = Ret + 0
+PUSH 0
+CALL normal
+c = Ret + 0
+PUSH 43
+CALL normal
+c = Ret + 0
+PUSH 47
+CALL normal
+c = Ret + 0
+PUSH 49
+CALL normal
+c = Ret + 0
+#0 = u1 + 0
+PRT id #0
+ENTER
+PRT string " | "
+ENTER
+i = u1 - 1
+BLZ i 0 $Label24
+LABEL $Label26
+c = s[i]
+PRT id c
+ENTER
+i = i - 1
+BGEZ i 0 $Label26
+LABEL $Label24
+LABEL $Label25
+PUSH 391
+CALL hash
+PRT string " | v1: "
+#0 = v1 + 0
+PRT id #0
+ENTER
+#0 = b + 0
+PUSH #0
+CALL normal
+c = Ret + 0
+PRT string " | b: "
+PRT id c
+ENTER
+i = 0 + 0
+BGEZ i 4 $Label27
+LABEL $Label29
+PRT string " | "
+#0 = w1[i]
+PRT id #0
+ENTER
+i = i + 1
+BLZ i 4 $Label29
+LABEL $Label27
+LABEL $Label28

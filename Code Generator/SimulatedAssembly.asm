@@ -1,805 +1,590 @@
 .data
-	$String37:.asciiz "wrongwhile1"
-	$String38:.asciiz "wrongwhile2"
-	$String39:.asciiz "wrongwhile3"
-	$String40:.asciiz "wrong1"
-	$String41:.asciiz "wrong2"
-	$String42:.asciiz "wrong3"
-	$String43:.asciiz "wrong4"
-	$String44:.asciiz "wrong5"
-	$String45:.asciiz "wrong6"
-	$String46:.asciiz "wrong7"
-	$String47:.asciiz "wrong8"
-	$String48:.asciiz "wrong9"
-	$String49:.asciiz "wrong10"
-	$String50:.asciiz "wrong11"
-	$String51:.asciiz "wrong12"
-	$String52:.asciiz "wrongt7t8neq\\n\\t\\r"
-	$String53:.asciiz "wrong\\n"
-	$String54:.asciiz "right\\n"
+	$String7:.asciiz " | "
+	$String8:.asciiz " | v1: "
+	$String9:.asciiz " | b: "
 .globl main
 .text
-init:
+limit2char:
 move $a0 $a0
-addiu $fp $sp 12
-addiu $sp $sp 24
-add:
-move $a0 $a0
-move $a1 $a1
-addiu $fp $sp 20
-addiu $sp $sp 36
-addx:
-addiu $fp $sp 8
-addiu $sp $sp 16
-addx1:
-addiu $fp $sp 8
-addiu $sp $sp 16
-tolow:
-move $a0 $a0
-addiu $fp $sp 16
-addiu $sp $sp 32
-fib:
-move $s0 $a0
 addiu $fp $sp 24
 addiu $sp $sp 36
-bne $s0 1 $Label3
-li $v0 1
-jr $ra
-j $Label4
-$Label3:
-bne $s0 2 $Label5
-li $v0 1
-jr $ra
-j $Label6
-$Label5:
-bne $s0 -100 $Label7
-li $v0 -100
-jr $ra
-$Label7:
-$Label8:
-$Label6:
-$Label4:
-bne $s0 2 $Label9
-li $v0 1
-jr $ra
-$Label9:
-$Label10:
-subu $t3 $s0 1
-move $a0 $t3
-sw $t3 8($sp)
-sw $t4 12($sp)
-sw $t5 16($sp)
-sw $s0 20($sp)
-sw $ra 24($sp)
-jal fib
-addiu $sp $fp -24
-lw $t3 8($sp)
-lw $t4 12($sp)
-lw $t5 16($sp)
-lw $s0 20($sp)
-lw $ra 0($fp)
-addiu $fp $sp -12
-addiu $t4 $v0 0
-subu $t5 $s0 2
-move $a0 $t5
-sw $t3 8($sp)
-sw $t4 12($sp)
-sw $t5 16($sp)
-sw $s0 20($sp)
-sw $ra 24($sp)
-jal fib
-addiu $sp $fp -24
-lw $t3 8($sp)
-lw $t4 12($sp)
-lw $t5 16($sp)
-lw $s0 20($sp)
-lw $ra 0($fp)
-addiu $fp $sp -12
-addu $t7 $t4 $v0
-move $v0 $t7
-jr $ra
-testif:
+m:
+move $a0 $a0
+move $a1 $a1
+addiu $fp $sp 24
+addiu $sp $sp 40
+randomset:
 addiu $fp $sp 8
 addiu $sp $sp 16
+lw $t1 32($gp)
+addiu $t3 $t1 0
 lw $t1 0($gp)
-bne $t1 1 $Label11
-li $t1 1
-sw $t1 4($gp)
-j $Label12
-$Label11:
-li $t1 2
-sw $t1 4($gp)
-$Label12:
-lw $t1 4($gp)
-beq $t1 1 $Label13
-li $t1 0
-sw $t1 16($gp)
-$Label13:
-$Label14:
-lw $t1 0($gp)
-blt $t1 1 $Label15
-li $t1 3
-sw $t1 4($gp)
-j $Label16
-$Label15:
-li $t1 4
-sw $t1 4($gp)
-$Label16:
-lw $t1 4($gp)
-beq $t1 3 $Label17
-li $t1 0
-sw $t1 16($gp)
-$Label17:
-$Label18:
-lw $t1 0($gp)
-addiu $t1 $t1 1
-sw $t1 0($gp)
-lw $t1 0($gp)
-bgt $t1 1 $Label19
-li $t1 5
-sw $t1 4($gp)
-j $Label20
-$Label19:
-li $t1 6
-sw $t1 4($gp)
-$Label20:
-lw $t1 4($gp)
-beq $t1 6 $Label21
-li $t1 0
-sw $t1 16($gp)
-$Label21:
-$Label22:
-lw $t1 0($gp)
-ble $t1 1 $Label23
-li $t1 7
-sw $t1 4($gp)
-j $Label24
-$Label23:
-li $t1 8
-sw $t1 4($gp)
-$Label24:
-lw $t1 4($gp)
-beq $t1 7 $Label25
-li $t1 0
-sw $t1 16($gp)
-$Label25:
-$Label26:
-lw $t1 0($gp)
-bge $t1 0 $Label27
-li $t1 9
-sw $t1 4($gp)
-j $Label28
-$Label27:
-li $t1 10
-sw $t1 4($gp)
-$Label28:
-lw $t1 4($gp)
-beq $t1 10 $Label29
-li $t1 0
-sw $t1 16($gp)
-$Label29:
-$Label30:
-li $a0 8
+addiu $t4 $t1 0
+move $a0 $t3
+move $a1 $t4
 sw $t3 8($sp)
 sw $t4 12($sp)
-sw $t5 16($sp)
-sw $s0 20($sp)
-sw $ra 24($sp)
-jal fib
-addiu $sp $fp -24
+bge $a0 0 $Label1_1
+$Label3_1:
+addu $a0 $a0 $a1
+blt $a0 0 $Label3_1
+$Label1_1:
+$Label2_1:
+bge $a0 $a1 $Label4_1
+move $v0 $a0
 lw $t3 8($sp)
 lw $t4 12($sp)
-lw $t5 16($sp)
-lw $s0 20($sp)
-lw $ra 0($fp)
-addiu $fp $sp -8
-subu $t1 $v0 1
-sw $t1 0($gp)
-lw $t1 0($gp)
-beq $t1 20 $Label31
-li $t1 11
-sw $t1 4($gp)
-j $Label32
-$Label31:
-li $t1 12
-sw $t1 4($gp)
-$Label32:
-lw $t1 4($gp)
-beq $t1 12 $Label33
-li $t1 0
-sw $t1 16($gp)
-$Label33:
-$Label34:
-li $t1 2
-sw $t1 0($gp)
+j $_m_1
+j $Label5_1
+$Label4_1:
+div $a0 $a1
+mflo $t3
+mul $t4 $t3 $a1
+subu $a0 $a0 $t4
+$Label5_1:
+move $v0 $a0
+lw $t3 8($sp)
+lw $t4 12($sp)
+$_m_1:
+addiu $t5 $v0 0
+addiu $t1 $gp 56
+sll $t2 $t5 2
+addu $t1 $t1 $t2
+lw $t1 0($t1)
+sw $t1 52($gp)
 jr $ra
-testcase1:
-move $a0 $a0
+normal:
+move $s0 $a0
 addiu $fp $sp 16
 addiu $sp $sp 28
-testcase2:
-move $a0 $a0
+move $a0 $s0
+sw $t3 8($sp)
+sw $t4 12($sp)
+sw $t5 16($sp)
+div $t3 $a0 256
+mul $t4 $t3 256
+subu $t5 $a0 $t4
+move $v0 $t5
+lw $t3 8($sp)
+lw $t4 12($sp)
+lw $t5 16($sp)
+$_limit2char_1:
+addiu $s0 $v0 0
+beq $s0 0 $Label6
+j $Label7
+$Label6:
+bne $s0 0 $Label8
+li $a0 36
+sw $t3 8($sp)
+sw $s0 12($sp)
+sw $ra 16($sp)
+jal normal
+addiu $sp $fp -16
+lw $t3 8($sp)
+lw $s0 12($sp)
+lw $ra 0($fp)
+addiu $fp $sp -12
+addiu $t3 $v0 0
+move $a0 $t3
+sw $t3 8($sp)
+sw $t4 12($sp)
+sw $t5 16($sp)
+div $t3 $a0 256
+mul $t4 $t3 256
+subu $t5 $a0 $t4
+move $v0 $t5
+lw $t3 8($sp)
+lw $t4 12($sp)
+lw $t5 16($sp)
+$_limit2char_1_2:
+jr $ra
+$Label8:
+$Label9:
+$Label7:
+beq $s0 43 $Label10
+sw $ra 8($sp)
+jal randomset
+addiu $sp $fp -8
+lw $ra 0($fp)
+addiu $fp $sp -12
+$Label10:
+$Label11:
+ble $s0 47 $Label12
+bgt $s0 57 $Label14
+move $a0 $s0
+sw $t3 8($sp)
+sw $t4 12($sp)
+sw $t5 16($sp)
+div $t3 $a0 256
+mul $t4 $t3 256
+subu $t5 $a0 $t4
+move $v0 $t5
+lw $t3 8($sp)
+lw $t4 12($sp)
+lw $t5 16($sp)
+$_limit2char_1_2_3:
+jr $ra
+$Label14:
+$Label15:
+$Label12:
+$Label13:
+subu $t3 $s0 32
+move $a0 $t3
+li $a1 95
+sw $t3 8($sp)
+sw $t4 12($sp)
+bge $a0 0 $Label1_1_2
+$Label3_1_2:
+addu $a0 $a0 $a1
+blt $a0 0 $Label3_1_2
+$Label1_1_2:
+$Label2_1_2:
+bge $a0 $a1 $Label4_1_2
+move $v0 $a0
+lw $t3 8($sp)
+lw $t4 12($sp)
+j $_m_1_2
+j $Label5_1_2
+$Label4_1_2:
+div $a0 $a1
+mflo $t3
+mul $t4 $t3 $a1
+subu $a0 $a0 $t4
+$Label5_1_2:
+move $v0 $a0
+lw $t3 8($sp)
+lw $t4 12($sp)
+$_m_1_2:
+addiu $t5 $v0 32
+move $a0 $t5
+sw $t3 8($sp)
+sw $t4 12($sp)
+sw $t5 16($sp)
+div $t3 $a0 256
+mul $t4 $t3 256
+subu $t5 $a0 $t4
+move $v0 $t5
+lw $t3 8($sp)
+lw $t4 12($sp)
+lw $t5 16($sp)
+$_limit2char_1_2_3_4:
+jr $ra
+acc:
+move $s0 $a0
 addiu $fp $sp 12
 addiu $sp $sp 24
-test_do_while:
-sw $a0 16($sp)
-addiu $fp $sp 8
-addiu $sp $sp 20
-$Label42:
-lw $t1 0($gp)
-addiu $t1 $t1 1
-sw $t1 0($gp)
-li $v0 0
-$_addx1_1:
-lw $t1 0($gp)
-blt $t1 5 $Label42
-lw $t1 0($gp)
-beq $t1 5 $Label43
-la $a0 $String37
-li $v0 4
-syscall
-li $a0 10
-li $v0 11
-syscall
-li $t1 0
-sw $t1 16($gp)
-$Label43:
-$Label44:
-li $t1 3
-sw $t1 4($gp)
-$Label45:
-lw $t1 0($gp)
-addiu $t1 $t1 1
-sw $t1 0($gp)
-lw $t1 0($gp)
-blt $t1 8 $Label45
-lw $t1 0($gp)
-beq $t1 8 $Label46
-li $t1 0
-sw $t1 16($gp)
-$Label46:
-$Label47:
-$Label48:
-$Label49:
-lw $t1 0($gp)
-subu $t1 $t1 1
-sw $t1 0($gp)
-lw $t1 0($gp)
-bge $t1 0 $Label49
-lw $t1 4($gp)
-subu $t1 $t1 1
-sw $t1 4($gp)
-lw $t1 4($gp)
-bge $t1 1 $Label48
-lw $t1 0($gp)
-beq $t1 -3 $Label50
-la $a0 $String38
-li $v0 4
-syscall
-li $a0 10
-li $v0 11
-syscall
-li $t1 0
-sw $t1 16($gp)
-$Label50:
-$Label51:
-lw $t1 4($gp)
-beq $t1 0 $Label52
-la $a0 $String39
-li $v0 4
-syscall
-li $a0 10
-li $v0 11
-syscall
-li $t1 0
-sw $t1 16($gp)
-$Label52:
-$Label53:
-jr $ra
-main:
-li $k1 268501156
-addiu $fp $gp 20
-addiu $sp $fp 832
-li $t1 1
-sw $t1 16($gp)
-li $s1 97
-move $a0 $s1
-addiu $a1 $a0 0
-move $v0 $a1
-$_tolow_1:
-sw $v0 468($fp)
-li $a0 5
-sw $t3 8($sp)
-sw $t4 12($sp)
-sw $t5 16($sp)
-sw $s0 20($sp)
-sw $ra 24($sp)
-jal fib
-addiu $sp $fp -24
-lw $t3 8($sp)
-lw $t4 12($sp)
-lw $t5 16($sp)
-lw $s0 20($sp)
-lw $ra 0($fp)
-addiu $fp $sp -832
-sw $v0 56($fp)
-li $a0 3
-sw $t3 8($sp)
-sw $t4 12($sp)
-sw $t5 16($sp)
-sw $s0 20($sp)
-sw $ra 24($sp)
-jal fib
-addiu $sp $fp -24
-lw $t3 8($sp)
-lw $t4 12($sp)
-lw $t5 16($sp)
-lw $s0 20($sp)
-lw $ra 0($fp)
-addiu $fp $sp -832
-addiu $s4 $v0 0
-lw $t3 468($fp)
-lw $t4 56($fp)
-mul $t5 $t4 -1
-mul $t6 $t5 $s4
-addu $t7 $t3 $t6
-div $t8 $t7 2
-subu $t9 $t8 48
-addiu $t1 $t9 123
-sw $t1 -4($sp)
-lw $t1 -4($sp)
-beq $t1 118 $Label54
-la $a0 $String40
-li $v0 4
-syscall
-li $a0 10
-li $v0 11
-syscall
-li $t1 0
-sw $t1 16($gp)
-j $Label55
-$Label54:
-li $a0 48
-addiu $a1 $a0 0
-move $v0 $a1
-$_tolow_1_2:
-addiu $t4 $v0 -909
-beq $t4 -861 $Label56
-la $a0 $String41
-li $v0 4
-syscall
-li $a0 48
-addiu $a1 $a0 0
-move $v0 $a1
-$_tolow_1_2_3:
-addiu $t4 $v0 -909
-move $a0 $t4
-li $v0 1
-syscall
-li $a0 10
-li $v0 11
-syscall
-li $t1 0
-sw $t1 16($gp)
-$Label56:
-$Label57:
-$Label55:
-li $a0 2
-sw $a0 0($gp)
-j $_init_1
-$_init_1:
-lw $t1 0($gp)
-beq $t1 2 $Label58
-la $a0 $String42
-li $v0 4
-syscall
-li $a0 10
-li $v0 11
-syscall
-li $t1 0
-sw $t1 16($gp)
-$Label58:
-$Label59:
-lw $t3 56($fp)
-li $a0 3
-move $a1 $t3
-sw $t3 8($sp)
-addu $t3 $a0 $a1
-move $v0 $t3
-lw $t3 8($sp)
-$_add_1:
-beq $v0 8 $Label60
-la $a0 $String43
-li $v0 4
-syscall
-li $a0 10
-li $v0 11
-syscall
-li $t1 0
-sw $t1 16($gp)
-j $Label61
-$Label60:
-li $a0 10
-sw $t3 8($sp)
-sw $t4 12($sp)
-sw $t5 16($sp)
-sw $s0 20($sp)
-sw $ra 24($sp)
-jal fib
-addiu $sp $fp -24
-lw $t3 8($sp)
-lw $t4 12($sp)
-lw $t5 16($sp)
-lw $s0 20($sp)
-lw $ra 0($fp)
-addiu $fp $sp -832
-beq $v0 55 $Label62
-la $a0 $String44
-li $v0 4
-syscall
-li $a0 10
-li $v0 11
-syscall
-li $t1 0
-sw $t1 16($gp)
-$Label62:
-$Label63:
-$Label61:
-move $a0 $s1
-addiu $a1 $a0 0
-move $v0 $a1
-$_tolow_1_2_3_4:
-addiu $t3 $v0 0
-li $a0 -2
+move $a0 $s0
 li $a1 4
 sw $t3 8($sp)
-addu $t3 $a0 $a1
-move $v0 $t3
+sw $t4 12($sp)
+bge $a0 0 $Label1_1_2_3
+$Label3_1_2_3:
+addu $a0 $a0 $a1
+blt $a0 0 $Label3_1_2_3
+$Label1_1_2_3:
+$Label2_1_2_3:
+bge $a0 $a1 $Label4_1_2_3
+move $v0 $a0
 lw $t3 8($sp)
-$_add_1_2:
+lw $t4 12($sp)
+j $_m_1_2_3
+j $Label5_1_2_3
+$Label4_1_2_3:
+div $a0 $a1
+mflo $t3
+mul $t4 $t3 $a1
+subu $a0 $a0 $t4
+$Label5_1_2_3:
+move $v0 $a0
+lw $t3 8($sp)
+lw $t4 12($sp)
+$_m_1_2_3:
+addiu $t3 $v0 0
+move $a0 $s0
+li $a1 4
+sw $t3 8($sp)
+sw $t4 12($sp)
+bge $a0 0 $Label1_1_2_3_4
+$Label3_1_2_3_4:
+addu $a0 $a0 $a1
+blt $a0 0 $Label3_1_2_3_4
+$Label1_1_2_3_4:
+$Label2_1_2_3_4:
+bge $a0 $a1 $Label4_1_2_3_4
+move $v0 $a0
+lw $t3 8($sp)
+lw $t4 12($sp)
+j $_m_1_2_3_4
+j $Label5_1_2_3_4
+$Label4_1_2_3_4:
+div $a0 $a1
+mflo $t3
+mul $t4 $t3 $a1
+subu $a0 $a0 $t4
+$Label5_1_2_3_4:
+move $v0 $a0
+lw $t3 8($sp)
+lw $t4 12($sp)
+$_m_1_2_3_4:
 addiu $t4 $v0 0
+addiu $t1 $gp 36
+sll $t2 $t4 2
+addu $t1 $t1 $t2
+lw $t5 0($t1)
+addu $t1 $t5 $s0
+sll $t0 $t3 2
+addu $t0 $gp $t0
+sw $t1 36($t0)
+jr $ra
+f:
+move $s2 $a0
+move $s1 $a1
+addiu $fp $sp 28
+addiu $sp $sp 48
+move $a0 $s1
+sw $t3 8($sp)
+sw $s0 12($sp)
+sw $ra 16($sp)
+jal normal
+addiu $sp $fp -16
+lw $t3 8($sp)
+lw $s0 12($sp)
+lw $ra 0($fp)
+addiu $fp $sp -20
+addiu $s0 $v0 0
+move $a0 $s0
+sw $s0 8($sp)
+sw $ra 12($sp)
+jal acc
+addiu $sp $fp -12
+lw $s0 8($sp)
+lw $ra 0($fp)
+addiu $fp $sp -20
+mul $t3 $s2 13
+addu $t4 $t3 $s0
 move $a0 $t4
+li $a1 100007
 sw $t3 8($sp)
 sw $t4 12($sp)
-sw $t5 16($sp)
-sw $s0 20($sp)
-sw $ra 24($sp)
-jal fib
-addiu $sp $fp -24
+bge $a0 0 $Label1_1_2_3_4_5
+$Label3_1_2_3_4_5:
+addu $a0 $a0 $a1
+blt $a0 0 $Label3_1_2_3_4_5
+$Label1_1_2_3_4_5:
+$Label2_1_2_3_4_5:
+bge $a0 $a1 $Label4_1_2_3_4_5
+move $v0 $a0
 lw $t3 8($sp)
 lw $t4 12($sp)
-lw $t5 16($sp)
-lw $s0 20($sp)
-lw $ra 0($fp)
-addiu $fp $sp -832
-addu $t1 $t3 $v0
-sw $t1 0($gp)
+j $_m_1_2_3_4_5
+j $Label5_1_2_3_4_5
+$Label4_1_2_3_4_5:
+div $a0 $a1
+mflo $t3
+mul $t4 $t3 $a1
+subu $a0 $a0 $t4
+$Label5_1_2_3_4_5:
+move $v0 $a0
+lw $t3 8($sp)
+lw $t4 12($sp)
+$_m_1_2_3_4_5:
+jr $ra
+hash:
+move $s1 $a0
+addiu $fp $sp 16
+addiu $sp $sp 32
 lw $t1 0($gp)
-addiu $t1 $t1 1
-sw $t1 0($gp)
-lw $t1 0($gp)
-beq $t1 99 $Label1_1
-li $v0 -100
-j $_addx_1
-j $Label2_1
-$Label1_1:
-li $v0 100
-$Label2_1:
-$_addx_1:
-beq $v0 100 $Label64
-la $a0 $String45
-li $v0 4
-syscall
-li $a0 10
-li $v0 11
-syscall
-li $t1 0
-sw $t1 16($gp)
-$Label64:
-$Label65:
-li $t1 1
-sw $t1 0($gp)
-sw $ra 8($sp)
-jal testif
-addiu $sp $fp -8
-lw $ra 0($fp)
-addiu $fp $sp -832
-lw $a0 0($gp)
-sw $t3 8($sp)
-beq $a0 1 $Label36_1
-beq $a0 2 $Label37_1
-li $v0 3
-lw $t3 8($sp)
-j $_testcase1_1
-j $Label35_1
-$Label36_1:
-li $v0 1
-lw $t3 8($sp)
-j $_testcase1_1
-j $Label35_1
-$Label37_1:
-li $v0 2
-lw $t3 8($sp)
-j $_testcase1_1
-$Label35_1:
-$_testcase1_1:
-beq $v0 2 $Label66
-la $a0 $String46
-li $v0 4
-syscall
-li $a0 10
-li $v0 11
-syscall
-li $t1 0
-sw $t1 16($gp)
-$Label66:
-$Label67:
-li $a0 3
+bgt $t1 0 $Label16
+jr $ra
+$Label16:
+$Label17:
+sw $s1 32($gp)
+li $s0 0
+lw $t2 0($gp)
+bge $s0 $t2 $Label18
+$Label20:
+lw $t1 32($gp)
+addiu $t3 $t1 0
+addiu $t1 $gp 56
+sll $t2 $s0 2
+addu $t1 $t1 $t2
+lw $t4 0($t1)
+move $a0 $t3
+move $a1 $t4
 sw $t3 8($sp)
 sw $t4 12($sp)
-sw $t5 16($sp)
-sw $s0 20($sp)
-sw $ra 24($sp)
-jal fib
-addiu $sp $fp -24
+sw $s0 16($sp)
+sw $s1 20($sp)
+sw $s2 24($sp)
+sw $ra 28($sp)
+jal f
+addiu $sp $fp -28
 lw $t3 8($sp)
 lw $t4 12($sp)
-lw $t5 16($sp)
-lw $s0 20($sp)
+lw $s0 16($sp)
+lw $s1 20($sp)
+lw $s2 24($sp)
 lw $ra 0($fp)
-addiu $fp $sp -832
-addiu $t3 $v0 0
-li $a0 1
-sw $t3 8($sp)
-beq $a0 1 $Label36_1_2
-beq $a0 2 $Label37_1_2
-li $v0 3
-lw $t3 8($sp)
-j $_testcase1_1_2
-j $Label35_1_2
-$Label36_1_2:
-li $v0 1
-lw $t3 8($sp)
-j $_testcase1_1_2
-j $Label35_1_2
-$Label37_1_2:
-li $v0 2
-lw $t3 8($sp)
-j $_testcase1_1_2
-$Label35_1_2:
-$_testcase1_1_2:
-subu $t5 $t3 $v0
-move $a0 $t5
-li $a1 1
-sw $t3 8($sp)
-addu $t3 $a0 $a1
-move $v0 $t3
-lw $t3 8($sp)
-$_add_1_2_3:
+addiu $fp $sp -16
+sw $v0 32($gp)
+addiu $s0 $s0 1
+lw $t2 0($gp)
+blt $s0 $t2 $Label20
+$Label18:
+$Label19:
+jr $ra
+main:
+li $k1 268501012
+addiu $fp $gp 40056
+addiu $sp $fp 20
+li $t1 0
+sw $t1 0($gp)
+li $a0 391
+sw $s0 8($sp)
+sw $s1 12($sp)
+sw $ra 16($sp)
+jal hash
+addiu $sp $fp -16
+lw $s0 8($sp)
+lw $s1 12($sp)
+lw $ra 0($fp)
+addiu $fp $sp -20
+li $v0 5
+syscall
 sw $v0 0($gp)
-lw $t1 0($gp)
-subu $t3 $t1 1
-move $a0 $t3
-sw $t3 8($sp)
-beq $a0 1 $Label36_1_2_3
-beq $a0 2 $Label37_1_2_3
-li $v0 3
-lw $t3 8($sp)
-j $_testcase1_1_2_3
-j $Label35_1_2_3
-$Label36_1_2_3:
-li $v0 1
-lw $t3 8($sp)
-j $_testcase1_1_2_3
-j $Label35_1_2_3
-$Label37_1_2_3:
-li $v0 2
-lw $t3 8($sp)
-j $_testcase1_1_2_3
-$Label35_1_2_3:
-$_testcase1_1_2_3:
-beq $v0 1 $Label68
-la $a0 $String47
-li $v0 4
-syscall
-li $a0 10
-li $v0 11
-syscall
-li $t1 0
-sw $t1 16($gp)
-$Label68:
-$Label69:
-li $t1 -1
-sw $t1 0($gp)
-lw $a0 0($gp)
-sw $t3 8($sp)
-beq $a0 1 $Label36_1_2_3_4
-beq $a0 2 $Label37_1_2_3_4
-li $v0 3
-lw $t3 8($sp)
-j $_testcase1_1_2_3_4
-j $Label35_1_2_3_4
-$Label36_1_2_3_4:
-li $v0 1
-lw $t3 8($sp)
-j $_testcase1_1_2_3_4
-j $Label35_1_2_3_4
-$Label37_1_2_3_4:
-li $v0 2
-lw $t3 8($sp)
-j $_testcase1_1_2_3_4
-$Label35_1_2_3_4:
-$_testcase1_1_2_3_4:
-addiu $t3 $v0 0
-lw $t4 56($fp)
-li $a0 6
-sw $t3 8($sp)
-sw $t4 12($sp)
-sw $t5 16($sp)
-sw $s0 20($sp)
-sw $ra 24($sp)
-jal fib
-addiu $sp $fp -24
-lw $t3 8($sp)
-lw $t4 12($sp)
-lw $t5 16($sp)
-lw $s0 20($sp)
-lw $ra 0($fp)
-addiu $fp $sp -832
-addiu $t5 $v0 0
-li $t0 0
-subu $t6 $t0 $t4
-addu $t7 $t6 $t5
-beq $t3 $t7 $Label70
-la $a0 $String48
-li $v0 4
-syscall
-li $a0 10
-li $v0 11
-syscall
-li $t1 0
-sw $t1 16($gp)
-$Label70:
-$Label71:
-li $t1 0
-sw $t1 0($gp)
-lw $a0 0($gp)
-sw $ra 8($sp)
-jal test_do_while
-addiu $sp $fp -8
-lw $ra 0($fp)
-addiu $fp $sp -832
-li $v0 5
-syscall
-move $s3 $v0
-li $v0 5
-syscall
-move $s2 $v0
-subu $t3 $s3 1
-move $a0 $t3
-sw $t3 8($sp)
-sw $t4 12($sp)
-sw $t5 16($sp)
-sw $s0 20($sp)
-sw $ra 24($sp)
-jal fib
-addiu $sp $fp -24
-lw $t3 8($sp)
-lw $t4 12($sp)
-lw $t5 16($sp)
-lw $s0 20($sp)
-lw $ra 0($fp)
-addiu $fp $sp -832
-addu $t5 $v0 $s2
-beq $t5 5 $Label72
-la $a0 $String49
-li $v0 4
-syscall
-li $a0 10
-li $v0 11
-syscall
-li $t1 0
-sw $t1 16($gp)
-$Label72:
-$Label73:
-li $s0 97
-move $a0 $s0
-beq $a0 97 $Label40_1
-li $v0 2
-j $_testcase2_1
-j $Label39_1
-$Label40_1:
-li $v0 1
-j $_testcase2_1
-$Label39_1:
-$_testcase2_1:
-li $t0 0
-subu $t4 $t0 $v0
-move $a0 $s2
-sw $t3 8($sp)
-sw $t4 12($sp)
-sw $t5 16($sp)
-sw $s0 20($sp)
-sw $ra 24($sp)
-jal fib
-addiu $sp $fp -24
-lw $t3 8($sp)
-lw $t4 12($sp)
-lw $t5 16($sp)
-lw $s0 20($sp)
-lw $ra 0($fp)
-addiu $fp $sp -832
-li $t0 0
-subu $t6 $t0 $v0
-beq $t4 $t6 $Label74
-la $a0 $String50
-li $v0 4
-syscall
-li $a0 10
-li $v0 11
-syscall
-li $t1 0
-sw $t1 16($gp)
-$Label74:
-$Label75:
-li $s0 98
-move $a0 $s0
-beq $a0 97 $Label40_1_2
-li $v0 2
-j $_testcase2_1_2
-j $Label39_1_2
-$Label40_1_2:
-li $v0 1
-j $_testcase2_1_2
-$Label39_1_2:
-$_testcase2_1_2:
-beq $v0 $s2 $Label76
-la $a0 $String51
-li $v0 4
-syscall
-li $a0 10
-li $v0 11
-syscall
-li $t1 0
-sw $t1 16($gp)
-$Label76:
-$Label77:
-li $v0 12
-syscall
-move $s0 $v0
+li $s0 0
+lw $t2 0($gp)
+bge $s0 $t2 $Label21
+$Label23:
 li $v0 12
 syscall
 move $s1 $v0
-subu $t3 $s0 0
-addiu $t4 $s1 97
-subu $t5 $t4 97
-beq $t3 $t5 $Label78
-la $a0 $String52
-li $v0 4
-syscall
-li $a0 10
-li $v0 11
-syscall
-$Label78:
-$Label79:
-lw $t1 16($gp)
-bne $t1 0 $Label80
-la $a0 $String53
-li $v0 4
-syscall
-li $a0 10
-li $v0 11
-syscall
-j $Label81
-$Label80:
-la $a0 $String54
-li $v0 4
-syscall
-lw $a0 0($gp)
+sll $t0 $s0 2
+addu $t0 $gp $t0
+sw $s1 56($t0)
+addiu $s0 $s0 1
+lw $t2 0($gp)
+blt $s0 $t2 $Label23
+$Label21:
+$Label22:
+li $a0 -20
+li $a1 2
+sw $t3 8($sp)
+sw $t4 12($sp)
+bge $a0 0 $Label1_1_2_3_4_5_6
+$Label3_1_2_3_4_5_6:
+addu $a0 $a0 $a1
+blt $a0 0 $Label3_1_2_3_4_5_6
+$Label1_1_2_3_4_5_6:
+$Label2_1_2_3_4_5_6:
+bge $a0 $a1 $Label4_1_2_3_4_5_6
+move $v0 $a0
+lw $t3 8($sp)
+lw $t4 12($sp)
+j $_m_1_2_3_4_5_6
+j $Label5_1_2_3_4_5_6
+$Label4_1_2_3_4_5_6:
+div $a0 $a1
+mflo $t3
+mul $t4 $t3 $a1
+subu $a0 $a0 $t4
+$Label5_1_2_3_4_5_6:
+move $v0 $a0
+lw $t3 8($sp)
+lw $t4 12($sp)
+$_m_1_2_3_4_5_6:
+addiu $s0 $v0 0
+li $a0 1
+li $a1 2
+sw $t3 8($sp)
+sw $t4 12($sp)
+bge $a0 0 $Label1_1_2_3_4_5_6_7
+$Label3_1_2_3_4_5_6_7:
+addu $a0 $a0 $a1
+blt $a0 0 $Label3_1_2_3_4_5_6_7
+$Label1_1_2_3_4_5_6_7:
+$Label2_1_2_3_4_5_6_7:
+bge $a0 $a1 $Label4_1_2_3_4_5_6_7
+move $v0 $a0
+lw $t3 8($sp)
+lw $t4 12($sp)
+j $_m_1_2_3_4_5_6_7
+j $Label5_1_2_3_4_5_6_7
+$Label4_1_2_3_4_5_6_7:
+div $a0 $a1
+mflo $t3
+mul $t4 $t3 $a1
+subu $a0 $a0 $t4
+$Label5_1_2_3_4_5_6_7:
+move $v0 $a0
+lw $t3 8($sp)
+lw $t4 12($sp)
+$_m_1_2_3_4_5_6_7:
+addiu $s0 $v0 0
+li $a0 3
+li $a1 2
+sw $t3 8($sp)
+sw $t4 12($sp)
+bge $a0 0 $Label1_1_2_3_4_5_6_7_8
+$Label3_1_2_3_4_5_6_7_8:
+addu $a0 $a0 $a1
+blt $a0 0 $Label3_1_2_3_4_5_6_7_8
+$Label1_1_2_3_4_5_6_7_8:
+$Label2_1_2_3_4_5_6_7_8:
+bge $a0 $a1 $Label4_1_2_3_4_5_6_7_8
+move $v0 $a0
+lw $t3 8($sp)
+lw $t4 12($sp)
+j $_m_1_2_3_4_5_6_7_8
+j $Label5_1_2_3_4_5_6_7_8
+$Label4_1_2_3_4_5_6_7_8:
+div $a0 $a1
+mflo $t3
+mul $t4 $t3 $a1
+subu $a0 $a0 $t4
+$Label5_1_2_3_4_5_6_7_8:
+move $v0 $a0
+lw $t3 8($sp)
+lw $t4 12($sp)
+$_m_1_2_3_4_5_6_7_8:
+addiu $s0 $v0 0
+li $a0 0
+sw $t3 8($sp)
+sw $s0 12($sp)
+sw $ra 16($sp)
+jal normal
+addiu $sp $fp -16
+lw $t3 8($sp)
+lw $s0 12($sp)
+lw $ra 0($fp)
+addiu $fp $sp -20
+addiu $s2 $v0 0
+li $a0 43
+sw $t3 8($sp)
+sw $s0 12($sp)
+sw $ra 16($sp)
+jal normal
+addiu $sp $fp -16
+lw $t3 8($sp)
+lw $s0 12($sp)
+lw $ra 0($fp)
+addiu $fp $sp -20
+addiu $s2 $v0 0
+li $a0 47
+sw $t3 8($sp)
+sw $s0 12($sp)
+sw $ra 16($sp)
+jal normal
+addiu $sp $fp -16
+lw $t3 8($sp)
+lw $s0 12($sp)
+lw $ra 0($fp)
+addiu $fp $sp -20
+addiu $s2 $v0 0
+li $a0 49
+sw $t3 8($sp)
+sw $s0 12($sp)
+sw $ra 16($sp)
+jal normal
+addiu $sp $fp -16
+lw $t3 8($sp)
+lw $s0 12($sp)
+lw $ra 0($fp)
+addiu $fp $sp -20
+addiu $s2 $v0 0
+lw $t1 0($gp)
+addiu $t3 $t1 0
+move $a0 $t3
 li $v0 1
 syscall
 li $a0 10
 li $v0 11
 syscall
-$Label81:
+la $a0 $String7
+li $v0 4
+syscall
+li $a0 10
+li $v0 11
+syscall
+lw $t1 0($gp)
+subu $s0 $t1 1
+blt $s0 0 $Label24
+$Label26:
+addiu $t1 $gp 56
+sll $t2 $s0 2
+addu $t1 $t1 $t2
+lw $s2 0($t1)
+move $a0 $s2
+li $v0 11
+syscall
+li $a0 10
+li $v0 11
+syscall
+subu $s0 $s0 1
+bge $s0 0 $Label26
+$Label24:
+$Label25:
+li $a0 391
+sw $s0 8($sp)
+sw $s1 12($sp)
+sw $ra 16($sp)
+jal hash
+addiu $sp $fp -16
+lw $s0 8($sp)
+lw $s1 12($sp)
+lw $ra 0($fp)
+addiu $fp $sp -20
+la $a0 $String8
+li $v0 4
+syscall
+lw $t1 32($gp)
+addiu $t3 $t1 0
+move $a0 $t3
+li $v0 1
+syscall
+li $a0 10
+li $v0 11
+syscall
+lw $t1 52($gp)
+addiu $t3 $t1 0
+move $a0 $t3
+sw $t3 8($sp)
+sw $s0 12($sp)
+sw $ra 16($sp)
+jal normal
+addiu $sp $fp -16
+lw $t3 8($sp)
+lw $s0 12($sp)
+lw $ra 0($fp)
+addiu $fp $sp -20
+addiu $s2 $v0 0
+la $a0 $String9
+li $v0 4
+syscall
+move $a0 $s2
+li $v0 1
+syscall
+li $a0 10
+li $v0 11
+syscall
+li $s0 0
+bge $s0 4 $Label27
+$Label29:
+la $a0 $String7
+li $v0 4
+syscall
+addiu $t1 $gp 36
+sll $t2 $s0 2
+addu $t1 $t1 $t2
+lw $t3 0($t1)
+move $a0 $t3
+li $v0 1
+syscall
+li $a0 10
+li $v0 11
+syscall
+addiu $s0 $s0 1
+blt $s0 4 $Label29
+$Label27:
+$Label28:
 # End Of MIPS Assembly Code.

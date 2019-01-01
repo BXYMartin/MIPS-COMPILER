@@ -527,6 +527,12 @@ void fixTemp() {
 				printOptimize(*(itr + 1));
 				optimizedMiddleCodeArr.erase(itr+1);
 			}
+			if (itr->target == (itr + 1)->target && itr->op == '+' && itr->right == "0" && itr->isLeftArr == false && (itr + 1)->type == Return) {
+				(itr + 1)->target = itr->left;
+				itr--;
+				printOptimize(*(itr + 1));
+				optimizedMiddleCodeArr.erase(itr + 1);
+			}
 			if (itr->target == (itr + 1)->left && (itr->isLeftArr == false || (itr + 1)->isTargetArr == false) && (itr + 1)->op == '+' && (itr + 1)->right == "0" && (itr->target.at(0) == '#'))
 			{
 				renameTemp(itr + 1, itr->target, (itr + 1)->target);

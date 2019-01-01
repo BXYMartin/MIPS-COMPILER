@@ -202,7 +202,7 @@ private:
 								break;
 							}
 							expItem.type = StringType;
-							if (inputItem.number == '+' && right == "0")
+							if ((inputItem.number == '+' || inputItem.number == '-') && right == "0")
 								expItem.str = left;
 							else
 								expItem.str = pushPseudoCode(Pass, cache, isCache, left, inputItem.number, right, "", "", false, false);
