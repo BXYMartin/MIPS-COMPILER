@@ -810,7 +810,7 @@ bool Syntax::enter_statement_inside(string funcName, bool isCache, vector<Middle
 	case PRINTFSY:
 		markSyntax("printf");
 		enter_writeStatement(funcName, isCache, cache, weight);
-		checkComponent(SEMICOLON, "Missing ; at the end of line");
+		checknskipComponent(SEMICOLON, "Missing ; at the end of line", '\n');
 		break;
 	case SEMICOLON:	// ¿ÕÓï¾ä
 		markSyntax("empty");

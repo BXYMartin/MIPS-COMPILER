@@ -1,331 +1,105 @@
-FUNC int limit2char()
-FUNC int m()
-FUNC void randomset()
-#0 = v1 + 0
-#1 = u1 + 0
-PUSH #0
-PUSH #1
-CALL m
-BGEZ x 0 $Label1_1
-LABEL $Label3_1
-x = x + m1
-BLZ x 0 $Label3_1
-LABEL $Label1_1
-LABEL $Label2_1
-BGEZ x m1 $Label4_1
-RET id x
-JMP $_m_1
-JMP $Label5_1
-LABEL $Label4_1
-#0 = x / m1
-#1 = #0 * m1
-x = x - #1
-LABEL $Label5_1
-RET id x
-LABEL $_m_1
-#2 = Ret + 0
-b = s[#2]
-RET
-FUNC int normal()
+FUNC int par2()
+FUNC int par3()
+FUNC int par4()
+FUNC int par5()
+PARA int a
+PARA int b
 PARA int c
-PUSH c
-CALL limit2char
-#0 = x / 256
-#1 = #0 * 256
-#2 = x - #1
-RET id #2
-LABEL $_limit2char_1
-c = Ret + 0
-BEZ c 0 $Label6
-JMP $Label7
-LABEL $Label6
-BNZ c 0 $Label8
-PUSH 36
-CALL normal
-#0 = Ret + 0
-PUSH #0
-CALL limit2char
-#0 = x / 256
-#1 = #0 * 256
-#2 = x - #1
-RET id #2
-LABEL $_limit2char_1_2
-RET id Ret
-LABEL $Label8
-LABEL $Label9
-LABEL $Label7
-BEZ c 43 $Label10
-CALL randomset
-LABEL $Label10
-LABEL $Label11
-BLEZ c 47 $Label12
-BGZ c 57 $Label14
-PUSH c
-CALL limit2char
-#0 = x / 256
-#1 = #0 * 256
-#2 = x - #1
-RET id #2
-LABEL $_limit2char_1_2_3
-RET id Ret
-LABEL $Label14
-LABEL $Label15
-LABEL $Label12
-LABEL $Label13
-#0 = c - 32
-PUSH #0
-PUSH 95
-CALL m
-BGEZ x 0 $Label1_1_2
-LABEL $Label3_1_2
-x = x + m1
-BLZ x 0 $Label3_1_2
-LABEL $Label1_1_2
-LABEL $Label2_1_2
-BGEZ x m1 $Label4_1_2
-RET id x
-JMP $_m_1_2
-JMP $Label5_1_2
-LABEL $Label4_1_2
-#0 = x / m1
-#1 = #0 * m1
-x = x - #1
-LABEL $Label5_1_2
-RET id x
-LABEL $_m_1_2
-#2 = Ret + 32
-PUSH #2
-CALL limit2char
-#0 = x / 256
-#1 = #0 * 256
-#2 = x - #1
-RET id #2
-LABEL $_limit2char_1_2_3_4
-RET id Ret
-FUNC void acc()
-PARA int x
-PUSH x
-PUSH 4
-CALL m
-BGEZ x 0 $Label1_1_2_3
-LABEL $Label3_1_2_3
-x = x + m1
-BLZ x 0 $Label3_1_2_3
-LABEL $Label1_1_2_3
-LABEL $Label2_1_2_3
-BGEZ x m1 $Label4_1_2_3
-RET id x
-JMP $_m_1_2_3
-JMP $Label5_1_2_3
-LABEL $Label4_1_2_3
-#0 = x / m1
-#1 = #0 * m1
-x = x - #1
-LABEL $Label5_1_2_3
-RET id x
-LABEL $_m_1_2_3
-#0 = Ret + 0
-PUSH x
-PUSH 4
-CALL m
-BGEZ x 0 $Label1_1_2_3_4
-LABEL $Label3_1_2_3_4
-x = x + m1
-BLZ x 0 $Label3_1_2_3_4
-LABEL $Label1_1_2_3_4
-LABEL $Label2_1_2_3_4
-BGEZ x m1 $Label4_1_2_3_4
-RET id x
-JMP $_m_1_2_3_4
-JMP $Label5_1_2_3_4
-LABEL $Label4_1_2_3_4
-#0 = x / m1
-#1 = #0 * m1
-x = x - #1
-LABEL $Label5_1_2_3_4
-RET id x
-LABEL $_m_1_2_3_4
-#1 = Ret + 0
-#2 = w1[#1]
-w1[#0] = #2 + x
-RET
-FUNC int f()
-PARA int x
-PARA char y
-PUSH y
-CALL normal
-u1 = Ret + 0
-PUSH u1
-CALL acc
-#0 = x * 13
-#1 = #0 + u1
-PUSH #1
-PUSH 100007
-CALL m
-BGEZ x 0 $Label1_1_2_3_4_5
-LABEL $Label3_1_2_3_4_5
-x = x + m1
-BLZ x 0 $Label3_1_2_3_4_5
-LABEL $Label1_1_2_3_4_5
-LABEL $Label2_1_2_3_4_5
-BGEZ x m1 $Label4_1_2_3_4_5
-RET id x
-JMP $_m_1_2_3_4_5
-JMP $Label5_1_2_3_4_5
-LABEL $Label4_1_2_3_4_5
-#0 = x / m1
-#1 = #0 * m1
-x = x - #1
-LABEL $Label5_1_2_3_4_5
-RET id x
-LABEL $_m_1_2_3_4_5
-RET id Ret
-FUNC void hash()
-PARA int seed
-BGZ u1 0 $Label16
-RET
-LABEL $Label16
-LABEL $Label17
-v1 = seed + 0
-i = 0 + 0
-BGEZ i u1 $Label18
-LABEL $Label20
-#0 = v1 + 0
-#1 = s[i]
-PUSH #0
-PUSH #1
-CALL f
-v1 = Ret + 0
-i = i + 1
-BLZ i u1 $Label20
-LABEL $Label18
-LABEL $Label19
-RET
+PARA int d
+PARA int e
+#0 = 5 * a
+#1 = #0 + b
+#2 = #1 + c
+#3 = #2 + d
+#4 = #3 - e
+RET id #4
+FUNC int par10()
+PARA int a1
+PARA int a2
+PARA int a3
+PARA int a4
+PARA int a5
+PARA int a6
+PARA int a7
+PARA int a8
+PARA int a9
+PARA int a10
+#0 = a1 + a2
+#1 = #0 + a3
+#2 = #1 + a4
+#3 = #2 + a5
+#4 = #3 + a6
+#5 = #4 + a7
+#6 = #5 + a8
+#7 = a9 * a10
+#8 = #6 + #7
+#9 = #8 - a10
+RET id #9
 FUNC void main()
-u1 = 0 + 0
-PUSH 391
-CALL hash
-READ int u1
-i = 0 + 0
-BGEZ i u1 $Label21
-LABEL $Label23
-READ char p
-s[i] = p + 0
-i = i + 1
-BLZ i u1 $Label23
-LABEL $Label21
-LABEL $Label22
-PUSH -20
-PUSH 2
-CALL m
-BGEZ x 0 $Label1_1_2_3_4_5_6
-LABEL $Label3_1_2_3_4_5_6
-x = x + m1
-BLZ x 0 $Label3_1_2_3_4_5_6
-LABEL $Label1_1_2_3_4_5_6
-LABEL $Label2_1_2_3_4_5_6
-BGEZ x m1 $Label4_1_2_3_4_5_6
-RET id x
-JMP $_m_1_2_3_4_5_6
-JMP $Label5_1_2_3_4_5_6
-LABEL $Label4_1_2_3_4_5_6
-#0 = x / m1
-#1 = #0 * m1
-x = x - #1
-LABEL $Label5_1_2_3_4_5_6
-RET id x
-LABEL $_m_1_2_3_4_5_6
-i = Ret + 0
 PUSH 1
-PUSH 2
-CALL m
-BGEZ x 0 $Label1_1_2_3_4_5_6_7
-LABEL $Label3_1_2_3_4_5_6_7
-x = x + m1
-BLZ x 0 $Label3_1_2_3_4_5_6_7
-LABEL $Label1_1_2_3_4_5_6_7
-LABEL $Label2_1_2_3_4_5_6_7
-BGEZ x m1 $Label4_1_2_3_4_5_6_7
-RET id x
-JMP $_m_1_2_3_4_5_6_7
-JMP $Label5_1_2_3_4_5_6_7
-LABEL $Label4_1_2_3_4_5_6_7
-#0 = x / m1
-#1 = #0 * m1
-x = x - #1
-LABEL $Label5_1_2_3_4_5_6_7
-RET id x
-LABEL $_m_1_2_3_4_5_6_7
-i = Ret + 0
-PUSH 3
-PUSH 2
-CALL m
-BGEZ x 0 $Label1_1_2_3_4_5_6_7_8
-LABEL $Label3_1_2_3_4_5_6_7_8
-x = x + m1
-BLZ x 0 $Label3_1_2_3_4_5_6_7_8
-LABEL $Label1_1_2_3_4_5_6_7_8
-LABEL $Label2_1_2_3_4_5_6_7_8
-BGEZ x m1 $Label4_1_2_3_4_5_6_7_8
-RET id x
-JMP $_m_1_2_3_4_5_6_7_8
-JMP $Label5_1_2_3_4_5_6_7_8
-LABEL $Label4_1_2_3_4_5_6_7_8
-#0 = x / m1
-#1 = #0 * m1
-x = x - #1
-LABEL $Label5_1_2_3_4_5_6_7_8
-RET id x
-LABEL $_m_1_2_3_4_5_6_7_8
-i = Ret + 0
-PUSH 0
-CALL normal
-c = Ret + 0
-PUSH 43
-CALL normal
-c = Ret + 0
-PUSH 47
-CALL normal
-c = Ret + 0
-PUSH 49
-CALL normal
-c = Ret + 0
-#0 = u1 + 0
-PRT id #0
-ENTER
-PRT string " | "
-ENTER
-i = u1 - 1
-BLZ i 0 $Label24
-LABEL $Label26
-c = s[i]
-PRT id c
-ENTER
-i = i - 1
-BGEZ i 0 $Label26
-LABEL $Label24
-LABEL $Label25
-PUSH 391
-CALL hash
-PRT string " | v1: "
-#0 = v1 + 0
-PRT id #0
-ENTER
-#0 = b + 0
+PUSH 1
+CALL par2
+#0 = 2 * a
+#1 = #0 + b
+RET id #1
+LABEL $_par2_1
+#0 = Ret + 0
+PUSH 1
+PUSH 1
+CALL par2
+#0 = 2 * a
+#1 = #0 + b
+RET id #1
+LABEL $_par2_1_2
+#2 = Ret + 1
+PUSH 1
+PUSH 1
+PUSH 1
+PUSH 1
+PUSH 1
+PUSH 1
+PUSH 1
+PUSH 1
+PUSH -1
+PUSH -1
+CALL par10
+#3 = Ret + 0
+PUSH 1
+PUSH 1
+CALL par2
+#0 = 2 * a
+#1 = #0 + b
+RET id #1
+LABEL $_par2_1_2_3
+#4 = Ret + 0
+PUSH 1
+PUSH 1
+PUSH 1
+CALL par3
+#0 = 3 * a
+#1 = #0 + b
+#2 = #1 + c
+RET id #2
+LABEL $_par3_1
+#5 = Ret + 0
+PUSH 1
+PUSH 1
+PUSH 1
+PUSH #5
+CALL par4
+#0 = 4 * a
+#1 = #0 + b
+#2 = #1 + c
+#3 = #2 + d
+RET id #3
+LABEL $_par4_1
+#7 = Ret * -1
 PUSH #0
-CALL normal
-c = Ret + 0
-PRT string " | b: "
-PRT id c
+PUSH #2
+PUSH #3
+PUSH #4
+PUSH #7
+CALL par5
+a = Ret + 0
+PRT id a
 ENTER
-i = 0 + 0
-BGEZ i 4 $Label27
-LABEL $Label29
-PRT string " | "
-#0 = w1[i]
-PRT id #0
-ENTER
-i = i + 1
-BLZ i 4 $Label29
-LABEL $Label27
-LABEL $Label28
