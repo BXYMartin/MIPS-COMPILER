@@ -1767,10 +1767,10 @@ int initializeStack(string funcName, int offset, ofstream & out) {
 						string id = item.getId();
 						map<int, string>::iterator itr = varToRegisterMap.find(locateVariable(id));
 						if (itr != varToRegisterMap.end()) {
-							out << "lw " << itr->second << " " << parameterCount * 4 - 16 << "($k1)" << endl;
+							out << "lw " << itr->second << " -" << parameterCount * 4 - 12 << "($gp)" << endl;
 						}
 						else {
-							out << "lw $v1 " << parameterCount * 4 - 16 << "($k1)" << endl;
+							out << "lw $v1 -" << parameterCount * 4 - 12 << "($gp)" << endl;
 							out << "sw $v1 " << 4 * parameterCount + offset << "($sp)" << endl;
 						}
 						parameterCount++;
@@ -1807,7 +1807,7 @@ void handleFunctionDefinition(string funcName, ofstream & out) {
 		// main 函数只需要做全局变量的数据分配
 		int size = arrageGlobalVariable();
 		int increment;
-		out << "li $k1 " << functionStackAddress << endl;
+		//out << "li $k1 " << functionStackAddress << endl;
 		out << "addiu $fp $gp " << size << endl;
 		increment = 8 + initializeStack(funcName, 8, out);
 		out << "addiu $sp $fp " << increment << endl;
@@ -1956,13 +1956,13 @@ void getTextSegment(ofstream & out, vector<MiddleCode> QuaterCode) {
 				// 传递变量地址
 				itr = varToRegisterMap.find(locateVariable(item.target));
 				if (itr != varToRegisterMap.end()) {
-					out << "sw " << itr->second << " " << currentFunctionStackAddress - 16 << "($k1)" << endl;
+					out << "sw " << itr->second << " -" << currentFunctionStackAddress - 12 << "($gp)" << endl;
 					currentFunctionStackAddress += 4;
 					break;
 				}
 				else if (IsNum(item.target.at(0))) {
 					out << "li $v0 " << integerConversion(item.target) << endl;
-					out << "sw $v0 " << currentFunctionStackAddress - 16 << "($k1)" << endl;
+					out << "sw $v0 -" << currentFunctionStackAddress - 12 << "($gp)" << endl;
 					currentFunctionStackAddress += 4;
 					break;
 				}
@@ -1970,24 +1970,24 @@ void getTextSegment(ofstream & out, vector<MiddleCode> QuaterCode) {
 					int g = integerConversion(item.target.substr(1));
 					if (g > TEMP_REGISTER) {
 						getTemp(g, "$v0", out);
-						out << "sw $v0 " << currentFunctionStackAddress - 16 << "($k1)" << endl;
+						out << "sw $v0 -" << currentFunctionStackAddress - 12 << "($gp)" << endl;
 						currentFunctionStackAddress += 4;
 						break;
 					}
 					else {
-						out << "sw " << "$t" << (g + 3) << " " << currentFunctionStackAddress - 16 << "($k1)" << endl;
+						out << "sw " << "$t" << (g + 3) << " -" << currentFunctionStackAddress - 12 << "($gp)" << endl;
 						currentFunctionStackAddress += 4;
 						break;
 					}
 				}
 				else if (item.target == "Ret") {
-					out << "sw $v0 " << currentFunctionStackAddress - 16 << "($k1)" << endl;
+					out << "sw $v0 -" << currentFunctionStackAddress - 12 << "($gp)" << endl;
 					currentFunctionStackAddress += 4;
 					break;
 				}
 				else {							// 标识符
 					getVariable(item.target, "$v0", out);
-					out << "sw $v0 " << currentFunctionStackAddress - 16 << "($k1)" << endl;
+					out << "sw $v0 -" << currentFunctionStackAddress - 12 << "($gp)" << endl;
 					currentFunctionStackAddress += 4;
 					break;
 				}

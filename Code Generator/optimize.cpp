@@ -202,10 +202,8 @@ bool isIn(vector<int> &obj, int target) {
 }
 
 void doFillCalSequ(vector<int> & calcNodes, vector<int>& interNodes, int code) {
-	//检查code是否加入队列
 	if (isIn(calcNodes, code))
 		return;
-	//检查该节点的所有父节点是否全部在calcNodes里面
 	bool flag = true;
 	for (unsigned int j = 0; j < nodeGraph.at(code).parent.size(); j++) {
 		if (!isIn(calcNodes, nodeGraph.at(code).parent.at(j))) {
@@ -215,9 +213,7 @@ void doFillCalSequ(vector<int> & calcNodes, vector<int>& interNodes, int code) {
 	}
 	if (!flag)
 		return;
-	//将该节点加入队列
 	calcNodes.push_back(code);
-	//下面检查该节点的左右子节点(都要检查)
 	Node node = nodeGraph.at(code);
 	Node left = nodeGraph.at(node.left);
 	Node right = nodeGraph.at(node.right);
@@ -298,16 +294,13 @@ void reduceExpression(int start, int end) {
 		if (item.type == Pass) {
 			int v1, v2, v3;
 			map<string, int>::iterator iter;
-			// 复杂在数组问题
 			// 检查左节点,如果左节点是数组
 			if (item.isLeftArr) {
 				v1 = pushNode(false, item.left);
-				// 寻找v2
 				if (item.indexLeftArr.at(0) == '#')
 					v2 = pushNode(false, item.indexLeftArr);
 				else
 					v2 = pushNode(true, item.indexLeftArr);
-				// 针对target,查询DAG图
 				v3 = pushNode(v1, v2, '[', item.target);
 			}
 			else {
@@ -324,21 +317,18 @@ void reduceExpression(int start, int end) {
 			}
 		}
 	}
-	// 遍历DAG图生成逆序的计算顺序
-	// 遍历所有可能需要保存初始值的变量,观察它们所对应的变量在节点表中的位置是否发生变化, 用以判定是否需要保存
-	// 找出所有的中间节点
 	vector<int> tempNodes;
 	map<string, unsigned>::iterator itr = maxTempOrderMap.find(funcName);
 	int tmpCount;
 	if (itr == maxTempOrderMap.end())
 		tmpCount = 0;
 	else
-		tmpCount = itr->second + 1;//保存的临时变量从当前函数最大临时变量计数器加一开始
+		tmpCount = itr->second + 1;
 	for (int i = 0; i < nodeGraph.size(); i++) {
 		Node node = nodeGraph.at(i);
-		if (node.isLeftLeaf && node.isInitial) {// 叶子结点
+		if (node.isLeftLeaf && node.isInitial) { // 叶子结点
 			map<string, int>::iterator iter = nodeTable.table.find(node.value);
-			if (iter->second != node.code) {//需要保存 Caution!
+			if (iter->second != node.code) { // 需要保存 Caution!
 				/*
 				MiddleCode tempMiddleCode;
 				tempMiddleCode.isTargetArr = tempMiddleCode.isLeftArr = false;
@@ -379,7 +369,7 @@ void reduceExpression(int start, int end) {
 				vars.push_back(iter->first);
 			}
 		}
-		if (isVarIn) {// 删除所有的临时变量
+		if (isVarIn) {
 			for (unsigned int j = 0; j < vars.size(); j++) {
 				if (vars.at(j).at(0) == '#') {
 					vars.erase(vars.begin() + j);
@@ -391,14 +381,12 @@ void reduceExpression(int start, int end) {
 			if (vars.size() == 0)
 				vars.push_back(nodeGraph.at(tempNodes.at(i)).target);
 		}
-		// 将DAG中对应节点的value设置为vars的第一个
 		nodeGraph.at(tempNodes.at(i)).value = vars.at(0);
-		// 加入final
 		nodeTable.final.insert(map<int, vector<string>>::value_type(tempNodes.at(i), vars));
 	}
-	// 遍历所有的中间节点,生成实质逆序的计算顺序
+	// 遍历中间节点,生成逆序计算顺序
 	vector<int> calcNodes;
-	while (calcNodes.size() != tempNodes.size()) {// 只要不等于,就继续扫描
+	while (calcNodes.size() != tempNodes.size()) {
 		for (int i = tempNodes.size() - 1; i >= 0; i--) {
 			doFillCalSequ(calcNodes, tempNodes, tempNodes.at(i));
 		}
@@ -527,12 +515,14 @@ void fixTemp() {
 				printOptimize(*(itr + 1));
 				optimizedMiddleCodeArr.erase(itr+1);
 			}
-			if (itr->target == (itr + 1)->target && itr->op == '+' && itr->right == "0" && itr->isLeftArr == false && (itr + 1)->type == Return) {
+			
+			if (itr->target == (itr + 1)->target && !IsNum(itr->left.at(0)) && itr->op == '+' && itr->right == "0" && itr->isLeftArr == false && (itr + 1)->type == Return && (itr->target.at(0) == '#')) {
 				(itr + 1)->target = itr->left;
 				itr--;
 				printOptimize(*(itr + 1));
 				optimizedMiddleCodeArr.erase(itr + 1);
 			}
+			
 			if (itr->target == (itr + 1)->left && (itr->isLeftArr == false || (itr + 1)->isTargetArr == false) && (itr + 1)->op == '+' && (itr + 1)->right == "0" && (itr->target.at(0) == '#'))
 			{
 				renameTemp(itr + 1, itr->target, (itr + 1)->target);
@@ -781,6 +771,6 @@ void runOptimization() {
 	if (INLINE) {
 		inlineDetection();
 	}
-	fixTemp();
+	//fixTemp();
 	evaluateOptimization();
 }
