@@ -771,6 +771,6 @@ void runOptimization() {
 	if (INLINE) {
 		inlineDetection();
 	}
-	//fixTemp();
+	fixTemp();
 	evaluateOptimization();
 }

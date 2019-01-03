@@ -457,9 +457,7 @@ private:
 		SymbolTable.push_back(newItem);
 	}
 	
-
-	//优化部分的函数
-	void addWeight(int order, int weight);//需要检查是否符合要求
+	void addWeight(int order, int weight);
 
 	void markSyntax(string content) {
 		log += "\n";

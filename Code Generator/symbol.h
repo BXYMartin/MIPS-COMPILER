@@ -53,7 +53,6 @@ public:
 	char getConstChar() {
 		return constCharValue;
 	}
-	//set
 	void setItemType(ItemType type) {
 		itemType = type;
 	}

@@ -37,11 +37,10 @@ struct Node {
 	int code;
 	int left;
 	int right;
-	char op;//+ - * / = [ 
-	string value;// 针对叶子结点
+	char op;		// + - * / = [ 代表数组元素
+	string value;
 	vector<int> parent;
-	// 针对叶节点引用不在结点表中的变量(只针对变量)
-	string target;//当中间节点啥都没有了的时候,保存最新的
+	string target;
 	bool isInitial;
 	bool isLeftLeaf;
 	bool isRightLeaf;

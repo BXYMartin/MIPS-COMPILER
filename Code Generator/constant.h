@@ -98,13 +98,13 @@ struct MiddleCode {
 	string right;
 	char op;
 };
-//中缀表达式转逆波兰表达式栈的项结构体
+
 struct PostfixItem {
 	ValueType type;
 	string str;
 	int number;
-	bool nonChar;//是否是char型变量或者说是char型数组某个元素
-	bool nonOp;//如果是char型常量,是不是运算符
+	bool nonChar;
+	bool nonOp;
 };
 
 #endif
