@@ -49,7 +49,7 @@ private:
 	bool getncheckSymbol(SymbolCode symbol, string message);
 	bool checkComponent(SymbolCode symbol, string message);
 	bool checknskipComponent(SymbolCode symbol, string message, char end);
-	bool skipComponent(SymbolCode symbol, string message, char end);
+	bool skipComponent(SymbolCode symbol, string message);
 	bool getncheckEnd(string message);
 	bool checkSymbol(SymbolCode symbol);
 	void pushMiddleCode(MiddleCode code, bool isCache, vector<MiddleCode> &cache);

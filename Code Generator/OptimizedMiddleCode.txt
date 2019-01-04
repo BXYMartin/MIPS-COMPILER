@@ -1,331 +1,378 @@
-FUNC int limit2char()
-FUNC int m()
-FUNC void randomset()
-#0 = v1 + 0
-#1 = u1 + 0
-PUSH #0
-PUSH #1
-CALL m
-BGEZ x 0 $Label1_1
-LABEL $Label3_1
-x = x + m1
-BLZ x 0 $Label3_1
-LABEL $Label1_1
-LABEL $Label2_1
-BGEZ x m1 $Label4_1
-RET id x
-JMP $_m_1
-JMP $Label5_1
-LABEL $Label4_1
-#0 = x / m1
-#1 = #0 * m1
-x = x - #1
-LABEL $Label5_1
-RET id x
-LABEL $_m_1
-#2 = Ret + 0
-b = s[#2]
-RET
-FUNC int normal()
-PARA int c
-PUSH c
-CALL limit2char
-#0 = x / 256
-#1 = #0 * 256
-#2 = x - #1
-RET id #2
-LABEL $_limit2char_1
-c = Ret + 0
-BEZ c 0 $Label6
-JMP $Label7
+FUNC int foo1()
+FUNC int add()
+FUNC int addchar()
+FUNC int addone()
+FUNC int addint()
+FUNC char foo2()
+FUNC void test_string_int()
+FUNC int fib()
+PARA int n
+BNZ n 1 $Label3
+RET int 1
+JMP $Label4
+LABEL $Label3
+BNZ n 2 $Label5
+RET int 1
+LABEL $Label5
 LABEL $Label6
-BNZ c 0 $Label8
-PUSH 36
-CALL normal
-#0 = Ret + 0
+LABEL $Label4
+#0 = n - 1
 PUSH #0
-CALL limit2char
-#0 = x / 256
-#1 = #0 * 256
-#2 = x - #1
-RET id #2
-LABEL $_limit2char_1_2
-RET id Ret
-LABEL $Label8
-LABEL $Label9
-LABEL $Label7
-BEZ c 43 $Label10
-CALL randomset
-LABEL $Label10
-LABEL $Label11
-BLEZ c 47 $Label12
-BGZ c 57 $Label14
-PUSH c
-CALL limit2char
-#0 = x / 256
-#1 = #0 * 256
-#2 = x - #1
-RET id #2
-LABEL $_limit2char_1_2_3
-RET id Ret
-LABEL $Label14
-LABEL $Label15
-LABEL $Label12
-LABEL $Label13
-#0 = c - 32
-PUSH #0
-PUSH 95
-CALL m
-BGEZ x 0 $Label1_1_2
-LABEL $Label3_1_2
-x = x + m1
-BLZ x 0 $Label3_1_2
-LABEL $Label1_1_2
-LABEL $Label2_1_2
-BGEZ x m1 $Label4_1_2
-RET id x
-JMP $_m_1_2
-JMP $Label5_1_2
-LABEL $Label4_1_2
-#0 = x / m1
-#1 = #0 * m1
-x = x - #1
-LABEL $Label5_1_2
-RET id x
-LABEL $_m_1_2
-#2 = Ret + 32
-PUSH #2
-CALL limit2char
-#0 = x / 256
-#1 = #0 * 256
-#2 = x - #1
-RET id #2
-LABEL $_limit2char_1_2_3_4
-RET id Ret
-FUNC void acc()
-PARA int x
-PUSH x
-PUSH 4
-CALL m
-BGEZ x 0 $Label1_1_2_3
-LABEL $Label3_1_2_3
-x = x + m1
-BLZ x 0 $Label3_1_2_3
-LABEL $Label1_1_2_3
-LABEL $Label2_1_2_3
-BGEZ x m1 $Label4_1_2_3
-RET id x
-JMP $_m_1_2_3
-JMP $Label5_1_2_3
-LABEL $Label4_1_2_3
-#0 = x / m1
-#1 = #0 * m1
-x = x - #1
-LABEL $Label5_1_2_3
-RET id x
-LABEL $_m_1_2_3
-#0 = Ret + 0
-PUSH x
-PUSH 4
-CALL m
-BGEZ x 0 $Label1_1_2_3_4
-LABEL $Label3_1_2_3_4
-x = x + m1
-BLZ x 0 $Label3_1_2_3_4
-LABEL $Label1_1_2_3_4
-LABEL $Label2_1_2_3_4
-BGEZ x m1 $Label4_1_2_3_4
-RET id x
-JMP $_m_1_2_3_4
-JMP $Label5_1_2_3_4
-LABEL $Label4_1_2_3_4
-#0 = x / m1
-#1 = #0 * m1
-x = x - #1
-LABEL $Label5_1_2_3_4
-RET id x
-LABEL $_m_1_2_3_4
+CALL fib
 #1 = Ret + 0
-#2 = w1[#1]
-w1[#0] = #2 + x
-RET
-FUNC int f()
-PARA int x
-PARA char y
-PUSH y
-CALL normal
-u1 = Ret + 0
-PUSH u1
-CALL acc
-#0 = x * 13
-#1 = #0 + u1
-PUSH #1
-PUSH 100007
-CALL m
-BGEZ x 0 $Label1_1_2_3_4_5
-LABEL $Label3_1_2_3_4_5
-x = x + m1
-BLZ x 0 $Label3_1_2_3_4_5
-LABEL $Label1_1_2_3_4_5
-LABEL $Label2_1_2_3_4_5
-BGEZ x m1 $Label4_1_2_3_4_5
-RET id x
-JMP $_m_1_2_3_4_5
-JMP $Label5_1_2_3_4_5
-LABEL $Label4_1_2_3_4_5
-#0 = x / m1
-#1 = #0 * m1
-x = x - #1
-LABEL $Label5_1_2_3_4_5
-RET id x
-LABEL $_m_1_2_3_4_5
-RET id Ret
-FUNC void hash()
-PARA int seed
-BGZ u1 0 $Label16
-RET
-LABEL $Label16
-LABEL $Label17
-v1 = seed + 0
-i = 0 + 0
-BGEZ i u1 $Label18
-LABEL $Label20
-#0 = v1 + 0
-#1 = s[i]
-PUSH #0
-PUSH #1
-CALL f
-v1 = Ret + 0
-i = i + 1
-BLZ i u1 $Label20
-LABEL $Label18
-LABEL $Label19
-RET
-FUNC void main()
-u1 = 0 + 0
-PUSH 391
-CALL hash
-READ int u1
-i = 0 + 0
-BGEZ i u1 $Label21
-LABEL $Label23
-READ char p
-s[i] = p + 0
-i = i + 1
-BLZ i u1 $Label23
-LABEL $Label21
-LABEL $Label22
-PUSH -20
-PUSH 2
-CALL m
-BGEZ x 0 $Label1_1_2_3_4_5_6
-LABEL $Label3_1_2_3_4_5_6
-x = x + m1
-BLZ x 0 $Label3_1_2_3_4_5_6
-LABEL $Label1_1_2_3_4_5_6
-LABEL $Label2_1_2_3_4_5_6
-BGEZ x m1 $Label4_1_2_3_4_5_6
-RET id x
-JMP $_m_1_2_3_4_5_6
-JMP $Label5_1_2_3_4_5_6
-LABEL $Label4_1_2_3_4_5_6
-#0 = x / m1
-#1 = #0 * m1
-x = x - #1
-LABEL $Label5_1_2_3_4_5_6
-RET id x
-LABEL $_m_1_2_3_4_5_6
-i = Ret + 0
-PUSH 1
-PUSH 2
-CALL m
-BGEZ x 0 $Label1_1_2_3_4_5_6_7
-LABEL $Label3_1_2_3_4_5_6_7
-x = x + m1
-BLZ x 0 $Label3_1_2_3_4_5_6_7
-LABEL $Label1_1_2_3_4_5_6_7
-LABEL $Label2_1_2_3_4_5_6_7
-BGEZ x m1 $Label4_1_2_3_4_5_6_7
-RET id x
-JMP $_m_1_2_3_4_5_6_7
-JMP $Label5_1_2_3_4_5_6_7
-LABEL $Label4_1_2_3_4_5_6_7
-#0 = x / m1
-#1 = #0 * m1
-x = x - #1
-LABEL $Label5_1_2_3_4_5_6_7
-RET id x
-LABEL $_m_1_2_3_4_5_6_7
-i = Ret + 0
+#2 = n - 2
+PUSH #2
+CALL fib
+#4 = #1 + Ret
+RET id #4
+FUNC int test_lots_paras()
+PARA int a
+PARA int b
+PARA char c
+PARA char d
+PARA int e
+#0 = a + b
+#1 = #0 + c
+#2 = #1 - d
+#3 = #2 + e
+RET id #3
+FUNC void test_all_cond()
+FUNC void test_diff_domain()
+FUNC void test_expr()
+PRT string "test for expression"
+res_of_expr = 60 + 0
+PRT string "--12--12--12-+12+-12--12--12--12--12="
+PRT id res_of_expr
+res_of_expr = -50 + 0
+PRT string "10*-5="
+PRT id res_of_expr
+res_of_expr = 2 + 0
+PRT string "10/+4="
+PRT id res_of_expr
+PUSH 12
+CALL fib
+#0 = Ret + 0
+PUSH 14
+CALL fib
+res_of_expr = #0 - Ret
+PRT string "fib(12)-fib(14)="
+PRT id res_of_expr
+res_of_expr = 111 + 0
+PRT string "c + 12 = "
+PRT id res_of_expr
+res_of_expr = 1188 + 0
+PRT string "c*12/1="
+PRT id res_of_expr
+res_of_expr = -12 + 0
+PRT string "1-(((12+1)))="
+PRT id res_of_expr
+arr[1] = 15 + 0
+#0 = arr[1]
 PUSH 3
-PUSH 2
-CALL m
-BGEZ x 0 $Label1_1_2_3_4_5_6_7_8
-LABEL $Label3_1_2_3_4_5_6_7_8
-x = x + m1
-BLZ x 0 $Label3_1_2_3_4_5_6_7_8
-LABEL $Label1_1_2_3_4_5_6_7_8
-LABEL $Label2_1_2_3_4_5_6_7_8
-BGEZ x m1 $Label4_1_2_3_4_5_6_7_8
-RET id x
-JMP $_m_1_2_3_4_5_6_7_8
-JMP $Label5_1_2_3_4_5_6_7_8
-LABEL $Label4_1_2_3_4_5_6_7_8
-#0 = x / m1
-#1 = #0 * m1
-x = x - #1
-LABEL $Label5_1_2_3_4_5_6_7_8
-RET id x
-LABEL $_m_1_2_3_4_5_6_7_8
-i = Ret + 0
-PUSH 0
-CALL normal
-c = Ret + 0
-PUSH 43
-CALL normal
-c = Ret + 0
-PUSH 47
-CALL normal
-c = Ret + 0
-PUSH 49
-CALL normal
-c = Ret + 0
-#0 = u1 + 0
-PRT id #0
-ENTER
-PRT string " | "
-ENTER
-i = u1 - 1
-BLZ i 0 $Label24
-LABEL $Label26
-c = s[i]
-PRT id c
-ENTER
-i = i - 1
-BGEZ i 0 $Label26
-LABEL $Label24
-LABEL $Label25
-PUSH 391
-CALL hash
-PRT string " | v1: "
-#0 = v1 + 0
-PRT id #0
-ENTER
-#0 = b + 0
+CALL fib
+#1 = Ret + 0
+#2 = #0 * 98
+res_of_expr = #2 + #1
+PRT string "arr[1]*'b'+fib(3)="
+PRT id res_of_expr
+g_v_int_a1 = 5 + 0
+tag[6] = 12 + 0
+g_v_char_h = 104 + 0
+PUSH g_v_char_h
+CALL addone
+#0 = a + 1
+RET id #0
+LABEL $_addone_1
+#0 = Ret + 0
+PUSH 5
+CALL fib
+#1 = Ret + 0
+PUSH 1
+PUSH #1
+CALL add
+#0 = a + b
+RET id #0
+LABEL $_add_1
+#2 = Ret + 0
+#3 = tag[6]
+#4 = #2 / g_v_int_a1
+#5 = #0 + #4
+res_of_expr = #5 - #3
+PRT string "addone(g_v_char_h)+add(1, fib(5))/G_v_int_a1 - tag[6]="
+PRT id res_of_expr
+RET
+FUNC void test_scanf()
+FUNC char echo_char()
+FUNC void really_void()
+FUNC void really_void2()
+FUNC void really_void3()
+FUNC void permutation()
+PARA int m
+PARA int n
+#0 = n - 1
+BGEZ m #0 $Label25
+#0 = m + 1
 PUSH #0
-CALL normal
-c = Ret + 0
-PRT string " | b: "
-PRT id c
-ENTER
-i = 0 + 0
-BGEZ i 4 $Label27
+PUSH n
+CALL permutation
+i = m + 1
+BGEZ i n $Label27
 LABEL $Label29
-PRT string " | "
-#0 = w1[i]
-PRT id #0
-ENTER
+t = chs[m]
+#0 = chs[i]
+chs[m] = #0 + 0
+chs[i] = t + 0
+#0 = m + 1
+PUSH #0
+PUSH n
+CALL permutation
+t = chs[m]
+#0 = chs[i]
+chs[m] = #0 + 0
+chs[i] = t + 0
 i = i + 1
-BLZ i 4 $Label29
+BLZ i n $Label29
 LABEL $Label27
 LABEL $Label28
+JMP $Label26
+LABEL $Label25
+i = 0 + 0
+LABEL $Label30
+#0 = chs[i]
+PUSH #0
+CALL echo_char
+PRT id a
+RET id a
+LABEL $_echo_char_1
+r = Ret + 0
+#0 = chs[i]
+BEZ r #0 $Label31
+PRT string "error"
+LABEL $Label31
+LABEL $Label32
+i = i + 1
+BLZ i 5 $Label30
+PRT string " "
+LABEL $Label26
+RET
+FUNC void main()
+i = 0 + 0
+BGEZ i 10 $Label33
+LABEL $Label35
+#0 = i + 1
+PUSH #0
+CALL fib
+arr[i] = Ret + 0
+i = i + 1
+BLZ i 10 $Label35
+LABEL $Label33
+LABEL $Label34
+PRT string "input the number of fib you want(1~10)"
+READ int user_input1
+READ int user_input2
+i = user_input1 - 1
+LABEL $Label36
+PRT string " "
+#0 = arr[i]
+PRT id #0
+i = i + 1
+BLZ i user_input2 $Label36
+i = user_input2 - 1
+#0 = user_input1 - 1
+BLZ i #0 $Label37
+LABEL $Label39
+PRT string " "
+#0 = arr[i]
+PRT id #0
+i = i - 1
+#0 = user_input1 - 1
+BGEZ i #0 $Label39
+LABEL $Label37
+LABEL $Label38
+PUSH 1
+PUSH 98
+CALL foo1
+#0 = a + b
+RET id #0
+LABEL $_foo1_1
+#0 = Ret + 0
+PRT id #0
+PUSH 1
+PUSH 2
+CALL add
+#0 = a + b
+RET id #0
+LABEL $_add_1_2
+#0 = Ret + 0
+PRT id #0
+PUSH 97
+PUSH 98
+CALL addchar
+#0 = a + b
+RET id #0
+LABEL $_addchar_1
+#0 = Ret + 0
+PRT id #0
+PUSH 70
+CALL addone
+#0 = a + 1
+RET id #0
+LABEL $_addone_1_2
+#0 = Ret + 0
+PRT id #0
+PUSH 16
+CALL addint
+#0 = a + 1
+RET id #0
+LABEL $_addint_1
+#0 = Ret + 0
+PRT id #0
+PUSH 99
+CALL foo2
+BLEZ c 99 $Label1_1
+RET char '4'
+JMP $_foo2_1
+JMP $Label2_1
+LABEL $Label1_1
+RET char '4'
+LABEL $Label2_1
+LABEL $_foo2_1
+#0 = Ret + 0
+PRT id #0
+CALL test_string_int
+a = 1 + 0
+PRT id a
+a = 0 + 0
+PRT id a
+a = 0 + 0
+PRT id a
+a = 0 + 0
+PRT id a
+a = 12 + 0
+PRT id a
+a = -12 + 0
+PRT id a
+PRT string "#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~ !"
+RET
+JMP $_test_string_int_1
+RET
+LABEL $_test_string_int_1
+PUSH 233
+CALL test_diff_domain
+PRT char 'b'
+g_v_int_a1 = 222 + 0
+PRT id g_v_int_a1
+PRT string "test global variable and constance"
+PRT int 1
+PRT char 'f'
+PRT char 'b'
+PRT char 'b'
+PRT int 2
+PRT int 3
+g_v_char_arr[2] = 72 + 0
+#0 = g_v_char_arr[2]
+PRT id #0
+g_v_int_arr2[6] = 155 + 0
+#0 = g_v_int_arr2[6]
+PRT id #0
+PRT string "before change para="
+PRT id para_change
+para_change = para_change * 2
+PRT string "after change para="
+PRT id para_change
+g_v_char_b = 89 + 0
+PRT id g_v_char_b
+RET
+LABEL $_test_diff_domain_1
+CALL test_expr
+CALL test_all_cond
+a = 1 + 0
+b = 2 + 0
+c = 2 + 0
+d = 65 + 0
+PRT string "test of comp symbol"
+BNZ b c $Label7_1
+PRT string "a==b"
+LABEL $Label7_1
+LABEL $Label8_1
+BGEZ a b $Label9_1
+PRT string "a<b"
+LABEL $Label9_1
+LABEL $Label10_1
+BLEZ c a $Label11_1
+PRT string "c>a"
+LABEL $Label11_1
+LABEL $Label12_1
+BEZ d 0 $Label13_1
+PRT string "d"
+LABEL $Label13_1
+LABEL $Label14_1
+BNZ a 1 $Label15_1
+PRT string "error"
+LABEL $Label15_1
+LABEL $Label16_1
+BEZ a 1 $Label17_1
+PRT string "error"
+LABEL $Label17_1
+LABEL $Label18_1
+BGZ a c $Label19_1
+PRT string "a<=c"
+LABEL $Label19_1
+LABEL $Label20_1
+BLZ a c $Label21_1
+PRT string "error!"
+LABEL $Label21_1
+LABEL $Label22_1
+BLEZ d 66 $Label23_1
+PRT string "error!"
+LABEL $Label23_1
+LABEL $Label24_1
+RET
+JMP $_test_all_cond_1
+RET
+LABEL $_test_all_cond_1
+CALL test_scanf
+PRT string "please input an integer"
+READ int a
+PRT id a
+PRT string "please input 2 integers press enter for each integer"
+READ int a
+READ int b
+PRT id a
+PRT id b
+RET
+JMP $_test_scanf_1
+RET
+LABEL $_test_scanf_1
+PUSH 97
+CALL echo_char
+PRT id a
+RET id a
+LABEL $_echo_char_1_2
+PUSH 1
+PUSH 2
+PUSH 99
+PUSH 100
+PUSH 5
+CALL test_lots_paras
+#0 = Ret + 0
+PRT id #0
+CALL really_void
+RET
+LABEL $_really_void_1
+CALL really_void2
+RET
+LABEL $_really_void2_1
+CALL really_void3
+RET
+LABEL $_really_void3_1
+chs[0] = 65 + 0
+chs[1] = 66 + 0
+chs[2] = 67 + 0
+chs[3] = 68 + 0
+chs[4] = 69 + 0
+PRT string "this is a permutation of ABCDE"
+PUSH 0
+PUSH 5
+CALL permutation
+EXIT

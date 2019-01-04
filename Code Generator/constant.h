@@ -17,8 +17,8 @@ using namespace std;
 #define MAX_WORD_LENGTH 1024		// 最长单词长度
 #define LEAST_REFERENCE 0
 #define DEBUG	false
-#define NEWLINE true
-#define INORD	true
+#define NEWLINE false
+#define INORD	false
 #define ULTOP	true
 #define SPEED	true
 #define INLINE	true

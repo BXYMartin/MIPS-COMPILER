@@ -2094,7 +2094,7 @@ void getTextSegment(ofstream & out, vector<MiddleCode> QuaterCode) {
 			map<string, bool>::iterator f;
 			f = inlinable.find(funcName);
 			if (f != inlinable.end() && f->second) {
-				out << "move $k0 $a0" << endl;
+				out << "move $v1 $a0" << endl;
 			}
 			if (item.isVal) {
 				itr = varToRegisterMap.find(locateVariable(item.target));
@@ -2143,7 +2143,7 @@ void getTextSegment(ofstream & out, vector<MiddleCode> QuaterCode) {
 				out << "syscall" << endl;
 			}
 			if (f != inlinable.end() && f->second) {
-				out << "move $a0 $k0" << endl;
+				out << "move $a0 $v1" << endl;
 			}
 			break;
 		}

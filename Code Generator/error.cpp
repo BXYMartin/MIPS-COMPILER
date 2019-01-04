@@ -43,16 +43,16 @@ void Error::LexicalError(LexicalErrorCode errorCode, int currentLine, int index)
 	cout << ", ";
 	switch (errorCode) {
 	case SingleCharIllegal:
-		cout << "illegal char format." << endl;
+		cout << "Illegal char format." << endl;
 		break;
 	case StringIllegal:
-		cout << "illegal string format." << endl;
+		cout << "Illegal string format." << endl;
 		break;
 	case ContentIllegal:
-		cout << "illegal content." << endl;
+		cout << "Illegal content." << endl;
 		break;
 	case NotEqualSymIllegal:
-		cout << "illegal != format." << endl;
+		cout << "Illegal != format." << endl;
 		break;
 	default:break;
 	}
@@ -189,7 +189,7 @@ void Error::TypeWarning(TypeWarningCode warningCode, int currentLine, int index,
 		cout << "Conflicting condition type between " << source << " and " << dest << "." << endl;
 		break;
 	case IlligalCharWarning:
-		cout << "Illigal Char '" << (char)src << "' Recognized." << endl;
+		cout << "Illigal char '" << (char)src << "' recognized." << endl;
 		break;
 	case ArrayIndexConversionWarning:
 		cout << "Illigal conversion for array index from char to int." << endl;

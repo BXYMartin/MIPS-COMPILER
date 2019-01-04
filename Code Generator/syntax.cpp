@@ -50,12 +50,13 @@ bool Syntax::checknskipComponent(SymbolCode symbol, string message, char end) {
 		error.SyntaxError(MissingComponentError, getLine(), getIndex(), message);
 		lexical.skip(end);
 		lexical.rest();
+		return false;
 	}
 	return true;
 }
 
 
-bool Syntax::skipComponent(SymbolCode symbol, string message, char end) {
+bool Syntax::skipComponent(SymbolCode symbol, string message) {
 	SymbolCode currentSymbol;
 	if (lexical.isFinished()) {
 		return false;
@@ -63,7 +64,7 @@ bool Syntax::skipComponent(SymbolCode symbol, string message, char end) {
 	currentSymbol = lexical.getSymbol();
 	if (currentSymbol != symbol) {
 		error.SyntaxError(MissingComponentError, getLine(), getIndex(), message);
-		lexical.skip(end);
+		return false;
 	}
 	return true;
 }
@@ -352,8 +353,14 @@ void Syntax::enter_functionDefinition() {
 		else if (checkSymbol(VOIDSY)) {
 			enter_functionDefinitionWithoutReturn();
 		}
-		else {
+		else if (checkSymbol(MAINSY)) {
 			return;
+		}
+		else {
+			error.SyntaxError(MissingComponentError, getLine(), getIndex(), "Invalid content outside function definition, [possibly bracket {...} mismatch]");
+			while (!lexical.isFinished() && !(checkSymbol(INTSY) || checkSymbol(CHARSY) || checkSymbol(VOIDSY))) {
+				lexical.nextSym();
+			}
 		}
 		if (lexical.isFinished())
 			return;
@@ -417,7 +424,7 @@ bool Syntax::enter_functionDefinitionWithoutReturn() {
 			voidMain = true;
 			return true;
 		}
-		error.SyntaxError(MissingComponentError, getLine(), getIndex(), "Missing function identifier");
+		error.SyntaxError(MissingComponentError, getLine(), getIndex(), "Invalid function identifier");
 		lexical.skip(';');
 		return false;
 	}
@@ -824,7 +831,7 @@ bool Syntax::enter_statement_inside(string funcName, bool isCache, vector<Middle
 	case RETURNSY:
 		markSyntax("return");
 		enter_returnStatement(funcName, isCache, cache, weight);
-		checknskipComponent(SEMICOLON, "Missing ; at the end of line", ';');
+		checkComponent(SEMICOLON, "Missing ; at the end of line");
 		break;
 	default:
 		return false;
@@ -998,7 +1005,7 @@ bool Syntax::enter_conditionStatement(string funcName, bool isCache, vector<Midd
 
 
 	// else
-	if (!skipComponent(ELSESY, "Missing else symbol in if-else statement", '\n'))
+	if (!skipComponent(ELSESY, "Missing else symbol in if-else statement"))
 		return false;
 	markSyntax("else");
 	// <Óï¾ä>
@@ -1198,8 +1205,7 @@ bool Syntax::enter_switchStatement(string funcName, bool isCache, vector<MiddleC
 	}
 	semantic.checkCaseEntry(cases);
 	// default
-	if (!checkComponent(DEFAULTSY, "Missing default entry for case table"))
-		return false;
+	checkComponent(DEFAULTSY, "Missing default entry for case table");
 	printLevel++;
 	markSyntax("default");
 	enter_defaultStatement(funcName, isCache, cache, weight);
@@ -1306,8 +1312,6 @@ entry Syntax::enter_caseStatement(string funcName, string endLabel, ValueType ty
 // £¼È±Ê¡£¾ ::= default : £¼Óï¾ä£¾
 bool Syntax::enter_defaultStatement(string funcName, bool isCache, vector<MiddleCode> &cache, int weight) {
 	//·ÖÎödefault
-	if (!checkSymbol(DEFAULTSY))
-		return false;
 	// :
 	getncheckComponent(COLON, "Missing : in case table entry");
 	// <Óï¾ä>

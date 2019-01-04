@@ -1055,10 +1055,14 @@ void load_word(int dest, int addr, int offset, bool optimize)
 {
 	if (offset > 0)
 		offset -= 32;
-	if ((reg_file[addr].val + offset) % 4)
-		cout << "Load Word Not Aligned to 4KB" << endl;
+	if ((reg_file[addr].val + offset) % 4) {
+		cout << endl;
+		cout << "[Warning: Load Word Not Aligned to 4KB]" << endl;
+	}
+		
 	if (reg_file[addr].val + offset < 0x10000000 || reg_file[addr].val + offset > 0x10040000) {
-		cout << "Access To Illegal Memory Address " << reg_file[addr].val + offset << " in Function " << current << endl;
+		cout << endl;
+		cout << "[Warning: Access To Illegal Memory Address " << reg_file[addr].val + offset << " in Function " << current << "]" << endl;
 		//printPosition();
 	}
 	if(optimize)
@@ -1067,7 +1071,8 @@ void load_word(int dest, int addr, int offset, bool optimize)
 		reg_file[dest].val = dm[reg_file[addr].val + offset];
 	else {
 		reg_file[dest].val = 0;
-		cout << "Accessed Uninitialized Memory Area " << reg_file[addr].val + offset << " in Function " << current << endl;
+		cout << endl;
+		cout << "[Warning: Accessed Uninitialized Memory Area " << reg_file[addr].val + offset << " in Function " << current << "]" << endl;
 	}
 	pc++;
 	return;
@@ -1077,10 +1082,14 @@ void store_word(int dest, int addr, int offset, bool optimize)
 {
 	if (offset > 0)
 		offset -= 32;
-	if ((reg_file[addr].val + offset) % 4)
-		cout << "Store Word Not Aligned to 4KB" << endl;
+	if ((reg_file[addr].val + offset) % 4) {
+		cout << endl;
+		cout << "[Warning: Store Word Not Aligned to 4KB]" << endl;
+	}
+		
 	if (reg_file[addr].val + offset < 0x10000000 || reg_file[addr].val + offset > 0x10040000) {
-		cout << "Access To Illegal Memory Address " << reg_file[addr].val + offset << " in Function " << current << endl;
+		cout << endl;
+		cout << "[Warning: Access To Illegal Memory Address " << reg_file[addr].val + offset << " in Function " << current << "]" << endl;
 		//printPosition();
 	}
 	if(optimize)
