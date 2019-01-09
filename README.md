@@ -70,10 +70,12 @@ After Basic Block Division, the compiler construct variable DAG Graph for each b
 **Constant Variables** together with numbers used in source code will be automatically merged while semantic analysis during compiling. This feature is deeply implemented in every module.
 ### Register Allocation
 For variables that matters (sorted by reference counts), the program further allocates global registers for global variables and local variables (Implemented as ***vector*** **varToRegisterMap**). Registers for local variables changes through functions and registers for global variables are always the same while the program is running.
+### Inline Optimization
+Functions that use less than 4 variables without array and do not call other functions can be put inline. Several problems must be taken care of. First, all labels inside the function must be renamed to avoid multiple inline block, including the return label. Second, for the sake of multiple returns, each of them must restore all temp registers used and jump to the end of inline block. Third, variables inside inline block is mapped to `$a0~$a3` registers. Last, when calling print syscall, the `$a0` register, if used, must be temporarily stored in another register and swap back later on.
 
 ## Profiling
 ### Optimize Register Allocation Strategy
-
+In simulation, reference times for each variables in symbol table can be recorded and used to replace the original reference times for more efficient allocation.
 ### Automatic BenchMark
 
 ## Error Handling
