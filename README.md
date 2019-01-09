@@ -66,7 +66,7 @@ Additional Requirements:
 ## Optimizations
 ### Direct Acyclic Graph (DAG) Reduction
 After Basic Block Division, the compiler construct variable DAG Graph for each block and reduce the redundant calculations through intuitive deriviation algorithm.
-### Bulit-in Constant
+### Constant Replacement
 **Constant Variables** together with numbers used in source code will be automatically merged while semantic analysis during compiling. This feature is deeply implemented in every module.
 ### Register Allocation
 For variables that matters (sorted by reference counts), the program further allocates global registers for global variables and local variables (Implemented as ***vector*** **varToRegisterMap**). Registers for local variables changes through functions and registers for global variables are always the same while the program is running.
@@ -112,8 +112,6 @@ The compiler can handle error types as follows:
 | `Missing Parameter Table` | Parameter count mismatch in calling a function
 | `Abundant Parameter` | Extra parameter detected
 | `Missing Parameter` | Missing parameter in calling a function 
-| `Conflicting Parameter Type` | Type mismatch during calling a function
-| `Invalid Type Conversion` | Invalid Conversion from **`int`** to **`char`**
 | `Invalid Assignment` | Assigned to non-variable identifiers
 | `Conflicting Case Entry` | Multiple entry found in `switch(){case:...}` block
 | `Divided by Zero` | Set zero as denominator
@@ -125,6 +123,15 @@ The compiler can handle error types as follows:
 |Error Type|Descriptions|
 |---|---
 | `Void Function Returned Non-void Value` | **`int`** or **`char`** type returned in void function
-| `Char Function Returned Int Value` | **`int`** type returned in **`char`** function
 | `Non-void Function Returned Void Value` | Void type returned in **`int`** or **`char`** function
 | `Missing Return` | Missing return statement in function
+
+## Type Warnings
+
+|Warning Type|Descriptions|
+| `Conflicting Return Value` | **`int`** type returned in **`char`** function
+| `Conflicting Parameter Type` | Type mismatch during calling a function
+| `Conflicting Assignment Type` | Invalid Conversion from **`int`** to **`char`**
+| `Conflicting Comparison Type` | Invalid comparison involving **`char`**
+| `Conflicting Case Entry Type` | Case entry type not match
+| `Illegal Char` | Illegal elements(character other than alphabet plus operators) appears in `' '` 
