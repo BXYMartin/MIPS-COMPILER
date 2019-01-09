@@ -239,10 +239,10 @@ private:
 								left = to_string(tmp.at(tmp.size() - 1).number);
 								leftDigit = tmp.at(tmp.size() - 1).number;
 								tmp.pop_back();
-								if (inputItem.number == '/' && right == "0") {
-									error.SemanticError(DivisionByZeroError, getLine(), getIndex(), "x/0");
-									break;
-								}
+							}
+							if (inputItem.number == '/' && right == "0") {
+								error.SemanticError(DivisionByZeroError, getLine(), getIndex(), "x/0");
+								break;
 							}
 							if (isAbleDirect) {
 								expItem.type = IntType;
