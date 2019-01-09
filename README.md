@@ -129,6 +129,7 @@ The compiler can handle error types as follows:
 ## Type Warnings
 
 |Warning Type|Descriptions|
+|---|---
 | `Conflicting Return Value` | **`int`** type returned in **`char`** function
 | `Conflicting Parameter Type` | Type mismatch during calling a function
 | `Conflicting Assignment Type` | Invalid Conversion from **`int`** to **`char`**
