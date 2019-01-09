@@ -1,6 +1,8 @@
 # MIPS Profiling Compiler
 A MIPS Assembly Generator for C0 Syntax, intended for Compiler Principle Curriculum. This Compiler separates each syntax elements with different functions and calls them recursively according to the recursive descent method.
 
+![image](https://github.com/BXYMartin/MIPS-COMPILER/blob/master/Pictures/Flow.png)
+
 ## Syntax
 ```
 ＜add＞ ::= +｜-
